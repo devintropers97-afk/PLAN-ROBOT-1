@@ -2183,3 +2183,168 @@ h6 { font-size: 1rem; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+/* ===== Text Readability Overrides ===== */
+/* Override Bootstrap text-muted for better readability on dark backgrounds */
+.text-muted {
+    color: #b8b8c8 !important;
+}
+
+/* Override Bootstrap text-secondary */
+.text-secondary {
+    color: #d0d0dc !important;
+}
+
+/* Form helper text */
+.form-text {
+    color: #b8b8c8 !important;
+}
+
+/* Small muted text inside elements */
+small.text-muted,
+.small.text-muted {
+    color: #b8b8c8 !important;
+}
+
+/* Table cell text */
+.table td.text-muted,
+.table .text-muted {
+    color: #b8b8c8 !important;
+}
+
+/* Auth pages subtitle */
+.auth-subtitle {
+    color: #c8c8d8 !important;
+}
+
+/* Card text */
+.card-text {
+    color: #c8c8d8;
+}
+
+/* Pricing description */
+.pricing-desc {
+    color: #b8b8c8 !important;
+}
+
+/* Step description */
+.step-desc {
+    color: #b8b8c8 !important;
+}
+
+/* Section description */
+.section-desc {
+    color: #c8c8d8 !important;
+}
+
+/* Feature description */
+.feature-desc {
+    color: #c8c8d8 !important;
+}
+
+/* Strategy card muted text */
+.strategy-card .text-muted {
+    color: #b8b8c8 !important;
+}
+
+/* Testimonial text */
+.testimonial-text {
+    color: #c8c8d8 !important;
+}
+
+/* Testimonial country */
+.testimonial-country {
+    color: #b8b8c8 !important;
+}
+
+/* Footer description */
+.footer-desc {
+    color: #b8b8c8 !important;
+}
+
+/* Form labels */
+.form-label {
+    color: #d0d0dc !important;
+}
+
+/* Form check labels */
+.form-check-label {
+    color: #c8c8d8 !important;
+}
+
+/* Input group text */
+.input-group-text {
+    color: #c8c8d8 !important;
+}
+
+/* List items in cards */
+.card ul li,
+.card ol li {
+    color: #c8c8d8;
+}
+
+/* Alert text in light mode compatibility */
+.alert ul li,
+.alert ol li {
+    color: inherit;
+}
+
+/* Stats label */
+.stat-label {
+    color: #b8b8c8 !important;
+}
+
+/* Stats counter label */
+.stats-label {
+    color: #b8b8c8 !important;
+}
+
+/* Payment method text */
+.payment-method span {
+    color: #b8b8c8 !important;
+}
+
+/* CTA feature text */
+.cta-feature {
+    color: #c8c8d8 !important;
+}
+
+/* Support step text */
+.support-step p {
+    color: #c8c8d8 !important;
+}
+
+/* Disclaimer short text */
+.disclaimer-short {
+    color: #b8b8c8 !important;
+}
+
+/* Copyright text */
+.copyright {
+    color: #b8b8c8 !important;
+}
+
+/* Result card headers in calculator */
+.result-card h6 {
+    color: #b8b8c8 !important;
+}
+
+/* Table responsive text */
+.table-responsive .text-muted {
+    color: #b8b8c8 !important;
+}
+
+/* Accordion body text */
+.accordion-body {
+    color: #c8c8d8 !important;
+}
+
+/* Refund policy specific */
+.card-body p {
+    color: #c8c8d8;
+}
+
+.card-body ul li,
+.card-body ol li {
+    color: #c8c8d8;
+}
