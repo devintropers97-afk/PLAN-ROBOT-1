@@ -176,15 +176,32 @@
 
     <!-- Preloader hide script -->
     <script>
-        window.addEventListener('load', function() {
-            const preloader = document.getElementById('preloader');
-            if (preloader) {
-                preloader.classList.add('fade-out');
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 500);
+        (function() {
+            const hidePreloader = function() {
+                const preloader = document.getElementById('preloader');
+                if (preloader && preloader.style.display !== 'none') {
+                    preloader.classList.add('fade-out');
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                    }, 500);
+                }
+            };
+
+            // Hide on window load
+            window.addEventListener('load', hidePreloader);
+
+            // Fallback: hide after 5 seconds regardless
+            setTimeout(hidePreloader, 5000);
+
+            // Also hide on DOMContentLoaded as backup
+            if (document.readyState === 'complete') {
+                hidePreloader();
+            } else {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(hidePreloader, 1000);
+                });
             }
-        });
+        })();
     </script>
 </body>
 </html>

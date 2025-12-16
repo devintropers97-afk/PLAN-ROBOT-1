@@ -2,56 +2,79 @@
 $page_title = 'Dashboard';
 require_once 'includes/admin-header.php';
 
+// Initialize default values
+$totalUsers = 0;
+$pendingVerifications = 0;
+$activeUsers = 0;
+$todayTrades = 0;
+$todayWins = 0;
+$winRate = 0;
+$monthlyRevenue = 0;
+$packageStats = [];
+$recentUsers = [];
+$recentTrades = [];
+$dbError = false;
+
 // Get statistics
 $db = getDBConnection();
 
-// Total users
-$stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
-$totalUsers = $stmt->fetch()['total'];
+if ($db) {
+    try {
+        // Total users
+        $stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
+        if ($stmt) $totalUsers = $stmt->fetch()['total'] ?? 0;
 
-// Pending verifications
-$stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE status = 'pending'");
-$pendingVerifications = $stmt->fetch()['total'];
+        // Pending verifications
+        $stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE status = 'pending'");
+        if ($stmt) $pendingVerifications = $stmt->fetch()['total'] ?? 0;
 
-// Active users
-$stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE status = 'active'");
-$activeUsers = $stmt->fetch()['total'];
+        // Active users
+        $stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE status = 'active'");
+        if ($stmt) $activeUsers = $stmt->fetch()['total'] ?? 0;
 
-// Today's trades
-$stmt = $db->query("SELECT COUNT(*) as total FROM trades WHERE DATE(created_at) = CURDATE()");
-$todayTrades = $stmt->fetch()['total'];
+        // Today's trades
+        $stmt = $db->query("SELECT COUNT(*) as total FROM trades WHERE DATE(created_at) = CURDATE()");
+        if ($stmt) $todayTrades = $stmt->fetch()['total'] ?? 0;
 
-// Today's wins
-$stmt = $db->query("SELECT COUNT(*) as total FROM trades WHERE DATE(created_at) = CURDATE() AND result = 'win'");
-$todayWins = $stmt->fetch()['total'];
+        // Today's wins
+        $stmt = $db->query("SELECT COUNT(*) as total FROM trades WHERE DATE(created_at) = CURDATE() AND result = 'win'");
+        if ($stmt) $todayWins = $stmt->fetch()['total'] ?? 0;
 
-// Win rate today
-$winRate = $todayTrades > 0 ? round(($todayWins / $todayTrades) * 100, 1) : 0;
+        // Win rate today
+        $winRate = $todayTrades > 0 ? round(($todayWins / $todayTrades) * 100, 1) : 0;
 
-// Subscription revenue this month
-$stmt = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM subscriptions WHERE status = 'active' AND MONTH(created_at) = MONTH(CURDATE())");
-$monthlyRevenue = $stmt->fetch()['total'];
+        // Subscription revenue this month
+        $stmt = $db->query("SELECT COALESCE(SUM(amount), 0) as total FROM subscriptions WHERE status = 'active' AND MONTH(created_at) = MONTH(CURDATE())");
+        if ($stmt) $monthlyRevenue = $stmt->fetch()['total'] ?? 0;
 
-// Package distribution
-$stmt = $db->query("SELECT package, COUNT(*) as count FROM users WHERE role = 'user' AND status = 'active' GROUP BY package");
-$packageStats = [];
-while ($row = $stmt->fetch()) {
-    $packageStats[$row['package']] = $row['count'];
+        // Package distribution
+        $stmt = $db->query("SELECT package, COUNT(*) as count FROM users WHERE role = 'user' AND status = 'active' GROUP BY package");
+        if ($stmt) {
+            while ($row = $stmt->fetch()) {
+                $packageStats[$row['package']] = $row['count'];
+            }
+        }
+
+        // Recent users
+        $stmt = $db->query("SELECT * FROM users WHERE role = 'user' ORDER BY created_at DESC LIMIT 8");
+        if ($stmt) $recentUsers = $stmt->fetchAll() ?: [];
+
+        // Recent trades
+        $stmt = $db->query("
+            SELECT t.*, u.fullname
+            FROM trades t
+            JOIN users u ON t.user_id = u.id
+            ORDER BY t.created_at DESC
+            LIMIT 5
+        ");
+        if ($stmt) $recentTrades = $stmt->fetchAll() ?: [];
+    } catch (Exception $e) {
+        error_log("Admin dashboard error: " . $e->getMessage());
+        $dbError = true;
+    }
+} else {
+    $dbError = true;
 }
-
-// Recent users
-$stmt = $db->query("SELECT * FROM users WHERE role = 'user' ORDER BY created_at DESC LIMIT 8");
-$recentUsers = $stmt->fetchAll();
-
-// Recent trades
-$stmt = $db->query("
-    SELECT t.*, u.fullname
-    FROM trades t
-    JOIN users u ON t.user_id = u.id
-    ORDER BY t.created_at DESC
-    LIMIT 5
-");
-$recentTrades = $stmt->fetchAll();
 ?>
 
 <!-- Page Header -->
@@ -67,6 +90,15 @@ $recentTrades = $stmt->fetchAll();
         </span>
     </div>
 </div>
+
+<?php if ($dbError): ?>
+<div class="alert alert-danger fade-in">
+    <i class="fas fa-database"></i>
+    <div>
+        <strong>Database Connection Error!</strong> Unable to connect to database. Please check your database configuration.
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Stats Grid -->
 <div class="stat-grid">

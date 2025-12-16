@@ -9,11 +9,26 @@ if (!isLoggedIn() || !isAdmin()) {
 
 // Get pending counts for notifications
 $db = getDBConnection();
-$stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE status = 'pending'");
-$pendingUsers = $stmt->fetch()['total'];
+$pendingUsers = 0;
+$pendingSubscriptions = 0;
 
-$stmt = $db->query("SELECT COUNT(*) as total FROM subscriptions WHERE status = 'pending'");
-$pendingSubscriptions = $stmt->fetch()['total'];
+if ($db) {
+    try {
+        $stmt = $db->query("SELECT COUNT(*) as total FROM users WHERE status = 'pending'");
+        if ($stmt) {
+            $result = $stmt->fetch();
+            $pendingUsers = $result['total'] ?? 0;
+        }
+
+        $stmt = $db->query("SELECT COUNT(*) as total FROM subscriptions WHERE status = 'pending'");
+        if ($stmt) {
+            $result = $stmt->fetch();
+            $pendingSubscriptions = $result['total'] ?? 0;
+        }
+    } catch (Exception $e) {
+        error_log("Admin header DB error: " . $e->getMessage());
+    }
+}
 
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 ?>
