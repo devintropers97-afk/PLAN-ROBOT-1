@@ -11,11 +11,47 @@ $error = '';
 $success = '';
 $countries = getCountryList();
 
+// Country to affiliate link mapping
+$countryLinks = [
+    'ID' => 'https://olymptrade-vid.com/id-id/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'MY' => 'https://olymptrade-vid.com/ms-ms/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'PH' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'TH' => 'https://olymptrade-vid.com/th-th/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'VN' => 'https://olymptrade-vid.com/vi-vi/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'IN' => 'https://olymptrade-vid.com/hi-hi/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'PK' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'BD' => 'https://olymptrade-vid.com/bn-bn/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'BR' => 'https://olymptrade-vid.com/pt-pt/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'MX' => 'https://olymptrade-vid.com/es-es/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'CO' => 'https://olymptrade-vid.com/es-es/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'AR' => 'https://olymptrade-vid.com/es-es/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'PE' => 'https://olymptrade-vid.com/es-es/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'CL' => 'https://olymptrade-vid.com/es-es/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'NG' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'KE' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'ZA' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'EG' => 'https://olymptrade-vid.com/ar-ar/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'TR' => 'https://olymptrade-vid.com/tr-tr/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'RU' => 'https://olymptrade-vid.com/ru-ru/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'UA' => 'https://olymptrade-vid.com/ru-ru/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'PL' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'ES' => 'https://olymptrade-vid.com/es-es/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'PT' => 'https://olymptrade-vid.com/pt-pt/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'IT' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'DE' => 'https://olymptrade-vid.com/de-de/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'FR' => 'https://olymptrade-vid.com/fr-fr/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'GB' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'US' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'CA' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'AU' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+    'OTHER' => 'https://olymptrade.com/?affiliate_id=660784&subid1=ZYNtradeSystem',
+];
+
 // Handle registration form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF token
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Invalid request. Please try again.';
+        $error = 'Request tidak valid. Silakan coba lagi.';
     } else {
         $email = cleanInput($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -29,35 +65,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = [];
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Please enter a valid email address.';
+            $errors[] = 'Masukkan alamat email yang valid.';
         }
 
         if (strlen($password) < 8) {
-            $errors[] = 'Password must be at least 8 characters.';
+            $errors[] = 'Password minimal 8 karakter.';
         }
 
         if ($password !== $confirm_password) {
-            $errors[] = 'Passwords do not match.';
+            $errors[] = 'Password tidak cocok.';
         }
 
         if (empty($fullname)) {
-            $errors[] = 'Please enter your full name.';
+            $errors[] = 'Masukkan nama lengkap Anda.';
         }
 
         if (empty($country)) {
-            $errors[] = 'Please select your country.';
+            $errors[] = 'Pilih negara Anda.';
         }
 
         if (empty($olymptrade_id) || strlen($olymptrade_id) < 6) {
-            $errors[] = 'Please enter a valid OlympTrade ID.';
+            $errors[] = 'Masukkan OlympTrade ID yang valid (minimal 6 digit).';
         }
 
         if (!isset($_POST['terms'])) {
-            $errors[] = 'You must agree to the Terms of Service.';
+            $errors[] = 'Anda harus menyetujui Syarat & Ketentuan.';
         }
 
         if (!isset($_POST['affiliate'])) {
-            $errors[] = 'Please confirm you registered via our affiliate link.';
+            $errors[] = 'Konfirmasi bahwa Anda sudah daftar via link afiliasi kami.';
         }
 
         if (!empty($errors)) {
@@ -75,150 +111,542 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<section class="auth-page">
+<section class="auth-page py-5">
     <div class="container">
-        <div class="card auth-card" style="max-width: 550px;">
-            <div class="auth-header">
-                <div class="mb-4">
-                    <span class="brand-logo" style="font-size: 2.5rem;">ZYN</span>
-                </div>
-                <h1 class="auth-title">Create Account</h1>
-                <p class="auth-subtitle">Start your automated trading journey</p>
-            </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
 
-            <!-- Important Notice -->
-            <div class="alert alert-info mb-4">
-                <i class="fas fa-info-circle"></i>
-                <strong>Important:</strong> You must register on OlympTrade via our affiliate link before creating an account here.
-                <a href="<?php echo OLYMPTRADE_AFFILIATE_LINK; ?>" target="_blank" class="alert-link">
-                    Register OlympTrade <i class="fas fa-external-link-alt"></i>
-                </a>
-            </div>
-
-            <?php if ($error): ?>
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
-            </div>
-            <?php endif; ?>
-
-            <form method="POST" action="" class="needs-validation" novalidate>
-                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="fullname" class="form-label">Full Name *</label>
-                        <input type="text" class="form-control" id="fullname" name="fullname"
-                               placeholder="Enter your full name" required
-                               value="<?php echo isset($_POST['fullname']) ? htmlspecialchars($_POST['fullname']) : ''; ?>">
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="country" class="form-label">Country *</label>
-                        <select class="form-select" id="country" name="country" required>
-                            <option value="">Select country</option>
-                            <?php foreach ($countries as $code => $name): ?>
-                            <option value="<?php echo $code; ?>" <?php echo (isset($_POST['country']) && $_POST['country'] === $code) ? 'selected' : ''; ?>>
-                                <?php echo $name; ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address *</label>
-                    <input type="email" class="form-control" id="email" name="email"
-                           placeholder="Enter your email" required
-                           value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone Number (Optional)</label>
-                    <input type="tel" class="form-control" id="phone" name="phone"
-                           placeholder="e.g., +62812345678"
-                           value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>">
-                </div>
-
-                <div class="mb-3">
-                    <label for="olymptrade_id" class="form-label">OlympTrade ID *</label>
-                    <input type="text" class="form-control" id="olymptrade_id" name="olymptrade_id"
-                           placeholder="Enter your OlympTrade ID" required
-                           value="<?php echo isset($_POST['olymptrade_id']) ? htmlspecialchars($_POST['olymptrade_id']) : ''; ?>">
-                    <div class="form-text">
-                        Find your ID in OlympTrade profile settings
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="password" class="form-label">Password *</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control border-end-0" id="password" name="password"
-                                   placeholder="Min 8 characters" required minlength="8">
-                            <button type="button" class="input-group-text bg-transparent border-start-0 password-toggle">
-                                <i class="fas fa-eye text-muted"></i>
-                            </button>
+                <!-- Important Warning Banner -->
+                <div class="alert alert-warning mb-4" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 16px;">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="alert-icon" style="font-size: 2rem;">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
                         </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password *</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control border-end-0" id="confirm_password" name="confirm_password"
-                                   placeholder="Repeat password" required>
-                            <button type="button" class="input-group-text bg-transparent border-start-0 password-toggle">
-                                <i class="fas fa-eye text-muted"></i>
-                            </button>
+                        <div>
+                            <h5 class="text-warning mb-2"><i class="fas fa-ban me-2"></i>PENTING! Baca Sebelum Daftar</h5>
+                            <p class="mb-2" style="color: var(--text-primary);">
+                                <strong>Anda BELUM BISA login ke Dashboard Trader ZYN</strong> jika belum memenuhi syarat utama:
+                            </p>
+                            <ul class="mb-0" style="color: var(--text-secondary);">
+                                <li>Wajib daftar akun <strong>BARU</strong> OlympTrade melalui link afiliasi kami</li>
+                                <li>Deposit minimal <strong>$10</strong> ke akun OlympTrade</li>
+                                <li>Akun OlympTrade harus akun <strong>REAL</strong> (bukan demo)</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="affiliate" name="affiliate" required>
-                        <label class="form-check-label" for="affiliate">
-                            I confirm that I registered on OlympTrade via ZYN's affiliate link and deposited minimum $10 *
-                        </label>
+                <!-- Registration Steps Card -->
+                <div class="card auth-card" style="max-width: 100%; border-radius: 20px;">
+                    <div class="auth-header text-center pb-0">
+                        <div class="mb-3">
+                            <span class="brand-logo" style="font-size: 2.5rem;">ZYN</span>
+                            <small class="d-block text-muted mt-1">Trade System</small>
+                        </div>
+                        <h1 class="auth-title h3">Pendaftaran Trader</h1>
+                        <p class="auth-subtitle">Ikuti langkah-langkah berikut untuk mendaftar</p>
+                    </div>
+
+                    <!-- Progress Steps -->
+                    <div class="registration-steps px-4 py-3">
+                        <div class="step-progress">
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Pilih Negara</div>
+                            </div>
+                            <div class="step-line"></div>
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Daftar OlympTrade</div>
+                            </div>
+                            <div class="step-line"></div>
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Isi Form</div>
+                            </div>
+                            <div class="step-line"></div>
+                            <div class="step" data-step="4">
+                                <div class="step-number">4</div>
+                                <div class="step-label">Verifikasi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php if ($error): ?>
+                    <div class="alert alert-danger mx-4">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Step 1: Country Selection -->
+                    <div class="step-content" id="step1Content">
+                        <div class="card-body px-4 pb-4">
+                            <div class="text-center mb-4">
+                                <div class="step-icon mb-3">
+                                    <i class="fas fa-globe-asia" style="font-size: 3rem; color: var(--primary);"></i>
+                                </div>
+                                <h4>Langkah 1: Pilih Negara Anda</h4>
+                                <p class="text-muted">Link pendaftaran OlympTrade akan disesuaikan dengan negara Anda</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="selectCountry" class="form-label">Pilih Negara <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-lg" id="selectCountry" required>
+                                    <option value="">-- Pilih Negara --</option>
+                                    <?php foreach ($countries as $code => $name): ?>
+                                    <option value="<?php echo $code; ?>" data-link="<?php echo $countryLinks[$code] ?? $countryLinks['OTHER']; ?>">
+                                        <?php echo getCountryFlag($name); ?> <?php echo $name; ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <button type="button" class="btn btn-primary w-100 btn-lg" id="btnStep1Next" disabled>
+                                <span>Lanjutkan</span> <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Register OlympTrade -->
+                    <div class="step-content d-none" id="step2Content">
+                        <div class="card-body px-4 pb-4">
+                            <div class="text-center mb-4">
+                                <div class="step-icon mb-3">
+                                    <i class="fas fa-user-plus" style="font-size: 3rem; color: var(--primary);"></i>
+                                </div>
+                                <h4>Langkah 2: Daftar Akun OlympTrade</h4>
+                                <p class="text-muted">Klik tombol di bawah untuk membuat akun OlympTrade BARU</p>
+                            </div>
+
+                            <div class="alert alert-info mb-4" style="border-radius: 12px;">
+                                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Petunjuk Penting:</h6>
+                                <ol class="mb-0 ps-3">
+                                    <li>Klik tombol "Daftar OlympTrade" di bawah</li>
+                                    <li>Buat akun <strong>BARU</strong> (jangan pakai akun lama)</li>
+                                    <li>Verifikasi email Anda</li>
+                                    <li>Deposit minimal <strong>$10</strong></li>
+                                    <li>Catat <strong>ID Akun</strong> Anda (ada di Profile)</li>
+                                </ol>
+                            </div>
+
+                            <div class="text-center mb-4">
+                                <a href="" id="olymptradeLink" target="_blank" class="btn btn-success btn-lg px-5 py-3" style="border-radius: 12px; font-size: 1.1rem;">
+                                    <i class="fas fa-external-link-alt me-2"></i> Daftar OlympTrade Sekarang
+                                </a>
+                                <p class="text-muted small mt-2">
+                                    <i class="fas fa-shield-alt me-1"></i> Link aman & resmi sesuai negara: <strong id="selectedCountryName"></strong>
+                                </p>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="form-check mb-4">
+                                <input type="checkbox" class="form-check-input" id="confirmOlymptrade" style="width: 20px; height: 20px;">
+                                <label class="form-check-label ms-2" for="confirmOlymptrade" style="font-size: 1rem;">
+                                    <strong>Saya sudah daftar OlympTrade dan sudah deposit minimal $10</strong>
+                                </label>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-outline-secondary btn-lg flex-fill" id="btnStep2Back">
+                                    <i class="fas fa-arrow-left me-2"></i> Kembali
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg flex-fill" id="btnStep2Next" disabled>
+                                    Lanjutkan <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Registration Form -->
+                    <div class="step-content d-none" id="step3Content">
+                        <div class="card-body px-4 pb-4">
+                            <div class="text-center mb-4">
+                                <div class="step-icon mb-3">
+                                    <i class="fas fa-edit" style="font-size: 3rem; color: var(--primary);"></i>
+                                </div>
+                                <h4>Langkah 3: Isi Data Pendaftaran</h4>
+                                <p class="text-muted">Masukkan ID OlympTrade dan data diri Anda</p>
+                            </div>
+
+                            <form method="POST" action="" class="needs-validation" novalidate id="registerForm">
+                                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+                                <input type="hidden" name="country" id="hiddenCountry" value="">
+
+                                <!-- OlympTrade ID - Most Important -->
+                                <div class="mb-4 p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 12px; border: 2px solid var(--primary);">
+                                    <label for="olymptrade_id" class="form-label fw-bold">
+                                        <i class="fas fa-id-card text-primary me-2"></i>OlympTrade ID <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="olymptrade_id" name="olymptrade_id"
+                                           placeholder="Contoh: 12345678" required
+                                           pattern="[0-9]{6,12}"
+                                           value="<?php echo isset($_POST['olymptrade_id']) ? htmlspecialchars($_POST['olymptrade_id']) : ''; ?>">
+                                    <div class="form-text">
+                                        <i class="fas fa-question-circle me-1"></i>
+                                        Temukan ID di aplikasi OlympTrade > Profile > ID Akun (6-12 digit angka)
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fullname" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="fullname" name="fullname"
+                                               placeholder="Sesuai KTP/Identitas" required
+                                               value="<?php echo isset($_POST['fullname']) ? htmlspecialchars($_POST['fullname']) : ''; ?>">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                               placeholder="email@contoh.com" required
+                                               value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                                        <div class="form-text">License key akan dikirim ke email ini</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">No. WhatsApp/Telegram (Opsional)</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           placeholder="Contoh: +6281234567890"
+                                           value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>">
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control border-end-0" id="password" name="password"
+                                                   placeholder="Min 8 karakter" required minlength="8">
+                                            <button type="button" class="input-group-text bg-transparent border-start-0 password-toggle">
+                                                <i class="fas fa-eye text-muted"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="confirm_password" class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control border-end-0" id="confirm_password" name="confirm_password"
+                                                   placeholder="Ulangi password" required>
+                                            <button type="button" class="input-group-text bg-transparent border-start-0 password-toggle">
+                                                <i class="fas fa-eye text-muted"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="affiliate" name="affiliate" required>
+                                        <label class="form-check-label" for="affiliate">
+                                            Saya sudah daftar OlympTrade via link afiliasi ZYN dan deposit min $10 <span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            Saya setuju dengan <a href="terms.php" target="_blank">Syarat & Ketentuan</a>,
+                                            <a href="privacy.php" target="_blank">Kebijakan Privasi</a>, dan
+                                            <a href="disclaimer.php" target="_blank">Disclaimer Risiko</a> <span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-3">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg flex-fill" id="btnStep3Back">
+                                        <i class="fas fa-arrow-left me-2"></i> Kembali
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-lg flex-fill" id="btnSubmit">
+                                        <span class="btn-text"><i class="fas fa-paper-plane me-2"></i> Daftar Sekarang</span>
+                                        <span class="btn-loading d-none"><i class="fas fa-spinner fa-spin me-2"></i> Memproses...</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: What Happens Next -->
+                    <div class="info-section px-4 pb-4">
+                        <div class="alert mb-0" style="background: rgba(var(--primary-rgb), 0.05); border: 1px solid rgba(var(--primary-rgb), 0.2); border-radius: 12px;">
+                            <h6 class="text-primary mb-3"><i class="fas fa-clock me-2"></i>Apa yang Terjadi Setelah Mendaftar?</h6>
+                            <div class="d-flex align-items-start mb-2">
+                                <span class="badge bg-primary me-3" style="min-width: 24px;">1</span>
+                                <span>Admin akan memverifikasi ID OlympTrade Anda (maks 24 jam)</span>
+                            </div>
+                            <div class="d-flex align-items-start mb-2">
+                                <span class="badge bg-primary me-3" style="min-width: 24px;">2</span>
+                                <span>Jika cocok, <strong>License Key</strong> akan dikirim ke email Anda</span>
+                            </div>
+                            <div class="d-flex align-items-start mb-2">
+                                <span class="badge bg-primary me-3" style="min-width: 24px;">3</span>
+                                <span>Gunakan License Key untuk login ke Dashboard Trader ZYN</span>
+                            </div>
+                            <div class="d-flex align-items-start">
+                                <span class="badge bg-primary me-3" style="min-width: 24px;">4</span>
+                                <span>Aktifkan robot dan mulai trading autopilot!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center px-4 pb-4">
+                        <p class="mb-0">
+                            Sudah punya License Key?
+                            <a href="login.php" class="text-primary fw-bold">Login di sini</a>
+                        </p>
                     </div>
                 </div>
-
-                <div class="mb-4">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
-                        <label class="form-check-label" for="terms">
-                            I agree to the <a href="terms.php" target="_blank">Terms of Service</a>,
-                            <a href="privacy.php" target="_blank">Privacy Policy</a>, and
-                            <a href="disclaimer.php" target="_blank">Risk Disclaimer</a> *
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 btn-lg">
-                    <i class="fas fa-user-plus"></i> Create Account
-                </button>
-            </form>
-
-            <div class="auth-divider">
-                <span>or</span>
             </div>
-
-            <p class="text-center mb-0">
-                Already have an account?
-                <a href="login.php" class="text-primary fw-bold">Login</a>
-            </p>
         </div>
     </div>
 </section>
 
-<script>
-// Password match validation
-document.getElementById('confirm_password').addEventListener('input', function() {
-    const password = document.getElementById('password').value;
-    if (this.value !== password) {
-        this.setCustomValidity('Passwords do not match');
-    } else {
-        this.setCustomValidity('');
+<style>
+/* Step Progress Styles */
+.step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.step.active .step-number,
+.step.completed .step-number {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+}
+
+.step.completed .step-number::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.step-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    text-align: center;
+    max-width: 70px;
+}
+
+.step.active .step-label {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.step-line {
+    width: 40px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.step.completed + .step-line {
+    background: var(--primary);
+}
+
+/* Step Content Animation */
+.step-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Styles */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+}
+
+/* Password Toggle */
+.password-toggle {
+    cursor: pointer;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.password-toggle:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .step-label {
+        font-size: 0.6rem;
+        max-width: 50px;
     }
+
+    .step-line {
+        width: 20px;
+    }
+
+    .step-number {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const selectCountry = document.getElementById('selectCountry');
+    const btnStep1Next = document.getElementById('btnStep1Next');
+    const btnStep2Back = document.getElementById('btnStep2Back');
+    const btnStep2Next = document.getElementById('btnStep2Next');
+    const btnStep3Back = document.getElementById('btnStep3Back');
+    const confirmOlymptrade = document.getElementById('confirmOlymptrade');
+    const olymptradeLink = document.getElementById('olymptradeLink');
+    const selectedCountryName = document.getElementById('selectedCountryName');
+    const hiddenCountry = document.getElementById('hiddenCountry');
+
+    const step1Content = document.getElementById('step1Content');
+    const step2Content = document.getElementById('step2Content');
+    const step3Content = document.getElementById('step3Content');
+
+    const steps = document.querySelectorAll('.step');
+
+    // Step 1: Country selection
+    selectCountry.addEventListener('change', function() {
+        btnStep1Next.disabled = !this.value;
+
+        if (this.value) {
+            const selectedOption = this.options[this.selectedIndex];
+            const link = selectedOption.dataset.link;
+            olymptradeLink.href = link;
+            selectedCountryName.textContent = selectedOption.text;
+            hiddenCountry.value = this.value;
+        }
+    });
+
+    // Step navigation
+    btnStep1Next.addEventListener('click', function() {
+        step1Content.classList.add('d-none');
+        step2Content.classList.remove('d-none');
+        updateSteps(2);
+    });
+
+    btnStep2Back.addEventListener('click', function() {
+        step2Content.classList.add('d-none');
+        step1Content.classList.remove('d-none');
+        updateSteps(1);
+    });
+
+    confirmOlymptrade.addEventListener('change', function() {
+        btnStep2Next.disabled = !this.checked;
+    });
+
+    btnStep2Next.addEventListener('click', function() {
+        step2Content.classList.add('d-none');
+        step3Content.classList.remove('d-none');
+        updateSteps(3);
+    });
+
+    btnStep3Back.addEventListener('click', function() {
+        step3Content.classList.add('d-none');
+        step2Content.classList.remove('d-none');
+        updateSteps(2);
+    });
+
+    function updateSteps(currentStep) {
+        steps.forEach((step, index) => {
+            const stepNum = index + 1;
+            step.classList.remove('active', 'completed');
+
+            if (stepNum < currentStep) {
+                step.classList.add('completed');
+            } else if (stepNum === currentStep) {
+                step.classList.add('active');
+            }
+        });
+    }
+
+    // Password toggle
+    document.querySelectorAll('.password-toggle').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Password match validation
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        if (this.value !== password) {
+            this.setCustomValidity('Password tidak cocok');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // Form submit loading state
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const btn = document.getElementById('btnSubmit');
+        const btnText = btn.querySelector('.btn-text');
+        const btnLoading = btn.querySelector('.btn-loading');
+
+        btnText.classList.add('d-none');
+        btnLoading.classList.remove('d-none');
+        btn.disabled = true;
+
+        // Reset after 10 seconds
+        setTimeout(function() {
+            btnText.classList.remove('d-none');
+            btnLoading.classList.add('d-none');
+            btn.disabled = false;
+        }, 10000);
+    });
+
+    // If there's an error, show step 3
+    <?php if ($error): ?>
+    step1Content.classList.add('d-none');
+    step2Content.classList.add('d-none');
+    step3Content.classList.remove('d-none');
+    updateSteps(3);
+    <?php endif; ?>
 });
 </script>
 
