@@ -1,4 +1,5 @@
 <?php
+require_once 'includes/language.php';
 $page_title = __('hero_title');
 require_once 'includes/header.php';
 
