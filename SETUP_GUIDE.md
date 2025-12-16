@@ -13,8 +13,9 @@ Ikuti langkah-langkah di bawah ini dengan teliti.
 5. [Google Analytics](#5-google-analytics)
 6. [PWA & Push Notifications](#6-pwa--push-notifications)
 7. [Backup Otomatis](#7-backup-otomatis)
-8. [Domain & SSL](#8-domain--ssl)
-9. [Troubleshooting](#9-troubleshooting)
+8. [Badges & Achievements](#8-badges--achievements)
+9. [Domain & SSL](#9-domain--ssl)
+10. [Troubleshooting](#10-troubleshooting)
 
 ---
 
@@ -222,7 +223,40 @@ Untuk push notifications, Anda perlu:
 
 ---
 
-## 8. Domain & SSL
+## 8. Badges & Achievements
+
+### Setup Database Badges
+1. Buka phpMyAdmin di cPanel
+2. Pilih database Anda
+3. Klik tab "Import"
+4. Pilih file `database/badges_schema.sql`
+5. Klik "Go"
+
+### Cara Kerja Badges
+System badges otomatis memberikan badge saat user mencapai milestone:
+- **Trading Milestones**: 1, 10, 50, 100, 500, 1000 trades
+- **Profit Milestones**: $100, $500, $1K, $5K, $10K profit
+- **Win Rate**: 60%, 70%, 80%, 90%+ win rate
+- **Streak**: 5, 10, 20 winning trades berturut-turut
+- **Special**: VIP member, referral ambassador, dll
+
+### Badge Ranks
+| Rank | Points Required |
+|------|-----------------|
+| Rookie | 0-49 |
+| Bronze | 50+ |
+| Silver | 200+ |
+| Gold | 500+ |
+| Platinum | 1,000+ |
+| Diamond | 2,000+ |
+
+### Halaman Badges
+- `/badges.php` - Lihat semua badges
+- `/leaderboard.php?view=badges` - Badge leaderboard
+
+---
+
+## 9. Domain & SSL
 
 ### Cara Menghubungkan Domain
 1. **Di Registrar Domain (Niagahoster, GoDaddy, etc)**:
@@ -253,7 +287,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 ### Error: "500 Internal Server Error"
 **Penyebab**: Biasanya error PHP atau .htaccess
@@ -311,6 +345,9 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 | 404/500 Pages | ✅ | `404.php`, `500.php` |
 | Google Analytics | ✅ | `includes/analytics.php` |
 | Referral Program | ✅ | `includes/referral.php` |
+| Badges/Achievements | ✅ | `includes/badges.php` |
+| PDF Export | ✅ | `includes/pdf-export.php` |
+| Dashboard Widgets | ✅ | `includes/dashboard-widgets.php` |
 | Anti-Inspect | ✅ | `includes/footer.php` |
 
 ---
