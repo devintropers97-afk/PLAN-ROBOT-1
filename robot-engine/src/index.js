@@ -206,6 +206,7 @@ class ZYNTradeRobot {
 
     /**
      * Calculate trade amount based on money management settings
+     * Martingale: x2 after each loss, max 10 steps
      */
     calculateTradeAmount(settings) {
         const baseAmount = parseFloat(settings.trade_amount) || 10000;
@@ -213,9 +214,16 @@ class ZYNTradeRobot {
         if (settings.money_management_type === 'martingale') {
             const step = parseInt(settings.martingale_step) || 0;
             const multiplier = 2;
-            const maxSteps = 3;
+            const maxSteps = 10; // Updated: Max 10 steps for martingale
             const actualStep = Math.min(step, maxSteps);
-            return baseAmount * Math.pow(multiplier, actualStep);
+
+            // Calculate amount: baseAmount * 2^step
+            // Step 0: 1x, Step 1: 2x, Step 2: 4x, ... Step 10: 1024x
+            const amount = baseAmount * Math.pow(multiplier, actualStep);
+
+            logger.debug(`Martingale calculation: Step ${actualStep}, Base: ${baseAmount}, Amount: ${amount}`);
+
+            return amount;
         }
 
         // Flat amount
