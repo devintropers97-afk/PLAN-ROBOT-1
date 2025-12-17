@@ -620,6 +620,65 @@ function getLiveLogs($user_id, $limit = 15) {
     }
 }
 
+// Get unread notifications for a user
+function getUnreadNotifications($user_id, $limit = 10) {
+    $db = getDBConnection();
+    if (!$db) return [];
+
+    try {
+        $stmt = $db->prepare("
+            SELECT * FROM notifications
+            WHERE user_id = ? AND is_read = 0
+            ORDER BY created_at DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$user_id, $limit]);
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        // If notifications table doesn't exist, return empty
+        return [];
+    }
+}
+
+// Get a single setting value
+function getSetting($key, $default = '') {
+    $db = getDBConnection();
+    if (!$db) return $default;
+
+    try {
+        $stmt = $db->prepare("SELECT value FROM settings WHERE `key` = ?");
+        $stmt->execute([$key]);
+        $result = $stmt->fetch();
+        return $result ? $result['value'] : $default;
+    } catch (Exception $e) {
+        return $default;
+    }
+}
+
+// Get multiple settings
+function getSettings($keys = []) {
+    $db = getDBConnection();
+    if (!$db) return [];
+
+    try {
+        if (empty($keys)) {
+            $stmt = $db->query("SELECT `key`, value FROM settings");
+        } else {
+            $placeholders = implode(',', array_fill(0, count($keys), '?'));
+            $stmt = $db->prepare("SELECT `key`, value FROM settings WHERE `key` IN ($placeholders)");
+            $stmt->execute($keys);
+        }
+
+        $settings = [];
+        while ($row = $stmt->fetch()) {
+            $settings[$row['key']] = $row['value'];
+        }
+        return $settings;
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
 /**
  * Subscription Functions
  */
