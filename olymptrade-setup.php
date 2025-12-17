@@ -33,28 +33,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
         $otPassword = $_POST['ot_password'] ?? '';
         $accountType = $_POST['account_type'] ?? 'demo';
 
-        // Validation
-        if (empty($otEmail) || empty($otPassword)) {
-            $message = 'Email dan Password OlympTrade wajib diisi!';
+        // Validation - password required only for new setup
+        $isNewSetup = empty($user['olymptrade_setup_completed']);
+
+        if (empty($otEmail)) {
+            $message = 'Email OlympTrade wajib diisi!';
+            $messageType = 'danger';
+        } elseif ($isNewSetup && empty($otPassword)) {
+            $message = 'Password OlympTrade wajib diisi untuk setup pertama!';
             $messageType = 'danger';
         } elseif (!filter_var($otEmail, FILTER_VALIDATE_EMAIL)) {
             $message = 'Format email tidak valid!';
             $messageType = 'danger';
         } else {
-            // Encrypt password before storing
-            $encryptedPassword = encryptPassword($otPassword);
+            // Only encrypt and update password if provided
+            if (!empty($otPassword)) {
+                // Encrypt new password
+                $encryptedPassword = encryptPassword($otPassword);
 
-            // Update user credentials
-            $stmt = $db->prepare("
-                UPDATE users SET
-                    olymptrade_email = ?,
-                    olymptrade_password = ?,
-                    olymptrade_account_type = ?,
-                    olymptrade_setup_completed = 1,
-                    updated_at = NOW()
-                WHERE id = ?
-            ");
-            $result = $stmt->execute([$otEmail, $encryptedPassword, $accountType, $userId]);
+                // Update with new password
+                $stmt = $db->prepare("
+                    UPDATE users SET
+                        olymptrade_email = ?,
+                        olymptrade_password = ?,
+                        olymptrade_account_type = ?,
+                        olymptrade_setup_completed = 1,
+                        updated_at = NOW()
+                    WHERE id = ?
+                ");
+                $result = $stmt->execute([$otEmail, $encryptedPassword, $accountType, $userId]);
+            } else {
+                // Update without changing password
+                $stmt = $db->prepare("
+                    UPDATE users SET
+                        olymptrade_email = ?,
+                        olymptrade_account_type = ?,
+                        updated_at = NOW()
+                    WHERE id = ?
+                ");
+                $result = $stmt->execute([$otEmail, $accountType, $userId]);
+            }
 
             if ($result) {
                 $message = 'OlympTrade credentials berhasil disimpan! Robot siap digunakan.';
