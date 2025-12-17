@@ -123,6 +123,12 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     </a>
                 </div>
                 <div class="nav-item">
+                    <a href="/settings.php" class="nav-link <?php echo $currentPage === 'settings' ? 'active' : ''; ?>">
+                        <i class="fas fa-cog"></i>
+                        <span>Robot Settings</span>
+                    </a>
+                </div>
+                <div class="nav-item">
                     <a href="/pricing.php" class="nav-link <?php echo $currentPage === 'pricing' ? 'active' : ''; ?>">
                         <i class="fas fa-crown"></i>
                         <span>Upgrade</span>
