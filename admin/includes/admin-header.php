@@ -153,6 +153,31 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
+
+                <!-- MY TRADING Section -->
+                <div class="sidebar-section-title">MY TRADING</div>
+                <a href="my-robot.php" class="sidebar-link <?php echo $current_page === 'my-robot' ? 'active' : ''; ?>">
+                    <i class="fas fa-robot"></i>
+                    <span>My Robot</span>
+                </a>
+                <a href="my-trading.php" class="sidebar-link <?php echo $current_page === 'my-trading' ? 'active' : ''; ?>">
+                    <i class="fas fa-chart-area"></i>
+                    <span>My Trading</span>
+                </a>
+
+                <!-- ROBOT MONITORING Section -->
+                <div class="sidebar-section-title">ROBOT SYSTEM</div>
+                <a href="robot-monitoring.php" class="sidebar-link <?php echo $current_page === 'robot-monitoring' ? 'active' : ''; ?>">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span>Robot Monitor</span>
+                </a>
+                <a href="signals.php" class="sidebar-link <?php echo $current_page === 'signals' ? 'active' : ''; ?>">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <span>Signals</span>
+                </a>
+
+                <!-- USER MANAGEMENT Section -->
+                <div class="sidebar-section-title">USER MANAGEMENT</div>
                 <a href="verify-users.php" class="sidebar-link <?php echo $current_page === 'verify-users' ? 'active' : ''; ?>">
                     <i class="fas fa-user-check"></i>
                     <span>Verify Users</span>
@@ -164,9 +189,13 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     <i class="fas fa-users"></i>
                     <span>All Users</span>
                 </a>
+                <a href="license-keys.php" class="sidebar-link <?php echo $current_page === 'license-keys' ? 'active' : ''; ?>">
+                    <i class="fas fa-key"></i>
+                    <span>License Keys</span>
+                </a>
                 <a href="trades.php" class="sidebar-link <?php echo $current_page === 'trades' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-line"></i>
-                    <span>Trades</span>
+                    <span>All Trades</span>
                 </a>
                 <a href="subscriptions.php" class="sidebar-link <?php echo $current_page === 'subscriptions' ? 'active' : ''; ?>">
                     <i class="fas fa-credit-card"></i>
@@ -176,8 +205,8 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     <?php endif; ?>
                 </a>
 
-                <div class="sidebar-divider"></div>
-
+                <!-- SYSTEM Section -->
+                <div class="sidebar-section-title">SYSTEM</div>
                 <a href="settings.php" class="sidebar-link <?php echo $current_page === 'settings' ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>

@@ -368,6 +368,16 @@ a:hover {
     color: var(--info);
 }
 
+.sidebar-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 1.25rem 1.25rem 0.5rem;
+    margin-top: 0.25rem;
+}
+
 .sidebar-divider {
     height: 1px;
     background: var(--border-color);
