@@ -1,29 +1,36 @@
 <?php
-$page_title = 'Login';
-require_once 'includes/header.php';
+/**
+ * ZYN Trade System - Login Page
+ * IMPORTANT: Login logic MUST be before any HTML output
+ */
 
-// Redirect if already logged in
+// Load config and functions FIRST (no HTML output)
+require_once 'includes/config.php';
+require_once 'includes/functions.php';
+
+// Check if already logged in - redirect BEFORE any output
 if (isLoggedIn()) {
     if (isAdmin()) {
         redirect('admin/index.php');
     } else {
         redirect('dashboard.php');
     }
+    exit;
 }
 
 $error = '';
 $success = '';
 
-// Handle login form submission
+// Handle login form submission BEFORE any output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF token
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = __('login_error_csrf', ['default' => 'Request tidak valid. Silakan coba lagi.']);
+        $error = 'Request tidak valid. Silakan coba lagi.';
     } else {
         $license_key = strtoupper(cleanInput($_POST['license_key'] ?? ''));
 
         if (empty($license_key)) {
-            $error = __('login_error_empty', ['default' => 'Silakan masukkan License Key Anda.']);
+            $error = 'Silakan masukkan License Key Anda.';
         } else {
             $result = loginWithLicenseKey($license_key);
 
@@ -34,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     redirect('dashboard.php');
                 }
+                exit;
             } else {
                 $error = $result['message'];
             }
@@ -43,14 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Check for success message from registration
 if (isset($_GET['registered'])) {
-    $success = __('login_success_registered');
+    $success = 'Registrasi berhasil! Silakan tunggu verifikasi admin.';
 }
 if (isset($_GET['verified'])) {
-    $success = __('login_success_verified');
+    $success = 'Akun Anda telah diverifikasi! Silakan login.';
 }
 
+// NOW load header (HTML output starts here)
+$page_title = 'Login';
+require_once 'includes/header.php';
+
 // WhatsApp number for support
-$whatsappNumber = '6281234567890'; // Ganti dengan nomor yang sesuai
+$whatsappNumber = '6281234567890';
 $whatsappLink = "https://wa.me/{$whatsappNumber}";
 ?>
 
@@ -113,19 +125,16 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                 var btnLoading = btn.querySelector('.btn-loading');
                 var licenseKey = document.getElementById('license_key').value.trim();
 
-                // Validate license key format
                 if (!licenseKey) {
                     e.preventDefault();
-                    alert('<?php _e('login_error_empty', ['default' => 'Silakan masukkan License Key Anda.']); ?>');
+                    alert('Silakan masukkan License Key Anda.');
                     return false;
                 }
 
-                // Show loading state
                 btnText.style.display = 'none';
                 btnLoading.style.display = 'inline';
                 btn.disabled = true;
 
-                // Reset button after 5 seconds (in case of error)
                 setTimeout(function() {
                     btnText.style.display = 'inline';
                     btnLoading.style.display = 'none';
