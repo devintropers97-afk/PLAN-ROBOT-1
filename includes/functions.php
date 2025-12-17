@@ -313,63 +313,126 @@ function recordTrade($user_id, $data) {
 // Get user robot settings
 function getRobotSettings($user_id) {
     $db = getDBConnection();
-    if (!$db) return null;
+    if (!$db) return getDefaultRobotSettings($user_id);
 
-    $stmt = $db->prepare("SELECT * FROM robot_settings WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $settings = $stmt->fetch();
-
-    if (!$settings) {
-        // Create default settings
-        $stmt = $db->prepare("
-            INSERT INTO robot_settings (user_id, robot_enabled, strategies, risk_level, trade_amount, daily_limit, stop_loss, take_profit)
-            VALUES (?, 0, '[]', 'medium', 1, 10, 5, 10)
-        ");
+    try {
+        $stmt = $db->prepare("SELECT * FROM robot_settings WHERE user_id = ?");
         $stmt->execute([$user_id]);
+        $settings = $stmt->fetch();
 
-        return [
-            'user_id' => $user_id,
-            'robot_enabled' => 0,
-            'strategies' => '[]',
-            'risk_level' => 'medium',
-            'trade_amount' => 1,
-            'daily_limit' => 10,
-            'stop_loss' => 5,
-            'take_profit' => 10
-        ];
+        if (!$settings) {
+            // Create default settings with correct column names
+            $stmt = $db->prepare("
+                INSERT INTO robot_settings (
+                    user_id, robot_enabled, market, timeframe, risk_level,
+                    trade_amount, daily_limit, take_profit_target, max_loss_limit,
+                    schedule_mode, active_strategies
+                ) VALUES (?, 0, 'EUR/USD', '15M', 'medium', 10000, 10, 50, 25, 'auto_24h', '[]')
+            ");
+            $stmt->execute([$user_id]);
+
+            return getDefaultRobotSettings($user_id);
+        }
+
+        return $settings;
+    } catch (Exception $e) {
+        // If table doesn't exist or other error, return defaults
+        error_log("getRobotSettings error: " . $e->getMessage());
+        return getDefaultRobotSettings($user_id);
     }
-
-    return $settings;
 }
 
-// Update robot settings
+// Helper function for default robot settings
+function getDefaultRobotSettings($user_id) {
+    return [
+        'user_id' => $user_id,
+        'robot_enabled' => 0,
+        'market' => 'EUR/USD',
+        'timeframe' => '15M',
+        'markets' => 'EUR/USD',
+        'timeframes' => '15M',
+        'strategy_id' => '8',
+        'strategies' => '[]',
+        'active_strategies' => '[]',
+        'risk_level' => 'medium',
+        'trade_amount' => 10000,
+        'daily_limit' => 10,
+        'max_trades_per_day' => 10,
+        'take_profit_target' => 50,
+        'max_loss_limit' => 25,
+        'current_daily_pnl' => 0,
+        'auto_pause_triggered' => 0,
+        'auto_pause_on_tp' => 1,
+        'auto_pause_on_ml' => 1
+    ];
+}
+
+// Update robot settings - flexible update for any fields
 function updateRobotSettings($user_id, $data) {
     $db = getDBConnection();
     if (!$db) return false;
 
-    $stmt = $db->prepare("
-        UPDATE robot_settings SET
-            robot_enabled = ?,
-            strategies = ?,
-            risk_level = ?,
-            trade_amount = ?,
-            daily_limit = ?,
-            stop_loss = ?,
-            take_profit = ?,
-            updated_at = NOW()
-        WHERE user_id = ?
-    ");
+    // First ensure user has robot_settings record
+    getRobotSettings($user_id);
 
-    return $stmt->execute([
-        $data['robot_enabled'] ?? 0,
-        $data['strategies'] ?? '[]',
-        $data['risk_level'] ?? 'medium',
-        $data['trade_amount'] ?? 1,
-        $data['daily_limit'] ?? 10,
-        $data['stop_loss'] ?? 5,
-        $data['take_profit'] ?? 10,
-        $user_id
-    ]);
+    // Map old field names to new ones for compatibility
+    $fieldMap = [
+        'stop_loss' => 'max_loss_limit',
+        'take_profit' => 'take_profit_target',
+        'max_trades' => 'daily_limit',
+        'max_trades_per_day' => 'daily_limit'
+    ];
+
+    // Allowed fields that can be updated
+    $allowedFields = [
+        'robot_enabled', 'market', 'timeframe', 'risk_level', 'trade_amount',
+        'daily_limit', 'take_profit_target', 'max_loss_limit', 'schedule_mode',
+        'active_strategies', 'strategy_id', 'markets', 'timeframes',
+        'auto_pause_on_tp', 'auto_pause_on_ml', 'current_daily_pnl',
+        'auto_pause_triggered', 'auto_pause_reason'
+    ];
+
+    $updates = [];
+    $values = [];
+
+    foreach ($data as $key => $value) {
+        // Map old field names to new ones
+        $field = $fieldMap[$key] ?? $key;
+
+        if (in_array($field, $allowedFields)) {
+            $updates[] = "`$field` = ?";
+            $values[] = $value;
+        }
+    }
+
+    if (empty($updates)) return false;
+
+    $values[] = $user_id;
+    $sql = "UPDATE robot_settings SET " . implode(', ', $updates) . ", updated_at = NOW() WHERE user_id = ?";
+
+    try {
+        $stmt = $db->prepare($sql);
+        return $stmt->execute($values);
+    } catch (Exception $e) {
+        error_log("updateRobotSettings error: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Update robot status (active/paused)
+function updateRobotStatus($user_id, $status) {
+    $db = getDBConnection();
+    if (!$db) return false;
+
+    $robot_enabled = ($status === 'active') ? 1 : 0;
+
+    try {
+        $stmt = $db->prepare("UPDATE robot_settings SET robot_enabled = ?, updated_at = NOW() WHERE user_id = ?");
+        return $stmt->execute([$robot_enabled, $user_id]);
+    } catch (Exception $e) {
+        error_log("updateRobotStatus error: " . $e->getMessage());
+        return false;
+    }
 }
 
 /**
@@ -468,6 +531,93 @@ function rejectUser($user_id, $reason_code, $custom_reason = '') {
 
     $stmt = $db->prepare("UPDATE users SET status = 'rejected', rejection_reason = ? WHERE id = ?");
     return $stmt->execute([$reason, $user_id]);
+}
+
+/**
+ * Missing Functions - Added to fix dashboard error
+ */
+
+// Get available strategies based on user package
+function getAvailableStrategies($package) {
+    $allStrategies = getAllStrategies();
+    $packageDetails = getPackageDetails($package);
+    $availableIds = $packageDetails['strategy_ids'] ?? ['8', '9'];
+
+    return array_filter($allStrategies, function($strategy) use ($availableIds) {
+        return in_array($strategy['id'], $availableIds);
+    });
+}
+
+// Get daily stats for a user
+function getDailyStats($user_id, $date = null) {
+    $db = getDBConnection();
+    if (!$db) return [
+        'total_trades' => 0,
+        'wins' => 0,
+        'losses' => 0,
+        'total_pnl' => 0,
+        'win_rate' => 0
+    ];
+
+    $date = $date ?? date('Y-m-d');
+
+    $stmt = $db->prepare("
+        SELECT
+            COUNT(*) as total_trades,
+            SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
+            SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
+            COALESCE(SUM(profit_loss), 0) as total_pnl
+        FROM trades
+        WHERE user_id = ? AND DATE(created_at) = ?
+    ");
+    $stmt->execute([$user_id, $date]);
+    $stats = $stmt->fetch();
+
+    if ($stats) {
+        $total = ($stats['wins'] ?? 0) + ($stats['losses'] ?? 0);
+        $stats['win_rate'] = $total > 0 ? round(($stats['wins'] / $total) * 100, 1) : 0;
+    }
+
+    return $stats ?: [
+        'total_trades' => 0,
+        'wins' => 0,
+        'losses' => 0,
+        'total_pnl' => 0,
+        'win_rate' => 0
+    ];
+}
+
+// Get live logs/activity for a user
+function getLiveLogs($user_id, $limit = 15) {
+    $db = getDBConnection();
+    if (!$db) return [];
+
+    // Try to get from activity_log table
+    try {
+        $stmt = $db->prepare("
+            SELECT
+                id,
+                action,
+                description as message,
+                CASE
+                    WHEN action LIKE '%win%' THEN 'win'
+                    WHEN action LIKE '%loss%' THEN 'loss'
+                    WHEN action LIKE '%signal%' THEN 'signal'
+                    WHEN action LIKE '%login%' OR action LIKE '%logout%' THEN 'system'
+                    ELSE 'info'
+                END as type,
+                created_at
+            FROM activity_log
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$user_id, $limit]);
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        // If activity_log doesn't exist or error, return empty
+        return [];
+    }
 }
 
 /**
