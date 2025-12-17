@@ -13,6 +13,9 @@ $availableStrategies = getAvailableStrategies($package);
 $allStrategies = getAllStrategies();
 $packageInfo = getPackageDetails($package);
 
+// Check if OlympTrade credentials are setup
+$otSetupCompleted = !empty($user['olymptrade_setup_completed']);
+
 // Get statistics
 $todayStats = getDailyStats($_SESSION['user_id'], date('Y-m-d'));
 $weekStats = getUserStats($_SESSION['user_id'], 7);
@@ -41,6 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
     switch ($action) {
         case 'toggle_robot':
             $newStatus = $_POST['robot_status'] === '1' ? 'active' : 'paused';
+
+            // Block robot activation if OlympTrade credentials not setup
+            if ($newStatus === 'active' && !$otSetupCompleted) {
+                $message = 'Setup OlympTrade credentials terlebih dahulu sebelum mengaktifkan robot!';
+                $messageType = 'danger';
+                break;
+            }
+
             updateRobotStatus($_SESSION['user_id'], $newStatus);
             $robotSettings['robot_enabled'] = $newStatus === 'active';
             $message = $newStatus === 'active' ? 'Robot activated!' : 'Robot paused.';
@@ -131,6 +142,22 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
 </div>
 <?php endif; ?>
 
+<?php if (!$otSetupCompleted): ?>
+<div class="db-alert warning db-fade-in">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div class="flex-grow-1">
+        <strong>OlympTrade Setup Required!</strong>
+        <p class="mb-0 small" style="opacity: 0.9;">
+            Anda harus menghubungkan akun OlympTrade sebelum mengaktifkan robot trading.
+            Robot membutuhkan credentials untuk login dan melakukan trading otomatis.
+        </p>
+    </div>
+    <a href="olymptrade-setup.php" class="db-btn db-btn-warning db-btn-sm ms-3">
+        <i class="fas fa-link"></i> Setup Sekarang
+    </a>
+</div>
+<?php endif; ?>
+
 <?php if ($isWeekendNow): ?>
 <div class="db-alert warning db-fade-in">
     <i class="fas fa-calendar-times"></i>
@@ -159,12 +186,18 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
             <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
             <input type="hidden" name="action" value="toggle_robot">
             <label>Master Switch</label>
+            <?php if (!$otSetupCompleted): ?>
+            <a href="olymptrade-setup.php" class="db-btn db-btn-warning db-btn-sm" title="Setup OlympTrade dulu">
+                <i class="fas fa-link"></i> Setup
+            </a>
+            <?php else: ?>
             <label class="toggle-switch">
                 <input type="checkbox" name="robot_status" value="1"
                        <?php echo $robotEnabled ? 'checked' : ''; ?>
                        onchange="this.form.submit()">
                 <span class="toggle-slider"></span>
             </label>
+            <?php endif; ?>
         </form>
         <?php endif; ?>
     </div>

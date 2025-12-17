@@ -6,6 +6,32 @@
 require_once 'config.php';
 
 /**
+ * Encryption Functions for OlympTrade Credentials
+ */
+
+// Encryption key (in production, store this in environment variable)
+define('ENCRYPTION_KEY', 'ZYN_TR4D3_S3CR3T_K3Y_2024!@#$');
+
+// Encrypt password for storage
+function encryptPassword($password) {
+    $key = hash('sha256', ENCRYPTION_KEY, true);
+    $iv = openssl_random_pseudo_bytes(16);
+    $encrypted = openssl_encrypt($password, 'AES-256-CBC', $key, 0, $iv);
+    return base64_encode($iv . $encrypted);
+}
+
+// Decrypt password for robot use
+function decryptPassword($encryptedPassword) {
+    if (empty($encryptedPassword)) return '';
+
+    $key = hash('sha256', ENCRYPTION_KEY, true);
+    $data = base64_decode($encryptedPassword);
+    $iv = substr($data, 0, 16);
+    $encrypted = substr($data, 16);
+    return openssl_decrypt($encrypted, 'AES-256-CBC', $key, 0, $iv);
+}
+
+/**
  * User Authentication Functions
  */
 

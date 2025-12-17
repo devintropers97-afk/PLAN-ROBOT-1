@@ -108,6 +108,15 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             <div class="nav-section">
                 <div class="nav-section-title">Account</div>
                 <div class="nav-item">
+                    <a href="/olymptrade-setup.php" class="nav-link <?php echo $currentPage === 'olymptrade-setup' ? 'active' : ''; ?>">
+                        <i class="fas fa-link"></i>
+                        <span>OlympTrade Setup</span>
+                        <?php if (empty($currentUser['olymptrade_setup_completed'])): ?>
+                        <span class="nav-badge bg-danger">!</span>
+                        <?php endif; ?>
+                    </a>
+                </div>
+                <div class="nav-item">
                     <a href="/profile.php" class="nav-link <?php echo $currentPage === 'profile' ? 'active' : ''; ?>">
                         <i class="fas fa-user"></i>
                         <span>Profile</span>
