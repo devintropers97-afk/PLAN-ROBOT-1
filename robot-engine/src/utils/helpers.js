@@ -2,6 +2,60 @@
  * ZYN Trade Robot - Helper Functions
  */
 
+const crypto = require('crypto');
+
+// MUST match PHP ENCRYPTION_KEY in includes/functions.php
+const ENCRYPTION_KEY = 'ZYN_TR4D3_S3CR3T_K3Y_2024!@#$';
+
+/**
+ * Decrypt password encrypted by PHP
+ * Matches PHP decryptPassword() function exactly
+ */
+function decryptPassword(encryptedPassword) {
+    if (!encryptedPassword) return '';
+
+    try {
+        // Create key using SHA256 hash (same as PHP)
+        const key = crypto.createHash('sha256').update(ENCRYPTION_KEY).digest();
+
+        // Decode base64
+        const data = Buffer.from(encryptedPassword, 'base64');
+
+        // Extract IV (first 16 bytes)
+        const iv = data.slice(0, 16);
+
+        // Extract encrypted data (rest is base64 encoded ciphertext from PHP)
+        const encryptedBase64 = data.slice(16).toString('utf8');
+        const encrypted = Buffer.from(encryptedBase64, 'base64');
+
+        // Decrypt using AES-256-CBC
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        let decrypted = decipher.update(encrypted);
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
+
+        return decrypted.toString('utf8');
+    } catch (error) {
+        console.error('Decryption error:', error.message);
+        return '';
+    }
+}
+
+/**
+ * Encrypt password (for testing, matches PHP encryptPassword)
+ */
+function encryptPassword(password) {
+    const key = crypto.createHash('sha256').update(ENCRYPTION_KEY).digest();
+    const iv = crypto.randomBytes(16);
+
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    let encrypted = cipher.update(password, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+
+    // Combine IV + encrypted (as base64 string) and encode whole thing
+    const combined = Buffer.concat([iv, Buffer.from(encrypted, 'utf8')]);
+    return combined.toString('base64');
+}
+
 /**
  * Check if today is weekend (Saturday or Sunday)
  */
@@ -119,6 +173,8 @@ function getNextTradingDay() {
 }
 
 module.exports = {
+    decryptPassword,
+    encryptPassword,
     isWeekend,
     isWithinSchedule,
     timeToMinutes,

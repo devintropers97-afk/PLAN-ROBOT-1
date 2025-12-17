@@ -1,52 +1,74 @@
 /**
- * Trade Executor Module
+ * Trade Executor Module - Multi-User Support
  * Menggunakan Puppeteer untuk automasi trading di OlympTrade
+ * Supports multiple users with their own browser sessions
  */
 
 const puppeteer = require('puppeteer');
 const logger = require('../utils/logger');
-const { sleep, formatCurrency } = require('../utils/helpers');
+const { sleep, randomDelay } = require('../utils/helpers');
 
-class TradeExecutor {
-    constructor() {
+/**
+ * Individual User Trading Session
+ */
+class UserSession {
+    constructor(userId, email) {
+        this.userId = userId;
+        this.email = email;
         this.browser = null;
         this.page = null;
         this.isLoggedIn = false;
         this.lastTradeTime = null;
-        this.minTradeInterval = 5000; // 5 seconds minimum between trades
+        this.minTradeInterval = 5000;
+        this.loginAttempts = 0;
+        this.maxLoginAttempts = 3;
+        this.lastError = null;
+        this.balance = null;
+        this.createdAt = new Date();
     }
 
     /**
-     * Initialize browser and login to OlympTrade
+     * Initialize browser and login
      */
-    async initialize(email, password, demoMode = true) {
+    async initialize(email, password, isDemo = true) {
         try {
-            logger.info('Initializing Trade Executor...');
+            logger.info(`[User ${this.userId}] Initializing session...`);
 
             this.browser = await puppeteer.launch({
-                headless: 'new', // Use new headless mode
+                headless: 'new',
                 args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--disable-accelerated-2d-canvas',
                     '--disable-gpu',
-                    '--window-size=1920,1080'
+                    '--window-size=1920,1080',
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins,site-per-process'
                 ],
-                defaultViewport: {
-                    width: 1920,
-                    height: 1080
-                }
+                defaultViewport: { width: 1920, height: 1080 }
             });
 
             this.page = await this.browser.newPage();
 
-            // Set user agent to avoid detection
+            // Set realistic user agent
             await this.page.setUserAgent(
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             );
 
+            // Block unnecessary resources for faster loading
+            await this.page.setRequestInterception(true);
+            this.page.on('request', (req) => {
+                const resourceType = req.resourceType();
+                if (['image', 'stylesheet', 'font'].includes(resourceType)) {
+                    req.abort();
+                } else {
+                    req.continue();
+                }
+            });
+
             // Navigate to OlympTrade
+            logger.info(`[User ${this.userId}] Navigating to OlympTrade...`);
             await this.page.goto('https://olymptrade.com/platform', {
                 waitUntil: 'networkidle2',
                 timeout: 60000
@@ -54,61 +76,130 @@ class TradeExecutor {
 
             await sleep(3000);
 
-            // Try to login
-            await this.login(email, password);
-
-            // Switch to demo mode if specified
-            if (demoMode) {
-                await this.switchToDemoAccount();
+            // Login
+            const loginSuccess = await this.login(email, password);
+            if (!loginSuccess) {
+                throw new Error('Login failed');
             }
 
+            // Switch account type if needed
+            if (isDemo) {
+                await this.switchToDemoAccount();
+            } else {
+                await this.switchToRealAccount();
+            }
+
+            // Get initial balance
+            this.balance = await this.getBalance();
+
             this.isLoggedIn = true;
-            logger.info('Trade Executor initialized successfully');
+            logger.info(`[User ${this.userId}] Session initialized. Balance: ${this.balance}`);
 
             return true;
         } catch (error) {
-            logger.error('Failed to initialize Trade Executor:', error);
+            logger.error(`[User ${this.userId}] Init failed:`, error.message);
+            this.lastError = error.message;
+            await this.close();
             return false;
         }
     }
 
     /**
-     * Login to OlympTrade account
+     * Login to OlympTrade
      */
     async login(email, password) {
         try {
-            logger.info('Attempting to login to OlympTrade...');
+            this.loginAttempts++;
+            logger.info(`[User ${this.userId}] Login attempt ${this.loginAttempts}...`);
 
-            // Wait for login form or check if already logged in
-            const loginSelector = 'input[name="email"], input[type="email"]';
-            const isLoginPage = await this.page.$(loginSelector);
+            // Check if already on platform (logged in)
+            const platformReady = await this.isPlatformReady();
+            if (platformReady) {
+                logger.info(`[User ${this.userId}] Already logged in`);
+                return true;
+            }
 
-            if (isLoginPage) {
-                // Fill email
-                await this.page.waitForSelector(loginSelector, { timeout: 10000 });
-                await this.page.type(loginSelector, email, { delay: 50 });
+            // Wait for login form
+            await sleep(2000);
 
-                // Fill password
-                const passwordSelector = 'input[name="password"], input[type="password"]';
-                await this.page.waitForSelector(passwordSelector, { timeout: 5000 });
-                await this.page.type(passwordSelector, password, { delay: 50 });
+            // Try different login selectors
+            const emailSelectors = [
+                'input[name="email"]',
+                'input[type="email"]',
+                'input[placeholder*="email" i]',
+                '.login-form input[type="text"]'
+            ];
 
-                // Click login button
-                const loginButton = await this.page.$('button[type="submit"], .login-button, .btn-login');
-                if (loginButton) {
-                    await loginButton.click();
+            let emailInput = null;
+            for (const selector of emailSelectors) {
+                emailInput = await this.page.$(selector);
+                if (emailInput) break;
+            }
+
+            if (emailInput) {
+                // Clear and type email
+                await emailInput.click({ clickCount: 3 });
+                await emailInput.type(email, { delay: randomDelay(30, 80) });
+                await sleep(500);
+
+                // Find and fill password
+                const passwordSelectors = [
+                    'input[name="password"]',
+                    'input[type="password"]'
+                ];
+
+                let passwordInput = null;
+                for (const selector of passwordSelectors) {
+                    passwordInput = await this.page.$(selector);
+                    if (passwordInput) break;
                 }
 
-                // Wait for navigation/login completion
-                await sleep(5000);
+                if (passwordInput) {
+                    await passwordInput.type(password, { delay: randomDelay(30, 80) });
+                    await sleep(500);
 
-                logger.info('Login attempt completed');
-            } else {
-                logger.info('Already logged in or different page structure');
+                    // Click login button
+                    const loginSelectors = [
+                        'button[type="submit"]',
+                        '.login-button',
+                        '.btn-login',
+                        'button:contains("Login")',
+                        'button:contains("Sign in")'
+                    ];
+
+                    for (const selector of loginSelectors) {
+                        const btn = await this.page.$(selector);
+                        if (btn) {
+                            await btn.click();
+                            break;
+                        }
+                    }
+
+                    // Wait for login to complete
+                    await sleep(5000);
+
+                    // Verify login success
+                    const success = await this.isPlatformReady();
+                    if (success) {
+                        logger.info(`[User ${this.userId}] Login successful`);
+                        return true;
+                    }
+                }
             }
+
+            // Check for login errors
+            const errorElement = await this.page.$('.error-message, .login-error, .alert-danger');
+            if (errorElement) {
+                const errorText = await this.page.evaluate(el => el.textContent, errorElement);
+                logger.error(`[User ${this.userId}] Login error: ${errorText}`);
+                this.lastError = errorText;
+            }
+
+            return false;
         } catch (error) {
-            logger.error('Login error:', error);
-            throw error;
+            logger.error(`[User ${this.userId}] Login error:`, error.message);
+            this.lastError = error.message;
+            return false;
         }
     }
 
@@ -117,27 +208,157 @@ class TradeExecutor {
      */
     async switchToDemoAccount() {
         try {
-            logger.info('Switching to demo account...');
+            logger.info(`[User ${this.userId}] Switching to DEMO account...`);
 
-            // Look for account switcher
-            const accountSelector = '.account-switcher, .balance-selector, [data-qa="account-type"]';
-            const accountSwitch = await this.page.$(accountSelector);
+            const accountSwitchers = [
+                '.account-switcher',
+                '.balance-selector',
+                '[data-qa="account-type"]',
+                '.account-type-switch'
+            ];
 
-            if (accountSwitch) {
-                await accountSwitch.click();
-                await sleep(1000);
+            for (const selector of accountSwitchers) {
+                const switcher = await this.page.$(selector);
+                if (switcher) {
+                    await switcher.click();
+                    await sleep(1000);
 
-                // Click demo option
-                const demoOption = await this.page.$('.demo-account, [data-type="demo"], .practice-account');
-                if (demoOption) {
-                    await demoOption.click();
-                    await sleep(2000);
+                    const demoOptions = [
+                        '.demo-account',
+                        '[data-type="demo"]',
+                        '.practice-account',
+                        'button:contains("Demo")'
+                    ];
+
+                    for (const optSelector of demoOptions) {
+                        const option = await this.page.$(optSelector);
+                        if (option) {
+                            await option.click();
+                            await sleep(2000);
+                            logger.info(`[User ${this.userId}] Switched to DEMO`);
+                            return true;
+                        }
+                    }
                 }
             }
 
-            logger.info('Demo account selected');
+            return false;
         } catch (error) {
-            logger.warn('Could not switch to demo account:', error.message);
+            logger.warn(`[User ${this.userId}] Could not switch to demo:`, error.message);
+            return false;
+        }
+    }
+
+    /**
+     * Switch to real account
+     */
+    async switchToRealAccount() {
+        try {
+            logger.info(`[User ${this.userId}] Switching to REAL account...`);
+
+            const accountSwitchers = [
+                '.account-switcher',
+                '.balance-selector',
+                '[data-qa="account-type"]'
+            ];
+
+            for (const selector of accountSwitchers) {
+                const switcher = await this.page.$(selector);
+                if (switcher) {
+                    await switcher.click();
+                    await sleep(1000);
+
+                    const realOptions = [
+                        '.real-account',
+                        '[data-type="real"]',
+                        '.live-account'
+                    ];
+
+                    for (const optSelector of realOptions) {
+                        const option = await this.page.$(optSelector);
+                        if (option) {
+                            await option.click();
+                            await sleep(2000);
+                            logger.info(`[User ${this.userId}] Switched to REAL`);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        } catch (error) {
+            logger.warn(`[User ${this.userId}] Could not switch to real:`, error.message);
+            return false;
+        }
+    }
+
+    /**
+     * Execute a trade
+     */
+    async executeTrade(direction, amount, asset, duration = 1) {
+        try {
+            // Check minimum interval
+            if (this.lastTradeTime) {
+                const elapsed = Date.now() - this.lastTradeTime;
+                if (elapsed < this.minTradeInterval) {
+                    await sleep(this.minTradeInterval - elapsed);
+                }
+            }
+
+            logger.info(`[User ${this.userId}] Executing ${direction} on ${asset}, Amount: ${amount}`);
+
+            // Select asset
+            await this.selectAsset(asset);
+            await sleep(1000);
+
+            // Set amount
+            await this.setAmount(amount);
+            await sleep(500);
+
+            // Set duration
+            await this.setDuration(duration);
+            await sleep(500);
+
+            // Click trade button
+            const buttonSelector = direction === 'CALL' || direction === 'call'
+                ? '.btn-call, .call-button, [data-qa="call-btn"], .up-button, .green-button, button.call'
+                : '.btn-put, .put-button, [data-qa="put-btn"], .down-button, .red-button, button.put';
+
+            const tradeButton = await this.page.$(buttonSelector);
+
+            if (tradeButton) {
+                const isDisabled = await this.page.evaluate(btn => btn.disabled, tradeButton);
+                if (isDisabled) {
+                    logger.warn(`[User ${this.userId}] Trade button disabled`);
+                    return { success: false, error: 'Button disabled' };
+                }
+
+                await tradeButton.click();
+                this.lastTradeTime = Date.now();
+
+                await sleep(2000);
+
+                // Update balance after trade
+                this.balance = await this.getBalance();
+
+                logger.info(`[User ${this.userId}] Trade executed! New balance: ${this.balance}`);
+
+                return {
+                    success: true,
+                    direction,
+                    amount,
+                    asset,
+                    duration,
+                    balance: this.balance,
+                    timestamp: new Date().toISOString()
+                };
+            }
+
+            return { success: false, error: 'Trade button not found' };
+        } catch (error) {
+            logger.error(`[User ${this.userId}] Trade error:`, error.message);
+            return { success: false, error: error.message };
         }
     }
 
@@ -146,35 +367,39 @@ class TradeExecutor {
      */
     async selectAsset(asset) {
         try {
-            logger.info(`Selecting asset: ${asset}`);
+            const assetSelectors = [
+                '.asset-selector',
+                '.instrument-selector',
+                '[data-qa="asset-select"]'
+            ];
 
-            // Click asset selector
-            const assetSelector = '.asset-selector, .instrument-selector, [data-qa="asset-select"]';
-            const assetButton = await this.page.$(assetSelector);
-
-            if (assetButton) {
-                await assetButton.click();
-                await sleep(1000);
-
-                // Search for asset
-                const searchInput = await this.page.$('.asset-search input, .search-instrument input');
-                if (searchInput) {
-                    await searchInput.type(asset, { delay: 50 });
+            for (const selector of assetSelectors) {
+                const btn = await this.page.$(selector);
+                if (btn) {
+                    await btn.click();
                     await sleep(1000);
-                }
 
-                // Click on asset result
-                const assetResult = await this.page.$(`[data-asset="${asset}"], .asset-item:first-child`);
-                if (assetResult) {
-                    await assetResult.click();
-                    await sleep(2000);
+                    // Search for asset
+                    const searchInput = await this.page.$('.asset-search input, .search-instrument input, input[placeholder*="search" i]');
+                    if (searchInput) {
+                        await searchInput.click({ clickCount: 3 });
+                        await searchInput.type(asset.replace('/', ''), { delay: 50 });
+                        await sleep(1000);
+                    }
+
+                    // Click first result
+                    const result = await this.page.$('.asset-item, .instrument-item, [data-asset]');
+                    if (result) {
+                        await result.click();
+                        await sleep(1000);
+                    }
+
+                    return true;
                 }
             }
-
-            logger.info(`Asset ${asset} selected`);
-            return true;
+            return false;
         } catch (error) {
-            logger.error(`Failed to select asset ${asset}:`, error);
+            logger.warn(`[User ${this.userId}] Select asset error:`, error.message);
             return false;
         }
     }
@@ -184,184 +409,94 @@ class TradeExecutor {
      */
     async setAmount(amount) {
         try {
-            logger.info(`Setting trade amount: ${amount}`);
+            const amountSelectors = [
+                '.amount-input input',
+                'input[data-qa="amount"]',
+                '.trade-amount input',
+                'input[name="amount"]'
+            ];
 
-            // Find amount input
-            const amountSelector = '.amount-input input, input[data-qa="amount"], .trade-amount input';
-            const amountInput = await this.page.$(amountSelector);
-
-            if (amountInput) {
-                // Clear existing value
-                await amountInput.click({ clickCount: 3 });
-                await amountInput.type(amount.toString(), { delay: 30 });
+            for (const selector of amountSelectors) {
+                const input = await this.page.$(selector);
+                if (input) {
+                    await input.click({ clickCount: 3 });
+                    await input.type(amount.toString(), { delay: 30 });
+                    return true;
+                }
             }
-
-            logger.info(`Amount set to ${amount}`);
-            return true;
+            return false;
         } catch (error) {
-            logger.error('Failed to set amount:', error);
             return false;
         }
     }
 
     /**
-     * Set trade duration/expiry
+     * Set trade duration
      */
     async setDuration(minutes) {
         try {
-            logger.info(`Setting trade duration: ${minutes} minutes`);
+            const durationSelectors = [
+                '.duration-selector',
+                '.expiry-time',
+                '[data-qa="time-select"]'
+            ];
 
-            // Click duration selector
-            const durationSelector = '.duration-selector, .expiry-time, [data-qa="time-select"]';
-            const durationButton = await this.page.$(durationSelector);
-
-            if (durationButton) {
-                await durationButton.click();
-                await sleep(500);
-
-                // Select duration option
-                const durationOption = await this.page.$(`[data-duration="${minutes}"], .time-option:contains("${minutes}")`);
-                if (durationOption) {
-                    await durationOption.click();
+            for (const selector of durationSelectors) {
+                const btn = await this.page.$(selector);
+                if (btn) {
+                    await btn.click();
                     await sleep(500);
+
+                    const option = await this.page.$(`[data-duration="${minutes}"], .time-option`);
+                    if (option) {
+                        await option.click();
+                        return true;
+                    }
                 }
             }
-
-            logger.info(`Duration set to ${minutes} minutes`);
-            return true;
+            return false;
         } catch (error) {
-            logger.error('Failed to set duration:', error);
             return false;
         }
     }
 
     /**
-     * Execute a trade (CALL or PUT)
-     */
-    async executeTrade(direction, amount, asset, duration = 1) {
-        try {
-            // Check minimum trade interval
-            if (this.lastTradeTime) {
-                const timeSinceLastTrade = Date.now() - this.lastTradeTime;
-                if (timeSinceLastTrade < this.minTradeInterval) {
-                    await sleep(this.minTradeInterval - timeSinceLastTrade);
-                }
-            }
-
-            logger.info(`Executing ${direction} trade: ${asset}, Amount: ${amount}, Duration: ${duration}min`);
-
-            // Select asset
-            await this.selectAsset(asset);
-
-            // Set amount
-            await this.setAmount(amount);
-
-            // Set duration
-            await this.setDuration(duration);
-
-            // Click trade button based on direction
-            let buttonSelector;
-            if (direction === 'CALL') {
-                buttonSelector = '.btn-call, .call-button, [data-qa="call-btn"], .up-button, .green-button';
-            } else {
-                buttonSelector = '.btn-put, .put-button, [data-qa="put-btn"], .down-button, .red-button';
-            }
-
-            const tradeButton = await this.page.$(buttonSelector);
-
-            if (tradeButton) {
-                // Check if button is enabled
-                const isDisabled = await this.page.evaluate(btn => btn.disabled, tradeButton);
-                if (isDisabled) {
-                    logger.warn('Trade button is disabled');
-                    return { success: false, error: 'Trade button disabled' };
-                }
-
-                await tradeButton.click();
-                this.lastTradeTime = Date.now();
-
-                await sleep(2000);
-
-                logger.info(`${direction} trade executed successfully`);
-
-                return {
-                    success: true,
-                    direction,
-                    amount,
-                    asset,
-                    duration,
-                    timestamp: new Date().toISOString()
-                };
-            } else {
-                logger.error('Trade button not found');
-                return { success: false, error: 'Trade button not found' };
-            }
-        } catch (error) {
-            logger.error('Trade execution error:', error);
-            return { success: false, error: error.message };
-        }
-    }
-
-    /**
-     * Get current account balance
+     * Get current balance
      */
     async getBalance() {
         try {
-            const balanceSelector = '.balance-value, .account-balance, [data-qa="balance"]';
-            const balanceElement = await this.page.$(balanceSelector);
+            const balanceSelectors = [
+                '.balance-value',
+                '.account-balance',
+                '[data-qa="balance"]',
+                '.balance-amount'
+            ];
 
-            if (balanceElement) {
-                const balanceText = await this.page.evaluate(el => el.textContent, balanceElement);
-                const balance = parseFloat(balanceText.replace(/[^0-9.-]+/g, ''));
-                return balance;
+            for (const selector of balanceSelectors) {
+                const element = await this.page.$(selector);
+                if (element) {
+                    const text = await this.page.evaluate(el => el.textContent, element);
+                    const balance = parseFloat(text.replace(/[^0-9.-]+/g, ''));
+                    if (!isNaN(balance)) {
+                        return balance;
+                    }
+                }
             }
-
             return null;
         } catch (error) {
-            logger.error('Failed to get balance:', error);
             return null;
         }
     }
 
     /**
-     * Get open trades/positions
-     */
-    async getOpenTrades() {
-        try {
-            const trades = [];
-            const tradeSelector = '.open-trade, .active-position, [data-qa="open-trade"]';
-            const tradeElements = await this.page.$$(tradeSelector);
-
-            for (const element of tradeElements) {
-                const trade = await this.page.evaluate(el => {
-                    return {
-                        asset: el.querySelector('.trade-asset')?.textContent || '',
-                        direction: el.querySelector('.trade-direction')?.textContent || '',
-                        amount: el.querySelector('.trade-amount')?.textContent || '',
-                        expiry: el.querySelector('.trade-expiry')?.textContent || ''
-                    };
-                }, element);
-                trades.push(trade);
-            }
-
-            return trades;
-        } catch (error) {
-            logger.error('Failed to get open trades:', error);
-            return [];
-        }
-    }
-
-    /**
-     * Check if trading platform is ready
+     * Check if platform is ready for trading
      */
     async isPlatformReady() {
         try {
-            // Check for trading buttons
-            const callButton = await this.page.$('.btn-call, .call-button, [data-qa="call-btn"]');
-            const putButton = await this.page.$('.btn-put, .put-button, [data-qa="put-btn"]');
-
-            return callButton !== null && putButton !== null;
-        } catch (error) {
+            const callBtn = await this.page.$('.btn-call, .call-button, [data-qa="call-btn"], button.call');
+            const putBtn = await this.page.$('.btn-put, .put-button, [data-qa="put-btn"], button.put');
+            return callBtn !== null && putBtn !== null;
+        } catch {
             return false;
         }
     }
@@ -369,48 +504,169 @@ class TradeExecutor {
     /**
      * Take screenshot for debugging
      */
-    async takeScreenshot(filename) {
+    async takeScreenshot(name) {
         try {
-            const path = `./screenshots/${filename}_${Date.now()}.png`;
-            await this.page.screenshot({ path, fullPage: true });
-            logger.info(`Screenshot saved: ${path}`);
-            return path;
-        } catch (error) {
-            logger.error('Failed to take screenshot:', error);
+            const filename = `./logs/screenshots/${this.userId}_${name}_${Date.now()}.png`;
+            await this.page.screenshot({ path: filename, fullPage: true });
+            return filename;
+        } catch {
             return null;
         }
     }
 
     /**
-     * Close browser and cleanup
+     * Check if session is healthy
+     */
+    isHealthy() {
+        return this.browser !== null && this.page !== null && this.isLoggedIn;
+    }
+
+    /**
+     * Close session
      */
     async close() {
         try {
             if (this.browser) {
                 await this.browser.close();
-                this.browser = null;
-                this.page = null;
-                this.isLoggedIn = false;
-                logger.info('Trade Executor closed');
             }
         } catch (error) {
-            logger.error('Error closing browser:', error);
+            logger.warn(`[User ${this.userId}] Close error:`, error.message);
+        } finally {
+            this.browser = null;
+            this.page = null;
+            this.isLoggedIn = false;
+        }
+    }
+}
+
+/**
+ * Trade Executor - Manages multiple user sessions
+ */
+class TradeExecutor {
+    constructor(db) {
+        this.db = db;
+        this.sessions = new Map(); // userId -> UserSession
+        this.maxConcurrentSessions = 5; // Limit concurrent browser instances
+    }
+
+    /**
+     * Get or create session for user
+     */
+    async getSession(userId) {
+        // Check if session exists and is healthy
+        if (this.sessions.has(userId)) {
+            const session = this.sessions.get(userId);
+            if (session.isHealthy()) {
+                return session;
+            }
+            // Close unhealthy session
+            await session.close();
+            this.sessions.delete(userId);
+        }
+
+        // Check session limit
+        if (this.sessions.size >= this.maxConcurrentSessions) {
+            // Close oldest session
+            const oldest = [...this.sessions.entries()]
+                .sort((a, b) => a[1].createdAt - b[1].createdAt)[0];
+            if (oldest) {
+                await oldest[1].close();
+                this.sessions.delete(oldest[0]);
+            }
+        }
+
+        // Get credentials from database
+        const creds = await this.db.getOlympTradeCredentials(userId);
+        if (!creds) {
+            logger.error(`No credentials for user ${userId}`);
+            return null;
+        }
+
+        // Create new session
+        const session = new UserSession(userId, creds.email);
+        const success = await session.initialize(creds.email, creds.password, creds.isDemo);
+
+        if (success) {
+            this.sessions.set(userId, session);
+            await this.db.updateRobotStatus(userId, 'running');
+            return session;
+        }
+
+        await this.db.updateRobotStatus(userId, 'error', session.lastError);
+        return null;
+    }
+
+    /**
+     * Execute trade for a user
+     */
+    async executeTrade(tradeParams) {
+        const { userId, direction, amount, pair, timeframe } = tradeParams;
+
+        const session = await this.getSession(userId);
+        if (!session) {
+            return { success: false, error: 'Could not create session' };
+        }
+
+        // Calculate duration from timeframe
+        const durationMap = { '1M': 1, '5M': 5, '15M': 15, '30M': 30, '1H': 60 };
+        const duration = durationMap[timeframe] || 1;
+
+        const result = await session.executeTrade(direction, amount, pair, duration);
+
+        // Update balance in database
+        if (session.balance) {
+            await this.db.updateUserBalance(userId, session.balance);
+        }
+
+        return result;
+    }
+
+    /**
+     * Get session status for user
+     */
+    getSessionStatus(userId) {
+        const session = this.sessions.get(userId);
+        if (!session) {
+            return { connected: false };
+        }
+
+        return {
+            connected: session.isHealthy(),
+            balance: session.balance,
+            lastTradeTime: session.lastTradeTime,
+            email: session.email
+        };
+    }
+
+    /**
+     * Close all sessions
+     */
+    async closeAll() {
+        logger.info('Closing all trading sessions...');
+        for (const [userId, session] of this.sessions) {
+            await session.close();
+            await this.db.updateRobotStatus(userId, 'stopped');
+        }
+        this.sessions.clear();
+    }
+
+    /**
+     * Close session for specific user
+     */
+    async closeSession(userId) {
+        const session = this.sessions.get(userId);
+        if (session) {
+            await session.close();
+            this.sessions.delete(userId);
+            await this.db.updateRobotStatus(userId, 'stopped');
         }
     }
 
     /**
-     * Check connection status
+     * Get active session count
      */
-    isConnected() {
-        return this.browser !== null && this.page !== null && this.isLoggedIn;
-    }
-
-    /**
-     * Reconnect if disconnected
-     */
-    async reconnect(email, password, demoMode = true) {
-        await this.close();
-        return await this.initialize(email, password, demoMode);
+    getActiveSessionCount() {
+        return this.sessions.size;
     }
 }
 

@@ -5,6 +5,7 @@
 
 const mysql = require('mysql2/promise');
 const logger = require('../utils/logger');
+const { decryptPassword } = require('../utils/helpers');
 
 class Database {
     constructor() {
@@ -49,7 +50,7 @@ class Database {
     }
 
     /**
-     * Get all active users with robot enabled
+     * Get all active users with robot enabled AND OlympTrade credentials setup
      */
     async getActiveUsers() {
         try {
@@ -59,11 +60,93 @@ class Database {
                 INNER JOIN robot_settings rs ON u.id = rs.user_id
                 WHERE u.status = 'active'
                 AND rs.robot_enabled = 1
+                AND u.olymptrade_setup_completed = 1
+                AND u.olymptrade_email IS NOT NULL
+                AND u.olymptrade_password IS NOT NULL
             `);
             return rows;
         } catch (error) {
             logger.error('Error getting active users:', error);
             return [];
+        }
+    }
+
+    /**
+     * Get OlympTrade credentials for a user (decrypts password)
+     */
+    async getOlympTradeCredentials(userId) {
+        try {
+            const [rows] = await this.pool.execute(`
+                SELECT
+                    olymptrade_email,
+                    olymptrade_password,
+                    olymptrade_account_type,
+                    olymptrade_setup_completed
+                FROM users
+                WHERE id = ? AND olymptrade_setup_completed = 1
+            `, [userId]);
+
+            if (rows.length === 0) {
+                logger.warn(`No OlympTrade credentials found for user ${userId}`);
+                return null;
+            }
+
+            const creds = rows[0];
+
+            // Decrypt the password
+            const decryptedPassword = decryptPassword(creds.olymptrade_password);
+
+            if (!decryptedPassword) {
+                logger.error(`Failed to decrypt password for user ${userId}`);
+                return null;
+            }
+
+            return {
+                email: creds.olymptrade_email,
+                password: decryptedPassword,
+                accountType: creds.olymptrade_account_type || 'demo',
+                isDemo: creds.olymptrade_account_type === 'demo'
+            };
+        } catch (error) {
+            logger.error(`Error getting OlympTrade credentials for user ${userId}:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Update robot connection status
+     */
+    async updateRobotStatus(userId, status, errorMessage = null) {
+        try {
+            await this.pool.execute(`
+                INSERT INTO robot_status (user_id, status, last_active, error_message, connection_status)
+                VALUES (?, ?, NOW(), ?, 'connected')
+                ON DUPLICATE KEY UPDATE
+                    status = VALUES(status),
+                    last_active = NOW(),
+                    error_message = VALUES(error_message),
+                    connection_status = 'connected',
+                    heartbeat_count = heartbeat_count + 1
+            `, [userId, status, errorMessage]);
+            return true;
+        } catch (error) {
+            logger.error(`Error updating robot status for user ${userId}:`, error);
+            return false;
+        }
+    }
+
+    /**
+     * Update user balance from OlympTrade
+     */
+    async updateUserBalance(userId, balance) {
+        try {
+            await this.pool.execute(`
+                UPDATE robot_status SET balance = ?, updated_at = NOW() WHERE user_id = ?
+            `, [balance, userId]);
+            return true;
+        } catch (error) {
+            logger.error(`Error updating balance for user ${userId}:`, error);
+            return false;
         }
     }
 
