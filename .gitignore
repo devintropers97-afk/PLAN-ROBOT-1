@@ -1,0 +1,38 @@
+# Environment files (contain sensitive credentials)
+.env
+*.env.local
+*.env.production
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+
+# Screenshots & Debug
+screenshots/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Zip files
+*.zip

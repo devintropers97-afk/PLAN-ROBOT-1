@@ -1,0 +1,36 @@
+{
+  "name": "zyn-trade-robot",
+  "version": "1.0.0",
+  "description": "ZYN Trade System - Automated Trading Robot Engine for OlympTrade",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node src/test.js",
+    "test:connection": "node src/test-connection.js"
+  },
+  "keywords": [
+    "trading",
+    "bot",
+    "olymptrade",
+    "automation"
+  ],
+  "author": "ZYN Trade System",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^21.0.0",
+    "technicalindicators": "^3.1.0",
+    "axios": "^1.6.0",
+    "mysql2": "^3.6.0",
+    "ws": "^8.14.0",
+    "dotenv": "^16.3.0",
+    "node-cron": "^3.0.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
