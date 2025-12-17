@@ -34,11 +34,14 @@ class ZYNTradeRobot {
         this.signalGenerator = null;
         this.tradeExecutor = null;
         this.activeUsers = [];
+        this.pendingTradeMap = new Map(); // Maps internal tradeId -> { dbId, userId, expiryTime }
         this.stats = {
             startTime: null,
             totalCycles: 0,
             totalTrades: 0,
             totalSignals: 0,
+            totalWins: 0,
+            totalLosses: 0,
             errors: 0
         };
         this.app = express();
@@ -311,8 +314,8 @@ class ZYNTradeRobot {
 
                         logger.info(`[User ${userId}] ✓ Trade executed: ${signal.direction} $${amount} on ${market}`);
 
-                        // Record trade in database
-                        await this.db.recordTrade({
+                        // Record trade in database and get the database ID
+                        const dbTradeId = await this.db.recordTrade({
                             userId: userId,
                             strategyId: strategyId,
                             strategy: signal.strategyName || `Strategy #${strategyId}`,
@@ -321,6 +324,17 @@ class ZYNTradeRobot {
                             amount: amount,
                             direction: signal.direction
                         });
+
+                        // Store mapping of internal trade ID to database ID for result updates
+                        if (dbTradeId && tradeResult.tradeId) {
+                            this.pendingTradeMap.set(tradeResult.tradeId, {
+                                dbId: dbTradeId,
+                                userId: userId,
+                                expiryTime: tradeResult.expiryTime,
+                                amount: amount
+                            });
+                            logger.debug(`[User ${userId}] Trade mapped: ${tradeResult.tradeId} -> DB#${dbTradeId}`);
+                        }
 
                         // Update robot status
                         await this.db.updateRobotStatus(userId, 'running');
@@ -377,6 +391,88 @@ class ZYNTradeRobot {
     }
 
     /**
+     * Check expired trades and update results in database
+     * This is called periodically to get trade outcomes
+     */
+    async checkTradeResults() {
+        if (!this.isRunning) return;
+
+        try {
+            // Get all expired trade results from trade executor
+            const results = await this.tradeExecutor.checkAllExpiredTrades();
+
+            if (results.length === 0) return;
+
+            logger.info(`Checking ${results.length} expired trade(s)...`);
+
+            for (const result of results) {
+                // Find the database trade ID from our mapping
+                const tradeInfo = this.pendingTradeMap.get(result.tradeId);
+
+                if (tradeInfo) {
+                    // Update trade result in database
+                    await this.db.updateTradeResult(
+                        tradeInfo.dbId,
+                        result.result,
+                        result.profitLoss
+                    );
+
+                    // Update stats
+                    if (result.result === 'win') {
+                        this.stats.totalWins++;
+                    } else if (result.result === 'loss') {
+                        this.stats.totalLosses++;
+                    }
+
+                    // Update daily stats
+                    await this.db.updateDailyStats(result.userId, {
+                        result: result.result,
+                        profitLoss: result.profitLoss
+                    });
+
+                    // Log the result
+                    await this.db.logActivity(result.userId, 'trade_result',
+                        `Trade ${result.result.toUpperCase()}: ${result.direction} on ${result.asset}, P&L: $${result.profitLoss.toFixed(2)}`);
+
+                    // Create notification
+                    const notifType = result.result === 'win' ? 'trade_win' : 'trade_loss';
+                    const notifMessage = result.result === 'win'
+                        ? `Trade WIN! +$${result.profitLoss.toFixed(2)} on ${result.asset}`
+                        : `Trade LOSS: -$${Math.abs(result.profitLoss).toFixed(2)} on ${result.asset}`;
+                    await this.db.createNotification(result.userId, notifType, notifMessage);
+
+                    logger.info(`[User ${result.userId}] Trade #${tradeInfo.dbId} result: ${result.result}, P&L: $${result.profitLoss.toFixed(2)}`);
+
+                    // Remove from pending map
+                    this.pendingTradeMap.delete(result.tradeId);
+                }
+            }
+
+        } catch (error) {
+            logger.error('Error checking trade results:', error);
+        }
+    }
+
+    /**
+     * Clean up stale pending trades (older than 2 hours)
+     */
+    cleanupStaleTrades() {
+        const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+        let cleaned = 0;
+
+        for (const [tradeId, info] of this.pendingTradeMap) {
+            if (info.expiryTime < twoHoursAgo) {
+                this.pendingTradeMap.delete(tradeId);
+                cleaned++;
+            }
+        }
+
+        if (cleaned > 0) {
+            logger.info(`Cleaned up ${cleaned} stale pending trades`);
+        }
+    }
+
+    /**
      * Start the robot
      */
     async start() {
@@ -394,10 +490,24 @@ class ZYNTradeRobot {
             await this.runTradingCycle();
         });
 
+        // Check trade results every 15 seconds
+        cron.schedule('*/15 * * * * *', async () => {
+            await this.checkTradeResults();
+        });
+
         // Health check every 5 minutes
         cron.schedule('*/5 * * * *', async () => {
             const sessions = this.tradeExecutor.getActiveSessionCount();
-            logger.info(`[Health] Uptime: ${this.getUptime()} | Users: ${this.activeUsers.length} | Sessions: ${sessions} | Trades: ${this.stats.totalTrades}`);
+            const pendingTrades = this.pendingTradeMap.size;
+            const winRate = this.stats.totalTrades > 0
+                ? ((this.stats.totalWins / this.stats.totalTrades) * 100).toFixed(1)
+                : '0.0';
+            logger.info(`[Health] Uptime: ${this.getUptime()} | Users: ${this.activeUsers.length} | Sessions: ${sessions} | Trades: ${this.stats.totalTrades} (W:${this.stats.totalWins}/L:${this.stats.totalLosses}) | WinRate: ${winRate}% | Pending: ${pendingTrades}`);
+        });
+
+        // Cleanup stale trades every hour
+        cron.schedule('0 * * * *', () => {
+            this.cleanupStaleTrades();
         });
 
         // Reset daily stats at midnight (WIB = UTC+7)
@@ -405,6 +515,8 @@ class ZYNTradeRobot {
             logger.info('Midnight reset - resetting daily statistics...');
             await this.db.resetDailyStats();
             this.stats.totalSignals = 0;
+            this.stats.totalWins = 0;
+            this.stats.totalLosses = 0;
         });
 
         // Refresh user list every minute

@@ -25,6 +25,7 @@ class UserSession {
         this.lastError = null;
         this.balance = null;
         this.createdAt = new Date();
+        this.pendingTrades = []; // Track trades waiting for result
     }
 
     /**
@@ -339,18 +340,41 @@ class UserSession {
 
                 await sleep(2000);
 
+                // Get balance before (for P&L calculation)
+                const balanceBefore = this.balance;
+
                 // Update balance after trade
                 this.balance = await this.getBalance();
 
-                logger.info(`[User ${this.userId}] Trade executed! New balance: ${this.balance}`);
+                // Calculate expected expiry time
+                const expiryTime = Date.now() + (duration * 60 * 1000);
+
+                // Create pending trade record
+                const pendingTrade = {
+                    id: `trade_${Date.now()}_${this.userId}`,
+                    direction,
+                    amount,
+                    asset,
+                    duration,
+                    balanceBefore,
+                    executedAt: Date.now(),
+                    expiryTime: expiryTime
+                };
+
+                this.pendingTrades.push(pendingTrade);
+
+                logger.info(`[User ${this.userId}] Trade executed! Balance: ${this.balance}, Expires in ${duration}min`);
 
                 return {
                     success: true,
+                    tradeId: pendingTrade.id,
                     direction,
                     amount,
                     asset,
                     duration,
                     balance: this.balance,
+                    balanceBefore: balanceBefore,
+                    expiryTime: expiryTime,
                     timestamp: new Date().toISOString()
                 };
             }
@@ -499,6 +523,81 @@ class UserSession {
         } catch {
             return false;
         }
+    }
+
+    /**
+     * Check expired trades and determine win/loss
+     * Call this periodically to get trade results
+     */
+    async checkExpiredTrades() {
+        const results = [];
+        const now = Date.now();
+
+        // Filter trades that have expired
+        const expiredTrades = this.pendingTrades.filter(t => now >= t.expiryTime + 5000); // +5s buffer
+
+        for (const trade of expiredTrades) {
+            try {
+                // Get current balance to determine result
+                const currentBalance = await this.getBalance();
+
+                if (currentBalance === null) {
+                    logger.warn(`[User ${this.userId}] Could not get balance for trade result`);
+                    continue;
+                }
+
+                // Calculate profit/loss
+                // Note: OlympTrade typically pays 80-92% on win
+                const expectedPayout = trade.amount * 0.85; // Average 85% payout
+                const balanceChange = currentBalance - trade.balanceBefore;
+
+                let result, profitLoss;
+
+                if (balanceChange > 0) {
+                    // Won - balance increased
+                    result = 'win';
+                    profitLoss = Math.min(balanceChange, expectedPayout);
+                } else if (balanceChange < -trade.amount * 0.5) {
+                    // Lost - balance decreased by more than half the trade
+                    result = 'loss';
+                    profitLoss = -trade.amount;
+                } else {
+                    // Tie or uncertain - small change
+                    result = 'tie';
+                    profitLoss = balanceChange;
+                }
+
+                this.balance = currentBalance;
+
+                results.push({
+                    tradeId: trade.id,
+                    result: result,
+                    profitLoss: profitLoss,
+                    balanceBefore: trade.balanceBefore,
+                    balanceAfter: currentBalance,
+                    direction: trade.direction,
+                    amount: trade.amount,
+                    asset: trade.asset
+                });
+
+                logger.info(`[User ${this.userId}] Trade ${trade.id} result: ${result}, P&L: ${profitLoss}`);
+
+            } catch (error) {
+                logger.error(`[User ${this.userId}] Error checking trade result:`, error.message);
+            }
+        }
+
+        // Remove processed trades from pending
+        this.pendingTrades = this.pendingTrades.filter(t => now < t.expiryTime + 5000);
+
+        return results;
+    }
+
+    /**
+     * Get count of pending trades
+     */
+    getPendingTradesCount() {
+        return this.pendingTrades.length;
     }
 
     /**
@@ -667,6 +766,38 @@ class TradeExecutor {
      */
     getActiveSessionCount() {
         return this.sessions.size;
+    }
+
+    /**
+     * Check all sessions for expired trades and return results
+     */
+    async checkAllExpiredTrades() {
+        const allResults = [];
+
+        for (const [userId, session] of this.sessions) {
+            if (session.isHealthy() && session.getPendingTradesCount() > 0) {
+                const results = await session.checkExpiredTrades();
+                for (const result of results) {
+                    allResults.push({
+                        userId: userId,
+                        ...result
+                    });
+                }
+            }
+        }
+
+        return allResults;
+    }
+
+    /**
+     * Get total pending trades across all sessions
+     */
+    getTotalPendingTrades() {
+        let total = 0;
+        for (const [, session] of this.sessions) {
+            total += session.getPendingTradesCount();
+        }
+        return total;
     }
 }
 

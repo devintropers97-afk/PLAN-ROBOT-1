@@ -266,7 +266,8 @@ class Database {
             await this.pool.execute(`
                 UPDATE trades SET
                     result = ?,
-                    profit_loss = ?
+                    profit_loss = ?,
+                    updated_at = NOW()
                 WHERE id = ?
             `, [result, profitLoss, tradeId]);
 
@@ -274,6 +275,57 @@ class Database {
             return true;
         } catch (error) {
             logger.error(`Error updating trade ${tradeId}:`, error);
+            return false;
+        }
+    }
+
+    /**
+     * Update daily stats for user after trade result
+     */
+    async updateDailyStats(userId, tradeResult) {
+        try {
+            const { result, profitLoss } = tradeResult;
+            const today = new Date().toISOString().split('T')[0];
+
+            // Use INSERT ... ON DUPLICATE KEY UPDATE for upsert
+            await this.pool.execute(`
+                INSERT INTO daily_stats (user_id, date, total_trades, trades, wins, losses, profit_loss, profit, updated_at)
+                VALUES (?, ?, 1, 1,
+                    ${result === 'win' ? 1 : 0},
+                    ${result === 'loss' ? 1 : 0},
+                    ?, ?, NOW())
+                ON DUPLICATE KEY UPDATE
+                    total_trades = total_trades + 1,
+                    trades = trades + 1,
+                    wins = wins + ${result === 'win' ? 1 : 0},
+                    losses = losses + ${result === 'loss' ? 1 : 0},
+                    profit_loss = profit_loss + ?,
+                    profit = profit + ?,
+                    win_rate = CASE WHEN (wins + ${result === 'win' ? 1 : 0}) > 0
+                        THEN ROUND(((wins + ${result === 'win' ? 1 : 0}) / (total_trades + 1)) * 100, 2)
+                        ELSE 0 END,
+                    updated_at = NOW()
+            `, [userId, today, profitLoss, profitLoss, profitLoss, profitLoss]);
+
+            // Also update user's total stats
+            await this.pool.execute(`
+                UPDATE users SET
+                    total_trades = total_trades + 1,
+                    wins = wins + ${result === 'win' ? 1 : 0},
+                    losses = losses + ${result === 'loss' ? 1 : 0},
+                    total_profit = total_profit + ?,
+                    last_trade_at = NOW()
+                WHERE id = ?
+            `, [profitLoss, userId]);
+
+            // Update robot_settings current_daily_pnl
+            await this.pool.execute(`
+                UPDATE robot_settings SET current_daily_pnl = current_daily_pnl + ? WHERE user_id = ?
+            `, [profitLoss, userId]);
+
+            return true;
+        } catch (error) {
+            logger.error(`Error updating daily stats for user ${userId}:`, error);
             return false;
         }
     }
