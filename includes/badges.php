@@ -446,13 +446,13 @@ class BadgeSystem {
 
         $awarded = [];
 
-        // Get user stats
+        // Get user stats (using correct column: profit_loss)
         $stmt = $db->prepare("
             SELECT
                 u.*,
                 COALESCE((SELECT COUNT(*) FROM trades WHERE user_id = u.id), 0) as total_trades,
-                COALESCE((SELECT SUM(profit) FROM trades WHERE user_id = u.id AND profit > 0), 0) as total_profit,
-                COALESCE((SELECT COUNT(*) FROM trades WHERE user_id = u.id AND profit > 0), 0) as winning_trades,
+                COALESCE((SELECT SUM(profit_loss) FROM trades WHERE user_id = u.id AND profit_loss > 0), 0) as total_profit,
+                COALESCE((SELECT COUNT(*) FROM trades WHERE user_id = u.id AND profit_loss > 0), 0) as winning_trades,
                 COALESCE((SELECT COUNT(*) FROM referrals WHERE referrer_id = u.id AND status = 'converted'), 0) as referral_count
             FROM users u
             WHERE u.id = ?
@@ -705,11 +705,11 @@ HTML;
         $db = self::getDB();
         if (!$db) return [];
 
-        // Get user stats
+        // Get user stats (using correct column: profit_loss)
         $stmt = $db->prepare("
             SELECT
                 COALESCE((SELECT COUNT(*) FROM trades WHERE user_id = ?), 0) as total_trades,
-                COALESCE((SELECT SUM(profit) FROM trades WHERE user_id = ? AND profit > 0), 0) as total_profit
+                COALESCE((SELECT SUM(profit_loss) FROM trades WHERE user_id = ? AND profit_loss > 0), 0) as total_profit
         ");
         $stmt->execute([$user_id, $user_id]);
         $stats = $stmt->fetch(PDO::FETCH_ASSOC);

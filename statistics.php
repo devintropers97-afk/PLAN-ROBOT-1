@@ -42,11 +42,11 @@ $daysInMonth = date('t', $firstDayOfMonth);
 $startDay = date('N', $firstDayOfMonth);
 $monthName = date('F', $firstDayOfMonth);
 
-// Daily target progress
-$dailyTarget = getDailyTargetSettings($_SESSION['user_id']);
-$todayPnl = $stats['overall']['today_pnl'] ?? $stats['overall']['total_pnl'] ?? 0;
-$takeProfit = $dailyTarget['amount'] ?? 20;
-$maxLoss = $dailyTarget['max_loss'] ?? 10;
+// Daily target progress (using correct keys from getRobotSettings)
+$robotSettings = getRobotSettings($_SESSION['user_id']);
+$todayPnl = $stats['overall']['total_pnl'] ?? 0;
+$takeProfit = $robotSettings['take_profit_target'] ?? 20;
+$maxLoss = $robotSettings['max_loss_limit'] ?? 10;
 
 function getPerformanceLevelColor($level) {
     $colors = [

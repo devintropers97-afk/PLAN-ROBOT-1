@@ -40,7 +40,7 @@ class DashboardWidgets {
                 COUNT(*) as total_trades,
                 SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
                 SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
-                SUM(profit) as profit
+                SUM(profit_loss) as profit
             FROM trades
             WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
             GROUP BY DATE(created_at)

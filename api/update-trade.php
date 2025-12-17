@@ -40,11 +40,11 @@ if (!in_array($input['result'], $validResults)) {
 try {
     $pdo = getDBConnection();
 
-    // Update trade
+    // Update trade (using correct column name: profit_loss)
     $stmt = $pdo->prepare("
         UPDATE trades SET
             result = ?,
-            profit = ?,
+            profit_loss = ?,
             exit_price = ?,
             updated_at = NOW()
         WHERE id = ?
@@ -57,21 +57,21 @@ try {
         $input['trade_id']
     ]);
 
-    // Get trade to update user stats
-    $getTrade = $pdo->prepare("SELECT user_id, profit FROM trades WHERE id = ?");
+    // Get trade to update user stats (using correct column: profit_loss)
+    $getTrade = $pdo->prepare("SELECT user_id, profit_loss FROM trades WHERE id = ?");
     $getTrade->execute([$input['trade_id']]);
     $trade = $getTrade->fetch(PDO::FETCH_ASSOC);
 
     if ($trade) {
-        // Update user statistics
+        // Update user statistics (using correct columns: wins, losses)
         $winAdd = $input['result'] === 'win' ? 1 : 0;
         $lossAdd = $input['result'] === 'loss' ? 1 : 0;
         $profitAdd = $input['profit'] ?? 0;
 
         $updateUser = $pdo->prepare("
             UPDATE users SET
-                win_trades = win_trades + ?,
-                loss_trades = loss_trades + ?,
+                wins = wins + ?,
+                losses = losses + ?,
                 total_profit = total_profit + ?,
                 updated_at = NOW()
             WHERE id = ?
@@ -90,7 +90,7 @@ try {
 }
 
 function checkAutoPauseCondition($pdo, $userId) {
-    // Get user settings
+    // Get user settings (using correct column names from schema)
     $stmt = $pdo->prepare("
         SELECT rs.*, u.total_profit
         FROM robot_settings rs
@@ -102,9 +102,9 @@ function checkAutoPauseCondition($pdo, $userId) {
 
     if (!$settings) return;
 
-    // Get today's profit/loss
+    // Get today's profit/loss (using correct column: profit_loss)
     $todayStmt = $pdo->prepare("
-        SELECT SUM(profit) as today_profit
+        SELECT SUM(profit_loss) as today_profit
         FROM trades
         WHERE user_id = ? AND DATE(created_at) = CURDATE()
     ");
@@ -115,22 +115,23 @@ function checkAutoPauseCondition($pdo, $userId) {
     $shouldPause = false;
     $reason = '';
 
-    // Check Take Profit
-    if ($settings['take_profit'] > 0 && $todayProfit >= $settings['take_profit']) {
+    // Check Take Profit (using correct column: take_profit_target)
+    if ($settings['take_profit_target'] > 0 && $todayProfit >= $settings['take_profit_target']) {
         $shouldPause = true;
         $reason = 'take_profit';
     }
 
-    // Check Max Loss
-    if ($settings['max_loss'] > 0 && $todayProfit <= -$settings['max_loss']) {
+    // Check Max Loss (using correct column: max_loss_limit)
+    if ($settings['max_loss_limit'] > 0 && $todayProfit <= -$settings['max_loss_limit']) {
         $shouldPause = true;
         $reason = 'max_loss';
     }
 
     if ($shouldPause) {
+        // Using correct column: robot_enabled instead of is_active
         $pauseStmt = $pdo->prepare("
             UPDATE robot_settings SET
-                is_active = 0,
+                robot_enabled = 0,
                 auto_pause_triggered = 1,
                 auto_pause_reason = ?,
                 updated_at = NOW()
