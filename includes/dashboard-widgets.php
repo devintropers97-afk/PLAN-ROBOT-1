@@ -239,7 +239,7 @@ HTML;
                 strategy,
                 COUNT(*) as total,
                 SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
-                SUM(profit) as profit
+                SUM(profit_loss) as profit
             FROM trades
             WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
             GROUP BY strategy
@@ -512,9 +512,9 @@ HTML;
             SELECT
                 COUNT(*) as total_trades,
                 SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
-                SUM(profit) as total_profit,
-                MAX(profit) as best_trade,
-                MIN(profit) as worst_trade
+                SUM(profit_loss) as total_profit,
+                MAX(profit_loss) as best_trade,
+                MIN(profit_loss) as worst_trade
             FROM trades
             WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
         ");
