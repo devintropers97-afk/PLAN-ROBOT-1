@@ -534,6 +534,71 @@ INSERT INTO `users` (
     `updated_at` = NOW();
 
 -- =============================================
+-- INSERT ADMIN ROBOT SETTINGS
+-- Admin bisa trading dengan semua fitur VIP
+-- =============================================
+INSERT INTO `robot_settings` (
+    `user_id`,
+    `robot_enabled`,
+    `strategies`,
+    `market`,
+    `timeframe`,
+    `risk_level`,
+    `trade_amount`,
+    `daily_limit`,
+    `money_management_type`,
+    `martingale_max_steps`,
+    `martingale_multiplier`,
+    `take_profit_target`,
+    `max_loss_limit`,
+    `schedule_mode`,
+    `weekend_auto_off`,
+    `daily_target_amount`,
+    `active_strategies`,
+    `notify_on_trade`,
+    `notify_on_error`,
+    `notify_on_pause`
+) SELECT
+    id,
+    0,  -- robot_enabled: OFF by default, admin turn ON when ready
+    '["RSI_MASTER","BB_SQUEEZE","MACD_DIVERGENCE","EMA_CROSS","STOCH_RSI","ADX_TREND","VOLUME_BREAKOUT","SUPPORT_RESISTANCE","CANDLE_PATTERN","MULTI_TF"]',
+    'EUR/USD',
+    '15M',
+    'medium',
+    10000.00,
+    20,  -- VIP daily limit
+    'flat',
+    3,
+    2.00,
+    100.00,  -- VIP take profit target
+    50.00,   -- VIP max loss limit
+    'auto_24h',
+    1,
+    100.00,
+    '["RSI_MASTER","BB_SQUEEZE","MACD_DIVERGENCE","EMA_CROSS","STOCH_RSI"]',
+    1,
+    1,
+    1
+FROM users WHERE license_key = 'ZYN-A-ADMN-2024'
+ON DUPLICATE KEY UPDATE `updated_at` = NOW();
+
+-- =============================================
+-- INSERT ADMIN ROBOT STATUS
+-- =============================================
+INSERT INTO `robot_status` (
+    `user_id`,
+    `status`,
+    `version`,
+    `connection_status`
+) SELECT
+    id,
+    'stopped',
+    '3.1.0',
+    'disconnected'
+FROM users WHERE license_key = 'ZYN-A-ADMN-2024'
+ON DUPLICATE KEY UPDATE `updated_at` = NOW();
+
+-- =============================================
 -- INSERT DEFAULT SETTINGS
 -- =============================================
 INSERT INTO `settings` (`key`, `value`, `type`, `group`, `description`, `is_public`) VALUES
