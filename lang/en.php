@@ -928,4 +928,14 @@ return [
     'testimonial_4_text' => 'As a housewife, this robot really helps. No need to keep staring at the screen, the robot does the work. Consistent daily profits!',
     'testimonial_5_text' => 'Started with FREE, after seeing results immediately upgraded to VIP. Win rate is really high! Support is super fast response too.',
     'testimonial_6_text' => 'The auto-pause feature is very useful! When loss reaches the limit, robot automatically stops. Capital safe, profits still flowing. Recommended!',
+
+    // Auto-Pause Modal
+    'modal_tp_title' => 'Target Profit Reached!',
+    'modal_tp_message' => 'Congratulations! Robot has been paused because daily profit target was reached. Consider withdrawing some of your profits.',
+    'modal_tp_note' => 'Robot will auto-resume according to Resume Behavior settings',
+    'modal_ml_title' => 'Loss Limit Reached',
+    'modal_ml_message' => 'Robot has been paused to protect your capital. Evaluate your strategy and market conditions before continuing.',
+    'modal_ml_note' => 'Make sure you are ready before continuing trading',
+    'modal_close' => 'Close',
+    'modal_resume_robot' => 'Resume Robot',
 ];

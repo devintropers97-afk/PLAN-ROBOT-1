@@ -698,22 +698,21 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="autopause-modal-icon">
             <i class="fas fa-trophy"></i>
         </div>
-        <h3>Target Profit Tercapai!</h3>
+        <h3><?php _e('modal_tp_title'); ?></h3>
         <p class="autopause-modal-amount" id="tpAmount">$0.00</p>
         <p class="autopause-modal-message">
-            Selamat! Robot telah di-pause karena target profit harian tercapai.
-            Pertimbangkan untuk withdraw sebagian profit Anda.
+            <?php _e('modal_tp_message'); ?>
         </p>
         <div class="autopause-modal-actions">
             <button class="db-btn db-btn-outline" onclick="closeModal('tpReachedModal')">
-                <i class="fas fa-times"></i> Tutup
+                <i class="fas fa-times"></i> <?php _e('modal_close'); ?>
             </button>
             <button class="db-btn db-btn-success" onclick="resumeRobot()">
-                <i class="fas fa-play"></i> Resume Robot
+                <i class="fas fa-play"></i> <?php _e('modal_resume_robot'); ?>
             </button>
         </div>
         <p class="autopause-modal-note">
-            <i class="fas fa-info-circle"></i> Robot akan auto-resume sesuai pengaturan Resume Behavior
+            <i class="fas fa-info-circle"></i> <?php _e('modal_tp_note'); ?>
         </p>
     </div>
 </div>
@@ -724,22 +723,21 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="autopause-modal-icon">
             <i class="fas fa-shield-alt"></i>
         </div>
-        <h3>Batas Loss Tercapai</h3>
+        <h3><?php _e('modal_ml_title'); ?></h3>
         <p class="autopause-modal-amount danger" id="mlAmount">-$0.00</p>
         <p class="autopause-modal-message">
-            Robot telah di-pause untuk melindungi modal Anda.
-            Evaluasi strategi dan kondisi market sebelum melanjutkan.
+            <?php _e('modal_ml_message'); ?>
         </p>
         <div class="autopause-modal-actions">
             <button class="db-btn db-btn-outline" onclick="closeModal('mlReachedModal')">
-                <i class="fas fa-times"></i> Tutup
+                <i class="fas fa-times"></i> <?php _e('modal_close'); ?>
             </button>
             <button class="db-btn db-btn-warning" onclick="resumeRobot()">
-                <i class="fas fa-play"></i> Resume Robot
+                <i class="fas fa-play"></i> <?php _e('modal_resume_robot'); ?>
             </button>
         </div>
         <p class="autopause-modal-note">
-            <i class="fas fa-exclamation-triangle"></i> Pastikan Anda siap sebelum melanjutkan trading
+            <i class="fas fa-exclamation-triangle"></i> <?php _e('modal_ml_note'); ?>
         </p>
     </div>
 </div>

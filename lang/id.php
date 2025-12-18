@@ -929,4 +929,14 @@ return [
     'testimonial_4_text' => 'Sebagai ibu rumah tangga, robot ini sangat membantu. Tidak perlu fokus terus ke layar, robot yang kerja. Profit konsisten setiap hari!',
     'testimonial_5_text' => 'Awalnya coba FREE dulu, setelah lihat hasilnya langsung upgrade ke VIP. Win rate beneran tinggi! Support juga super fast response.',
     'testimonial_6_text' => 'Fitur auto-pause sangat berguna! Ketika loss mencapai limit, robot otomatis berhenti. Modal aman, profit tetap jalan. Recommended!',
+
+    // Auto-Pause Modal
+    'modal_tp_title' => 'Target Profit Tercapai!',
+    'modal_tp_message' => 'Selamat! Robot telah di-pause karena target profit harian tercapai. Pertimbangkan untuk withdraw sebagian profit Anda.',
+    'modal_tp_note' => 'Robot akan auto-resume sesuai pengaturan Resume Behavior',
+    'modal_ml_title' => 'Batas Loss Tercapai',
+    'modal_ml_message' => 'Robot telah di-pause untuk melindungi modal Anda. Evaluasi strategi dan kondisi market sebelum melanjutkan.',
+    'modal_ml_note' => 'Pastikan Anda siap sebelum melanjutkan trading',
+    'modal_close' => 'Tutup',
+    'modal_resume_robot' => 'Resume Robot',
 ];
