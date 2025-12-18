@@ -117,7 +117,7 @@ $completedChallenges = [
 $challengeLeaderboard = [
     ['rank' => 1, 'name' => 'Trader_Pro', 'score' => 48, 'badge' => 'fa-crown text-warning'],
     ['rank' => 2, 'name' => 'ZYN_Master', 'score' => 45, 'badge' => 'fa-medal text-secondary'],
-    ['rank' => 3, 'name' => 'Robot_King', 'score' => 42, 'badge' => 'fa-medal' style='color: #cd7f32'],
+    ['rank' => 3, 'name' => 'Robot_King', 'score' => 42, 'badge' => 'fa-medal', 'style' => 'color: #cd7f32'],
     ['rank' => 4, 'name' => htmlspecialchars($currentUser['fullname']), 'score' => 32, 'badge' => null, 'is_me' => true],
     ['rank' => 5, 'name' => 'Winner99', 'score' => 28, 'badge' => null],
 ];
