@@ -37,13 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
         $isNewSetup = empty($user['olymptrade_setup_completed']);
 
         if (empty($otEmail)) {
-            $message = 'Email OlympTrade wajib diisi!';
+            $message = __('ot_email_required');
             $messageType = 'danger';
         } elseif ($isNewSetup && empty($otPassword)) {
-            $message = 'Password OlympTrade wajib diisi untuk setup pertama!';
+            $message = __('ot_password_required');
             $messageType = 'danger';
         } elseif (!filter_var($otEmail, FILTER_VALIDATE_EMAIL)) {
-            $message = 'Format email tidak valid!';
+            $message = __('ot_email_invalid');
             $messageType = 'danger';
         } else {
             // Only encrypt and update password if provided
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             }
 
             if ($result) {
-                $message = 'OlympTrade credentials berhasil disimpan! Robot siap digunakan.';
+                $message = __('ot_setup_success');
                 $messageType = 'success';
 
                 // Refresh user data
@@ -83,13 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 $stmt->execute([$userId]);
                 $user = $stmt->fetch();
             } else {
-                $message = 'Gagal menyimpan credentials. Coba lagi.';
+                $message = __('ot_setup_failed');
                 $messageType = 'danger';
             }
         }
     } elseif ($action === 'test_connection') {
         // Test connection to OlympTrade (simulation)
-        $message = 'Test koneksi akan dijalankan oleh robot. Pastikan credentials sudah benar.';
+        $message = __('ot_test_info');
         $messageType = 'info';
     } elseif ($action === 'remove_credentials') {
         // Remove credentials
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
         $stmt = $db->prepare("UPDATE robot_settings SET robot_enabled = 0 WHERE user_id = ?");
         $stmt->execute([$userId]);
 
-        $message = 'Credentials berhasil dihapus. Robot dinonaktifkan.';
+        $message = __('ot_delete_success');
         $messageType = 'warning';
 
         // Refresh user data
