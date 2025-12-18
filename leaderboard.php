@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Leaderboard';
+$page_title = __('leaderboard_title');
 require_once 'includes/header.php';
 require_once 'includes/badges.php';
 

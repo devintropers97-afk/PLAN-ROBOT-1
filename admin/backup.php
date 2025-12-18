@@ -373,7 +373,7 @@ if ($is_cron) {
 // Get backup list
 $backups = $backup->listBackups();
 
-$page_title = 'Database Backup';
+$page_title = __('admin_backup');
 require_once 'includes/admin-header.php';
 ?>
 

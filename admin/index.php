@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Dashboard';
+$page_title = __('admin_dashboard');
 require_once 'includes/admin-header.php';
 
 // Initialize default values

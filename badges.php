@@ -4,7 +4,7 @@
  * Halaman untuk melihat semua badges dan achievements
  */
 
-$page_title = 'Badges & Achievements';
+$page_title = __('badges_title');
 require_once 'includes/header.php';
 require_once 'includes/badges.php';
 

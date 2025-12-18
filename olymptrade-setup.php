@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 $setupCompleted = !empty($user['olymptrade_setup_completed']);
 
 // NOW load header (HTML output starts here)
-$page_title = 'OlympTrade Setup';
+$page_title = __('olymptrade_setup_title');
 require_once 'dashboard/includes/dashboard-header.php';
 ?>
 

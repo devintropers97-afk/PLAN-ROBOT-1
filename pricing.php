@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Pricing';
+$page_title = __('pricing_title');
 require_once 'includes/header.php';
 ?>
 

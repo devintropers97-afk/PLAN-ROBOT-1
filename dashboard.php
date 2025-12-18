@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Robot Control';
+$page_title = __('dashboard_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 $db = getDBConnection();

@@ -2,7 +2,7 @@
 /**
  * User Robot Settings Page
  */
-$page_title = 'Robot Settings';
+$page_title = __('settings_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 $user = getUserById($_SESSION['user_id']);

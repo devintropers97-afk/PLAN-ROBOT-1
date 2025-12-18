@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Profile';
+$page_title = __('profile_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 $user = getUserById($_SESSION['user_id']);

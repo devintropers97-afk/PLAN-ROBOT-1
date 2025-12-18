@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Statistics';
+$page_title = __('stats_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Get period from query

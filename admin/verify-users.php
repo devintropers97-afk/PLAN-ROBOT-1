@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Verify Users';
+$page_title = __('admin_verify_users');
 require_once 'includes/admin-header.php';
 
 $message = '';

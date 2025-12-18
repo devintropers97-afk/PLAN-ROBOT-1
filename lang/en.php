@@ -1358,4 +1358,9 @@ return [
     'admin_settings' => 'System Settings',
     'admin_license_keys' => 'License Keys',
     'admin_my_trading' => 'My Trading',
+    'admin_backup' => 'Database Backup',
+    'admin_verify_users' => 'Verify Users',
+
+    // OlympTrade Setup
+    'olymptrade_setup_title' => 'OlympTrade Setup',
 ];

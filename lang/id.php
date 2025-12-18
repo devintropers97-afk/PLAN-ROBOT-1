@@ -1359,4 +1359,9 @@ return [
     'admin_settings' => 'Pengaturan Sistem',
     'admin_license_keys' => 'License Keys',
     'admin_my_trading' => 'Trading Saya',
+    'admin_backup' => 'Database Backup',
+    'admin_verify_users' => 'Verifikasi User',
+
+    // OlympTrade Setup
+    'olymptrade_setup_title' => 'Setup OlympTrade',
 ];

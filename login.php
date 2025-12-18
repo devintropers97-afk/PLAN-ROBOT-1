@@ -58,7 +58,7 @@ if (isset($_GET['verified'])) {
 }
 
 // NOW load header (HTML output starts here)
-$page_title = 'Login';
+$page_title = __('login_title');
 require_once 'includes/header.php';
 
 // WhatsApp number for support
