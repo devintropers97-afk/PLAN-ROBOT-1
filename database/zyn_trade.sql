@@ -78,6 +78,8 @@ CREATE TABLE `users` (
     `olymptrade_setup_completed` TINYINT(1) DEFAULT 0 COMMENT 'Whether OT credentials are setup',
     `referral_code` VARCHAR(20) DEFAULT NULL UNIQUE,
     `referred_by` INT UNSIGNED DEFAULT NULL,
+    `referral_count` INT UNSIGNED DEFAULT 0 COMMENT 'Number of successful referrals',
+    `referral_earnings` DECIMAL(15,2) DEFAULT 0.00 COMMENT 'Total earnings from referrals',
     `total_trades` INT UNSIGNED DEFAULT 0,
     `total_profit` DECIMAL(15,2) DEFAULT 0.00,
     `wins` INT UNSIGNED DEFAULT 0,
@@ -728,6 +730,52 @@ BEGIN
 END //
 
 DELIMITER ;
+
+-- =============================================
+-- REFERRALS TABLE
+-- =============================================
+DROP TABLE IF EXISTS `referrals`;
+CREATE TABLE `referrals` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `referrer_id` INT UNSIGNED NOT NULL COMMENT 'User who referred',
+    `referred_id` INT UNSIGNED NOT NULL COMMENT 'New user who was referred',
+    `code` VARCHAR(20) NOT NULL COMMENT 'Referral code used',
+    `status` ENUM('pending', 'converted', 'expired') DEFAULT 'pending',
+    `converted_at` DATETIME DEFAULT NULL COMMENT 'When referral converted to paying user',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_referral` (`referrer_id`, `referred_id`),
+    INDEX `idx_referrer_id` (`referrer_id`),
+    INDEX `idx_referred_id` (`referred_id`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_code` (`code`),
+    FOREIGN KEY (`referrer_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`referred_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- COMMISSIONS TABLE
+-- =============================================
+DROP TABLE IF EXISTS `commissions`;
+CREATE TABLE `commissions` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `referrer_id` INT UNSIGNED NOT NULL COMMENT 'User who gets commission',
+    `referred_id` INT UNSIGNED NOT NULL COMMENT 'User who made payment',
+    `payment_id` INT UNSIGNED DEFAULT NULL COMMENT 'Related payment/subscription ID',
+    `amount` DECIMAL(15,2) NOT NULL COMMENT 'Original payment amount',
+    `commission` DECIMAL(15,2) NOT NULL COMMENT 'Commission amount',
+    `status` ENUM('pending', 'approved', 'paid', 'rejected') DEFAULT 'pending',
+    `paid_at` DATETIME DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_referrer_id` (`referrer_id`),
+    INDEX `idx_referred_id` (`referred_id`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_created_at` (`created_at`),
+    FOREIGN KEY (`referrer_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`referred_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================
 -- TRIGGERS

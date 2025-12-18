@@ -12,15 +12,18 @@
  * Sitemap ini otomatis generate berdasarkan halaman yang ada
  */
 
+// Include config for SITE_URL constant
+require_once __DIR__ . '/includes/config.php';
+
 // Set header sebagai XML
 header('Content-Type: application/xml; charset=utf-8');
 header('X-Robots-Tag: noindex');
 
-// Domain website (GANTI dengan domain asli Anda)
-$base_url = 'https://zyntrading.com';
+// Use SITE_URL from config, fallback to current host
+$base_url = defined('SITE_URL') ? SITE_URL : '';
 
-// Jika belum ada domain, gunakan current host
-if (isset($_SERVER['HTTP_HOST'])) {
+// If SITE_URL not defined, use current host
+if (empty($base_url) && isset($_SERVER['HTTP_HOST'])) {
     $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
     $base_url = $protocol . '://' . $_SERVER['HTTP_HOST'];
 }
