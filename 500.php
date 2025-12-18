@@ -262,7 +262,7 @@ $page_title = $lang_loaded ? __('error_500_title') : 'Server Error';
 
         <div class="contact-support">
             <i class="fab fa-whatsapp"></i>
-            <?php echo $lang_loaded ? __('error_need_help') : 'Butuh bantuan segera?'; ?> <a href="https://wa.me/6281234567890" target="_blank"><?php echo $lang_loaded ? __('error_contact_whatsapp') : 'Hubungi Support via WhatsApp'; ?></a>
+            <?php echo $lang_loaded ? __('error_need_help') : 'Butuh bantuan segera?'; ?> <a href="https://wa.me/<?php echo defined('WHATSAPP_SUPPORT') ? WHATSAPP_SUPPORT : '6281234567890'; ?>" target="_blank"><?php echo $lang_loaded ? __('error_contact_whatsapp') : 'Hubungi Support via WhatsApp'; ?></a>
         </div>
     </div>
 

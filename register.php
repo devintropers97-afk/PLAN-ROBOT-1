@@ -59,7 +59,7 @@ $countryLinks = [
 ];
 
 // WhatsApp support
-$whatsappNumber = '6281234567890';
+$whatsappNumber = WHATSAPP_SUPPORT;
 $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
 // Handle registration form submission

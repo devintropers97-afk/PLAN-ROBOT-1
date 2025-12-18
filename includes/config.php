@@ -93,6 +93,7 @@ define('TELEGRAM_CHANNEL_ID', '@OlymptradeCopytrade');
 define('TELEGRAM_USERNAME', '@aheenkgans');
 define('TELEGRAM_SUPPORT', '@aheenkgans');
 define('TELEGRAM_BOT_TOKEN', '');
+define('WHATSAPP_SUPPORT', '6281234567890'); // WhatsApp support number (without + prefix)
 
 // =========================================================
 // CURRENCY & PRICING (USD - Global Market)

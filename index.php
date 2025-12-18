@@ -11,7 +11,7 @@ $page_title = __('hero_title');
 require_once 'includes/header.php';
 
 // WhatsApp support
-$whatsappNumber = '6281234567890';
+$whatsappNumber = WHATSAPP_SUPPORT;
 $whatsappLink = "https://wa.me/{$whatsappNumber}";
 ?>
 
