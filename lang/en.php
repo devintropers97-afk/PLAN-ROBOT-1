@@ -1383,4 +1383,49 @@ return [
     'refund_non_refundable' => 'Non-Refundable Items',
     'refund_cancellation' => 'Subscription Cancellation',
     'refund_disputes' => 'Disputes',
+
+    // Refund Page - Table Conditions
+    'refund_cond_7days_no_trade' => 'Within 7 days, <strong>NO trades executed</strong>',
+    'refund_cond_7days_traded' => 'Within 7 days, trades executed',
+    'refund_cond_after_7days' => 'After 7 days',
+    'refund_cond_fraud' => 'Fraudulent or duplicate account',
+    'refund_cond_tos_violation' => 'Terms of Service violation',
+
+    // Refund Page - Free Trial Section
+    'refund_free_trial_text' => 'Free trial accounts are not eligible for refunds as no payment is made. If you\'re unsatisfied during the trial period, simply do not subscribe to a paid plan.',
+
+    // Refund Page - How to Request
+    'refund_request_intro' => 'To request a refund:',
+    'refund_step1' => 'Contact us via Telegram:',
+    'refund_step2' => 'Provide your registered email address',
+    'refund_step3' => 'State your reason for requesting a refund',
+    'refund_step4' => 'Our team will verify your eligibility',
+    'refund_step5' => 'If approved, refund will be processed within 5-10 business days',
+
+    // Refund Page - Processing Methods
+    'refund_proc_stripe' => 'Refunded to original payment method (5-10 business days)',
+    'refund_proc_qris' => 'Refunded via bank transfer (requires bank details)',
+    'refund_proc_wise' => 'Refunded to original Wise account',
+    'refund_proc_bitcoin' => 'Refunded to provided wallet address (may incur network fees)',
+
+    // Refund Page - Non-Refundable Items
+    'refund_nonref_traded' => 'Subscription fees after any trade has been executed',
+    'refund_nonref_news' => 'News Hunter addon if signals have been received',
+    'refund_nonref_partial' => 'Partial month refunds (we don\'t prorate)',
+    'refund_nonref_fees' => 'Payment processing fees (charged by payment providers)',
+
+    // Refund Page - Cancellation
+    'refund_cancel_intro' => 'You can cancel your subscription anytime:',
+    'refund_cancel_step1' => 'Go to Dashboard > Settings > Subscription',
+    'refund_cancel_step2' => 'Click "Cancel Subscription"',
+    'refund_cancel_step3' => 'Your access continues until the end of the billing period',
+    'refund_cancel_step4' => 'No refund for the remaining days',
+
+    // Refund Page - Disputes
+    'refund_dispute_intro' => 'If you dispute a charge with your payment provider (chargeback) without first contacting us:',
+    'refund_dispute1' => 'Your account will be immediately suspended',
+    'refund_dispute2' => 'You will be permanently banned from the Service',
+    'refund_dispute3' => 'We reserve the right to dispute the chargeback with evidence',
+    'refund_dispute_note' => 'Please contact us first to resolve any issues before initiating a dispute.',
+    'refund_contact_intro' => 'For refund requests or questions:',
 ];

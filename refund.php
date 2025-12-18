@@ -27,78 +27,78 @@ require_once 'includes/header.php';
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Within 7 days, <strong>NO trades executed</strong></td>
-                                        <td><span class="badge bg-success">Full Refund Available</span></td>
+                                        <td><?php _e('refund_cond_7days_no_trade'); ?></td>
+                                        <td><span class="badge bg-success"><?php _e('refund_full_available'); ?></span></td>
                                     </tr>
                                     <tr>
-                                        <td>Within 7 days, trades executed</td>
-                                        <td><span class="badge bg-danger">No Refund</span></td>
+                                        <td><?php _e('refund_cond_7days_traded'); ?></td>
+                                        <td><span class="badge bg-danger"><?php _e('refund_no_refund'); ?></span></td>
                                     </tr>
                                     <tr>
-                                        <td>After 7 days</td>
-                                        <td><span class="badge bg-danger">No Refund</span></td>
+                                        <td><?php _e('refund_cond_after_7days'); ?></td>
+                                        <td><span class="badge bg-danger"><?php _e('refund_no_refund'); ?></span></td>
                                     </tr>
                                     <tr>
-                                        <td>Fraudulent or duplicate account</td>
-                                        <td><span class="badge bg-danger">No Refund</span></td>
+                                        <td><?php _e('refund_cond_fraud'); ?></td>
+                                        <td><span class="badge bg-danger"><?php _e('refund_no_refund'); ?></span></td>
                                     </tr>
                                     <tr>
-                                        <td>Terms of Service violation</td>
-                                        <td><span class="badge bg-danger">No Refund</span></td>
+                                        <td><?php _e('refund_cond_tos_violation'); ?></td>
+                                        <td><span class="badge bg-danger"><?php _e('refund_no_refund'); ?></span></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
                         <h4 class="mt-4"><?php _e('refund_free_trial'); ?></h4>
-                        <p>Free trial accounts are not eligible for refunds as no payment is made. If you're unsatisfied during the trial period, simply do not subscribe to a paid plan.</p>
+                        <p><?php _e('refund_free_trial_text'); ?></p>
 
                         <h4 class="mt-4"><?php _e('refund_how_to_request'); ?></h4>
-                        <p>To request a refund:</p>
+                        <p><?php _e('refund_request_intro'); ?></p>
                         <ol>
-                            <li>Contact us via Telegram: <a href="<?php echo TELEGRAM_SUPPORT; ?>"><?php echo TELEGRAM_SUPPORT; ?></a></li>
-                            <li>Provide your registered email address</li>
-                            <li>State your reason for requesting a refund</li>
-                            <li>Our team will verify your eligibility</li>
-                            <li>If approved, refund will be processed within 5-10 business days</li>
+                            <li><?php _e('refund_step1'); ?> <a href="<?php echo TELEGRAM_SUPPORT; ?>"><?php echo TELEGRAM_SUPPORT; ?></a></li>
+                            <li><?php _e('refund_step2'); ?></li>
+                            <li><?php _e('refund_step3'); ?></li>
+                            <li><?php _e('refund_step4'); ?></li>
+                            <li><?php _e('refund_step5'); ?></li>
                         </ol>
 
                         <h4 class="mt-4"><?php _e('refund_processing'); ?></h4>
                         <ul>
-                            <li><strong>Stripe/PayPal:</strong> Refunded to original payment method (5-10 business days)</li>
-                            <li><strong>QRIS:</strong> Refunded via bank transfer (requires bank details)</li>
-                            <li><strong>Wise:</strong> Refunded to original Wise account</li>
-                            <li><strong>Bitcoin:</strong> Refunded to provided wallet address (may incur network fees)</li>
+                            <li><strong>Stripe/PayPal:</strong> <?php _e('refund_proc_stripe'); ?></li>
+                            <li><strong>QRIS:</strong> <?php _e('refund_proc_qris'); ?></li>
+                            <li><strong>Wise:</strong> <?php _e('refund_proc_wise'); ?></li>
+                            <li><strong>Bitcoin:</strong> <?php _e('refund_proc_bitcoin'); ?></li>
                         </ul>
 
                         <h4 class="mt-4"><?php _e('refund_non_refundable'); ?></h4>
                         <ul>
-                            <li>Subscription fees after any trade has been executed</li>
-                            <li>News Hunter addon if signals have been received</li>
-                            <li>Partial month refunds (we don't prorate)</li>
-                            <li>Payment processing fees (charged by payment providers)</li>
+                            <li><?php _e('refund_nonref_traded'); ?></li>
+                            <li><?php _e('refund_nonref_news'); ?></li>
+                            <li><?php _e('refund_nonref_partial'); ?></li>
+                            <li><?php _e('refund_nonref_fees'); ?></li>
                         </ul>
 
                         <h4 class="mt-4"><?php _e('refund_cancellation'); ?></h4>
-                        <p>You can cancel your subscription anytime:</p>
+                        <p><?php _e('refund_cancel_intro'); ?></p>
                         <ul>
-                            <li>Go to Dashboard > Settings > Subscription</li>
-                            <li>Click "Cancel Subscription"</li>
-                            <li>Your access continues until the end of the billing period</li>
-                            <li>No refund for the remaining days</li>
+                            <li><?php _e('refund_cancel_step1'); ?></li>
+                            <li><?php _e('refund_cancel_step2'); ?></li>
+                            <li><?php _e('refund_cancel_step3'); ?></li>
+                            <li><?php _e('refund_cancel_step4'); ?></li>
                         </ul>
 
                         <h4 class="mt-4"><?php _e('refund_disputes'); ?></h4>
-                        <p>If you dispute a charge with your payment provider (chargeback) without first contacting us:</p>
+                        <p><?php _e('refund_dispute_intro'); ?></p>
                         <ul>
-                            <li>Your account will be immediately suspended</li>
-                            <li>You will be permanently banned from the Service</li>
-                            <li>We reserve the right to dispute the chargeback with evidence</li>
+                            <li><?php _e('refund_dispute1'); ?></li>
+                            <li><?php _e('refund_dispute2'); ?></li>
+                            <li><?php _e('refund_dispute3'); ?></li>
                         </ul>
-                        <p>Please contact us first to resolve any issues before initiating a dispute.</p>
+                        <p><?php _e('refund_dispute_note'); ?></p>
 
                         <h4 class="mt-4"><?php _e('legal_contact'); ?></h4>
-                        <p>For refund requests or questions:</p>
+                        <p><?php _e('refund_contact_intro'); ?></p>
                         <ul>
                             <li>Telegram: <a href="<?php echo TELEGRAM_SUPPORT; ?>"><?php echo TELEGRAM_SUPPORT; ?></a></li>
                             <li>Email: <a href="mailto:<?php echo SITE_EMAIL; ?>"><?php echo SITE_EMAIL; ?></a></li>

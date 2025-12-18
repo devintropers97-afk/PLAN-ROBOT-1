@@ -1384,4 +1384,49 @@ return [
     'refund_non_refundable' => 'Item Non-Refundable',
     'refund_cancellation' => 'Pembatalan Subscription',
     'refund_disputes' => 'Disputes',
+
+    // Refund Page - Table Conditions
+    'refund_cond_7days_no_trade' => 'Dalam 7 hari, <strong>TIDAK ADA trade</strong>',
+    'refund_cond_7days_traded' => 'Dalam 7 hari, sudah ada trade',
+    'refund_cond_after_7days' => 'Setelah 7 hari',
+    'refund_cond_fraud' => 'Akun fraud atau duplikat',
+    'refund_cond_tos_violation' => 'Pelanggaran Terms of Service',
+
+    // Refund Page - Free Trial Section
+    'refund_free_trial_text' => 'Akun free trial tidak berhak refund karena tidak ada pembayaran. Jika tidak puas selama masa trial, cukup jangan berlangganan paket berbayar.',
+
+    // Refund Page - How to Request
+    'refund_request_intro' => 'Untuk mengajukan refund:',
+    'refund_step1' => 'Hubungi kami via Telegram:',
+    'refund_step2' => 'Berikan alamat email terdaftar Anda',
+    'refund_step3' => 'Sebutkan alasan pengajuan refund',
+    'refund_step4' => 'Tim kami akan memverifikasi kelayakan Anda',
+    'refund_step5' => 'Jika disetujui, refund akan diproses dalam 5-10 hari kerja',
+
+    // Refund Page - Processing Methods
+    'refund_proc_stripe' => 'Dikembalikan ke metode pembayaran asal (5-10 hari kerja)',
+    'refund_proc_qris' => 'Dikembalikan via transfer bank (memerlukan detail bank)',
+    'refund_proc_wise' => 'Dikembalikan ke akun Wise asal',
+    'refund_proc_bitcoin' => 'Dikembalikan ke alamat wallet yang diberikan (mungkin ada biaya jaringan)',
+
+    // Refund Page - Non-Refundable Items
+    'refund_nonref_traded' => 'Biaya langganan setelah trade apapun dieksekusi',
+    'refund_nonref_news' => 'Addon News Hunter jika sinyal sudah diterima',
+    'refund_nonref_partial' => 'Refund bulan parsial (kami tidak prorate)',
+    'refund_nonref_fees' => 'Biaya pemrosesan pembayaran (dibebankan oleh provider)',
+
+    // Refund Page - Cancellation
+    'refund_cancel_intro' => 'Anda dapat membatalkan langganan kapan saja:',
+    'refund_cancel_step1' => 'Buka Dashboard > Settings > Subscription',
+    'refund_cancel_step2' => 'Klik "Cancel Subscription"',
+    'refund_cancel_step3' => 'Akses Anda berlanjut sampai akhir periode billing',
+    'refund_cancel_step4' => 'Tidak ada refund untuk sisa hari',
+
+    // Refund Page - Disputes
+    'refund_dispute_intro' => 'Jika Anda mendispute tagihan dengan provider pembayaran (chargeback) tanpa menghubungi kami terlebih dahulu:',
+    'refund_dispute1' => 'Akun Anda akan segera disuspend',
+    'refund_dispute2' => 'Anda akan dibanned permanen dari Service',
+    'refund_dispute3' => 'Kami berhak mendispute chargeback dengan bukti',
+    'refund_dispute_note' => 'Silakan hubungi kami terlebih dahulu untuk menyelesaikan masalah sebelum memulai dispute.',
+    'refund_contact_intro' => 'Untuk permintaan refund atau pertanyaan:',
 ];
