@@ -263,7 +263,7 @@ function csrf_error() {
     } else {
         $_SESSION['flash'] = [
             'type' => 'error',
-            'message' => 'Sesi keamanan expired. Silakan coba lagi.'
+            'message' => __('session_expired')
         ];
         header('Location: ' . $_SERVER['HTTP_REFERER'] ?? '/');
         exit;

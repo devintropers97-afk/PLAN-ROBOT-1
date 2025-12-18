@@ -78,11 +78,11 @@ $success = resumeRobotManual($userId);
 if ($success) {
     echo json_encode([
         'success' => true,
-        'message' => 'Robot berhasil di-resume!'
+        'message' => __('api_robot_resumed')
     ]);
 } else {
     echo json_encode([
         'success' => false,
-        'message' => 'Gagal resume robot. Silakan coba lagi.'
+        'message' => __('api_robot_resume_failed')
     ]);
 }

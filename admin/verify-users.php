@@ -8,7 +8,7 @@ $messageType = '';
 // Handle verify action (POST only for CSRF protection)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_user'])) {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $message = 'Request tidak valid. Silakan coba lagi.';
+        $message = __('login_error_invalid_request');
         $messageType = 'danger';
     } else {
         $userId = intval($_POST['user_id']);
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_user'])) {
 // Handle rejection form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_user'])) {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $message = 'Request tidak valid. Silakan coba lagi.';
+        $message = __('login_error_invalid_request');
         $messageType = 'danger';
     } else {
         $userId = intval($_POST['user_id']);
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_user'])) {
         $customReason = cleanInput($_POST['custom_reason'] ?? '');
 
         if (empty($reasonCode)) {
-            $message = 'Silakan pilih alasan penolakan.';
+            $message = __('admin_select_rejection');
             $messageType = 'danger';
         } elseif (rejectUser($userId, $reasonCode, $customReason)) {
             $message = 'User rejected successfully.';
@@ -53,16 +53,16 @@ $pendingCount = count($pendingUsers);
 
 // Rejection reasons
 $rejectionReasons = [
-    'R01' => 'ID tidak ditemukan / ID not found',
-    'R02' => 'Tidak terdaftar via link afiliasi resmi',
-    'R03' => 'Deposit di bawah $10',
-    'R04' => 'ID sudah digunakan akun lain',
-    'R05' => 'Data tidak lengkap',
-    'R06' => 'Akun OlympTrade tidak aktif',
-    'R07' => 'Negara tidak sesuai',
-    'R08' => 'Screenshot tidak valid',
-    'R09' => 'Duplikat akun terdeteksi',
-    'R10' => 'Alasan lain (custom)'
+    'R01' => __('reject_id_not_found'),
+    'R02' => __('reject_not_affiliate'),
+    'R03' => __('reject_low_deposit'),
+    'R04' => __('reject_id_used'),
+    'R05' => __('reject_incomplete_data'),
+    'R06' => __('reject_account_inactive'),
+    'R07' => __('reject_country_mismatch'),
+    'R08' => __('reject_invalid_screenshot'),
+    'R09' => __('reject_duplicate_account'),
+    'R10' => __('reject_other')
 ];
 
 // Helper function for time ago

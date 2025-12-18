@@ -123,7 +123,7 @@ function loginUser($email, $password) {
 // Login with License Key
 function loginWithLicenseKey($license_key) {
     $db = getDBConnection();
-    if (!$db) return ['success' => false, 'message' => 'Koneksi database gagal'];
+    if (!$db) return ['success' => false, 'message' => __('api_db_connection_failed')];
 
     // Find user by license key
     $stmt = $db->prepare("SELECT * FROM users WHERE license_key = ?");
@@ -131,20 +131,20 @@ function loginWithLicenseKey($license_key) {
     $user = $stmt->fetch();
 
     if (!$user) {
-        return ['success' => false, 'message' => 'License Key tidak ditemukan. Pastikan Anda memasukkan key dengan benar.'];
+        return ['success' => false, 'message' => __('api_license_not_found')];
     }
 
     if ($user['status'] === 'pending') {
-        return ['success' => false, 'message' => 'Akun Anda sedang menunggu verifikasi admin. Silakan tunggu maksimal 24 jam.'];
+        return ['success' => false, 'message' => __('api_account_pending')];
     }
 
     if ($user['status'] === 'rejected') {
-        $reason = $user['rejection_reason'] ?? 'Hubungi support untuk info lebih lanjut';
-        return ['success' => false, 'message' => 'Akun Anda ditolak. Alasan: ' . $reason];
+        $reason = $user['rejection_reason'] ?? __('api_contact_support');
+        return ['success' => false, 'message' => __('api_account_rejected') . $reason];
     }
 
     if ($user['status'] === 'suspended') {
-        return ['success' => false, 'message' => 'Akun Anda telah disuspend. Hubungi support.'];
+        return ['success' => false, 'message' => __('api_account_suspended')];
     }
 
     // Check package expiry for paid packages
@@ -178,7 +178,7 @@ function loginWithLicenseKey($license_key) {
     // Log activity
     logActivity($user['id'], 'login', 'Login dengan License Key');
 
-    return ['success' => true, 'message' => 'Login berhasil', 'user' => $user];
+    return ['success' => true, 'message' => __('api_login_success'), 'user' => $user];
 }
 
 // Generate License Key
