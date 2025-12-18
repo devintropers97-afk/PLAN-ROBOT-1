@@ -2299,4 +2299,248 @@ function getSetupProgress($user_id) {
         'percentage' => round(($completed / count($checklist)) * 100)
     ];
 }
+
+/**
+ * Resume Behavior Functions
+ * Handles robot resume after auto-pause
+ */
+
+// Get resume info for auto-paused robot
+function getResumeInfo($user_id) {
+    $db = getDBConnection();
+    if (!$db) return null;
+
+    $stmt = $db->prepare("
+        SELECT
+            auto_pause_triggered,
+            auto_pause_reason,
+            auto_pause_time,
+            resume_behavior,
+            schedule_mode,
+            schedule_sessions,
+            schedule_per_day,
+            custom_start,
+            custom_end
+        FROM robot_settings
+        WHERE user_id = ?
+    ");
+    $stmt->execute([$user_id]);
+    $settings = $stmt->fetch();
+
+    if (!$settings || !$settings['auto_pause_triggered']) {
+        return ['paused' => false];
+    }
+
+    $resumeBehavior = $settings['resume_behavior'] ?? 'next_session';
+    $pauseTime = $settings['auto_pause_time'];
+    $pauseReason = $settings['auto_pause_reason'];
+
+    $resumeInfo = [
+        'paused' => true,
+        'reason' => $pauseReason,
+        'pause_time' => $pauseTime,
+        'behavior' => $resumeBehavior,
+        'can_resume' => false,
+        'next_resume_time' => null,
+        'message' => ''
+    ];
+
+    switch ($resumeBehavior) {
+        case 'next_session':
+            // Check if next session is available based on schedule mode
+            $scheduleMode = $settings['schedule_mode'];
+            $nextSession = getNextSessionTime($scheduleMode, $settings);
+            if ($nextSession) {
+                $resumeInfo['can_resume'] = time() >= strtotime($nextSession);
+                $resumeInfo['next_resume_time'] = $nextSession;
+                $resumeInfo['message'] = "Robot akan resume pada sesi berikutnya: " . date('H:i', strtotime($nextSession));
+            }
+            break;
+
+        case 'next_day':
+            // Resume at midnight
+            $tomorrow = date('Y-m-d 00:00:00', strtotime('+1 day'));
+            $resumeInfo['can_resume'] = date('Y-m-d') > date('Y-m-d', strtotime($pauseTime));
+            $resumeInfo['next_resume_time'] = $tomorrow;
+            $resumeInfo['message'] = "Robot akan resume besok pukul 00:00";
+            break;
+
+        case 'manual_only':
+            $resumeInfo['can_resume'] = true; // Manual resume is always available
+            $resumeInfo['message'] = "Robot perlu di-resume manual. Klik tombol Resume untuk melanjutkan.";
+            break;
+    }
+
+    return $resumeInfo;
+}
+
+// Get next session time based on schedule mode
+function getNextSessionTime($scheduleMode, $settings) {
+    $now = new DateTime();
+    $currentTime = $now->format('H:i');
+    $currentDay = strtolower($now->format('l'));
+
+    switch ($scheduleMode) {
+        case 'auto_24h':
+            return null; // Always active
+
+        case 'best_hours':
+            $start = '14:00';
+            $end = '22:00';
+            if ($currentTime < $start) {
+                return date('Y-m-d') . ' ' . $start . ':00';
+            } elseif ($currentTime > $end) {
+                return date('Y-m-d', strtotime('+1 day')) . ' ' . $start . ':00';
+            }
+            return null;
+
+        case 'custom_single':
+            $start = $settings['custom_start'] ?? '08:00';
+            $end = $settings['custom_end'] ?? '22:00';
+            if ($currentTime < $start) {
+                return date('Y-m-d') . ' ' . $start . ':00';
+            } elseif ($currentTime > $end) {
+                return date('Y-m-d', strtotime('+1 day')) . ' ' . $start . ':00';
+            }
+            return null;
+
+        case 'multi_session':
+            $sessions = json_decode($settings['schedule_sessions'] ?? '[]', true);
+            foreach ($sessions as $session) {
+                if ($currentTime < $session['start']) {
+                    return date('Y-m-d') . ' ' . $session['start'] . ':00';
+                }
+            }
+            // Next day first session
+            if (!empty($sessions)) {
+                return date('Y-m-d', strtotime('+1 day')) . ' ' . $sessions[0]['start'] . ':00';
+            }
+            return null;
+
+        case 'per_day':
+            $perDay = json_decode($settings['schedule_per_day'] ?? '{}', true);
+            // Find next enabled day
+            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            $dayIndex = array_search($currentDay, $days);
+
+            for ($i = 0; $i < 7; $i++) {
+                $checkDay = $days[($dayIndex + $i) % 5]; // Only weekdays
+                if (isset($perDay[$checkDay]) && $perDay[$checkDay]['enabled']) {
+                    $checkDate = date('Y-m-d', strtotime("+$i days"));
+                    $startTime = $perDay[$checkDay]['start'];
+
+                    if ($i === 0 && $currentTime < $startTime) {
+                        return $checkDate . ' ' . $startTime . ':00';
+                    } elseif ($i > 0) {
+                        return $checkDate . ' ' . $startTime . ':00';
+                    }
+                }
+            }
+            return null;
+    }
+
+    return null;
+}
+
+// Resume robot manually
+function resumeRobotManual($user_id) {
+    $db = getDBConnection();
+    if (!$db) return false;
+
+    $stmt = $db->prepare("
+        UPDATE robot_settings SET
+            robot_enabled = 1,
+            auto_pause_triggered = 0,
+            auto_pause_reason = NULL,
+            auto_pause_time = NULL,
+            updated_at = NOW()
+        WHERE user_id = ?
+    ");
+
+    $success = $stmt->execute([$user_id]);
+
+    if ($success) {
+        createNotification($user_id, 'robot_resumed', 'Robot berhasil di-resume secara manual');
+        logActivity($user_id, 'robot_resume', 'Robot resumed manually after auto-pause');
+    }
+
+    return $success;
+}
+
+// Auto-resume robot (called by cron/scheduler)
+function resumeRobotAuto($user_id) {
+    $resumeInfo = getResumeInfo($user_id);
+
+    if (!$resumeInfo['paused'] || !$resumeInfo['can_resume']) {
+        return false;
+    }
+
+    if ($resumeInfo['behavior'] === 'manual_only') {
+        return false; // Don't auto-resume if manual only
+    }
+
+    $db = getDBConnection();
+    if (!$db) return false;
+
+    $stmt = $db->prepare("
+        UPDATE robot_settings SET
+            robot_enabled = 1,
+            auto_pause_triggered = 0,
+            auto_pause_reason = NULL,
+            auto_pause_time = NULL,
+            updated_at = NOW()
+        WHERE user_id = ?
+    ");
+
+    $success = $stmt->execute([$user_id]);
+
+    if ($success) {
+        createNotification($user_id, 'robot_auto_resumed', 'Robot otomatis di-resume sesuai jadwal');
+        logActivity($user_id, 'robot_auto_resume', 'Robot auto-resumed based on schedule');
+    }
+
+    return $success;
+}
+
+// Reset daily P&L (called at midnight)
+function resetDailyPnL($user_id) {
+    $db = getDBConnection();
+    if (!$db) return false;
+
+    // Reset the daily counters (if stored in robot_settings)
+    $stmt = $db->prepare("
+        UPDATE robot_settings SET
+            daily_pnl_reset_at = NOW()
+        WHERE user_id = ?
+    ");
+
+    $success = $stmt->execute([$user_id]);
+
+    if ($success) {
+        logActivity($user_id, 'daily_reset', 'Daily P&L counters reset at midnight');
+    }
+
+    return $success;
+}
+
+// Check and auto-resume all eligible robots (for cron job)
+function checkAndAutoResumeAllRobots() {
+    $db = getDBConnection();
+    if (!$db) return 0;
+
+    $stmt = $db->query("
+        SELECT user_id FROM robot_settings
+        WHERE auto_pause_triggered = 1
+        AND resume_behavior != 'manual_only'
+    ");
+
+    $count = 0;
+    while ($row = $stmt->fetch()) {
+        if (resumeRobotAuto($row['user_id'])) {
+            $count++;
+        }
+    }
+
+    return $count;
+}
 ?>

@@ -79,9 +79,11 @@ $riskLevels = [
 
 // Schedule modes
 $scheduleModes = [
-    'auto_24h' => ['name' => '24 Jam Otomatis', 'desc' => 'Robot aktif sepanjang hari'],
-    'best_hours' => ['name' => 'Jam Terbaik', 'desc' => '14:00 - 22:00 WIB (London & NY session)'],
-    'custom_single' => ['name' => 'Custom Single', 'desc' => 'Atur jam mulai dan selesai sendiri']
+    'auto_24h' => ['name' => '24 Jam Otomatis', 'desc' => 'Robot aktif sepanjang hari', 'icon' => 'fa-clock'],
+    'best_hours' => ['name' => 'Jam Terbaik', 'desc' => '14:00 - 22:00 WIB (London & NY session)', 'icon' => 'fa-star'],
+    'custom_single' => ['name' => 'Custom Single Session', 'desc' => 'Atur jam mulai dan selesai sendiri', 'icon' => 'fa-edit'],
+    'multi_session' => ['name' => 'Multi-Session', 'desc' => 'Atur beberapa sesi trading dalam sehari', 'icon' => 'fa-layer-group'],
+    'per_day' => ['name' => 'Per Hari Berbeda', 'desc' => 'Jadwal berbeda untuk setiap hari', 'icon' => 'fa-calendar-week']
 ];
 ?>
 

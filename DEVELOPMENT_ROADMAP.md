@@ -392,5 +392,37 @@
 
 ---
 
+## SCHEDULE & AUTO-PAUSE ENHANCEMENTS (Dec 18, 2024)
+
+### Schedule Mode UI - Complete Implementation
+| Feature | File(s) Modified | Status |
+|---------|-----------------|--------|
+| 5 Schedule Modes Dropdown | `settings.php`, `admin/my-robot.php` | ✅ Complete |
+| Custom Single Session UI | `admin/my-robot.php` | ✅ Complete |
+| Multi-Session Manager UI | `admin/my-robot.php` | ✅ Complete |
+| Per-Day Schedule UI | `admin/my-robot.php` | ✅ Complete |
+| Copy to All Days Function | `admin/my-robot.php` | ✅ Complete |
+
+### Resume Behavior System
+| Feature | File(s) Modified | Status |
+|---------|-----------------|--------|
+| Resume Behavior Dropdown | `admin/my-robot.php` | ✅ Complete |
+| getResumeInfo() Function | `includes/functions.php` | ✅ Complete |
+| resumeRobotManual() Function | `includes/functions.php` | ✅ Complete |
+| resumeRobotAuto() Function | `includes/functions.php` | ✅ Complete |
+| resetDailyPnL() Function | `includes/functions.php` | ✅ Complete |
+
+### Auto-Pause Modal System
+| Feature | File(s) Modified | Status |
+|---------|-----------------|--------|
+| Take Profit Reached Modal | `dashboard.php` | ✅ Complete |
+| Max Loss Reached Modal | `dashboard.php` | ✅ Complete |
+| Auto-Pause Check JS | `dashboard.php` | ✅ Complete |
+| Resume Robot JS | `dashboard.php` | ✅ Complete |
+| check-autopause.php API | `api/check-autopause.php` | ✅ Complete |
+| resume-robot.php API | `api/resume-robot.php` | ✅ Complete |
+
+---
+
 *Document maintained by development team*
 *Last review: 18 Desember 2024*

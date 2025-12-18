@@ -72,6 +72,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             $mlLimit = floatval($_POST['max_loss_limit'] ?? 25);
             $scheduleMode = $_POST['schedule_mode'] ?? 'auto_24h';
             $activeStrategies = $_POST['strategies'] ?? [];
+            $resumeBehavior = $_POST['resume_behavior'] ?? 'next_session';
+
+            // Handle schedule-specific data
+            $customStart = $_POST['custom_start'] ?? '08:00';
+            $customEnd = $_POST['custom_end'] ?? '22:00';
+            $scheduleSessions = $_POST['schedule_sessions'] ?? '[]';
+
+            // Build schedule_per_day from form data
+            $schedulePerDay = [];
+            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            foreach ($days as $day) {
+                $schedulePerDay[$day] = [
+                    'enabled' => isset($_POST['day_enabled'][$day]),
+                    'start' => $_POST['day_start'][$day] ?? '08:00',
+                    'end' => $_POST['day_end'][$day] ?? '22:00'
+                ];
+            }
 
             $stmt = $db->prepare("
                 UPDATE robot_settings SET
@@ -84,12 +101,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                     max_loss_limit = ?,
                     schedule_mode = ?,
                     active_strategies = ?,
+                    resume_behavior = ?,
+                    custom_start = ?,
+                    custom_end = ?,
+                    schedule_sessions = ?,
+                    schedule_per_day = ?,
                     updated_at = NOW()
                 WHERE user_id = ?
             ");
             $stmt->execute([
                 $market, $timeframe, $riskLevel, $tradeAmount, $dailyLimit,
-                $tpTarget, $mlLimit, $scheduleMode, json_encode($activeStrategies), $adminId
+                $tpTarget, $mlLimit, $scheduleMode, json_encode($activeStrategies),
+                $resumeBehavior, $customStart, $customEnd, $scheduleSessions,
+                json_encode($schedulePerDay), $adminId
             ]);
 
             $message = 'Robot settings updated!';
@@ -286,11 +310,90 @@ $todayStats = $stmt->fetch();
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Schedule</label>
-                            <select name="schedule_mode" class="form-select">
-                                <option value="auto_24h" <?php echo $robotSettings['schedule_mode'] === 'auto_24h' ? 'selected' : ''; ?>>24/7 Auto</option>
-                                <option value="best_hours" <?php echo $robotSettings['schedule_mode'] === 'best_hours' ? 'selected' : ''; ?>>Best Hours Only</option>
+                            <label class="form-label">Schedule Mode</label>
+                            <select name="schedule_mode" id="scheduleMode" class="form-select" onchange="toggleScheduleUI()">
+                                <option value="auto_24h" <?php echo ($robotSettings['schedule_mode'] ?? 'auto_24h') === 'auto_24h' ? 'selected' : ''; ?>>
+                                    <i class="fas fa-clock"></i> 24 Jam Otomatis
+                                </option>
+                                <option value="best_hours" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'best_hours' ? 'selected' : ''; ?>>
+                                    <i class="fas fa-star"></i> Jam Terbaik (14:00-22:00)
+                                </option>
+                                <option value="custom_single" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'custom_single' ? 'selected' : ''; ?>>
+                                    <i class="fas fa-edit"></i> Custom Single Session
+                                </option>
+                                <option value="multi_session" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'multi_session' ? 'selected' : ''; ?>>
+                                    <i class="fas fa-layer-group"></i> Multi-Session
+                                </option>
+                                <option value="per_day" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'per_day' ? 'selected' : ''; ?>>
+                                    <i class="fas fa-calendar-week"></i> Per Hari Berbeda
+                                </option>
                             </select>
+                        </div>
+                    </div>
+
+                    <!-- Custom Single Session UI -->
+                    <div id="customSingleUI" class="schedule-ui-panel" style="display: none;">
+                        <div class="row mt-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><i class="fas fa-play text-success"></i> Jam Mulai</label>
+                                <input type="time" name="custom_start" id="customStart" class="form-control"
+                                       value="<?php echo $robotSettings['custom_start'] ?? '08:00'; ?>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><i class="fas fa-stop text-danger"></i> Jam Selesai</label>
+                                <input type="time" name="custom_end" id="customEnd" class="form-control"
+                                       value="<?php echo $robotSettings['custom_end'] ?? '22:00'; ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Session UI -->
+                    <div id="multiSessionUI" class="schedule-ui-panel" style="display: none;">
+                        <div class="mt-3">
+                            <label class="form-label"><i class="fas fa-layer-group"></i> Multiple Trading Sessions</label>
+                            <div id="sessionsContainer">
+                                <!-- Sessions will be rendered here -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSession()">
+                                <i class="fas fa-plus"></i> Add Session
+                            </button>
+                            <input type="hidden" name="schedule_sessions" id="scheduleSessionsInput" value="">
+                        </div>
+                    </div>
+
+                    <!-- Per Day UI -->
+                    <div id="perDayUI" class="schedule-ui-panel" style="display: none;">
+                        <div class="mt-3">
+                            <label class="form-label"><i class="fas fa-calendar-week"></i> Jadwal Per Hari</label>
+                            <?php
+                            $days = ['monday' => 'Senin', 'tuesday' => 'Selasa', 'wednesday' => 'Rabu', 'thursday' => 'Kamis', 'friday' => 'Jumat'];
+                            $schedulePerDay = json_decode($robotSettings['schedule_per_day'] ?? '{}', true) ?: [];
+                            ?>
+                            <?php foreach ($days as $dayKey => $dayName): ?>
+                            <div class="day-schedule-row mb-2">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <label class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="day_enabled[<?php echo $dayKey; ?>]"
+                                                   <?php echo isset($schedulePerDay[$dayKey]) && $schedulePerDay[$dayKey]['enabled'] ? 'checked' : ''; ?>>
+                                            <span class="form-check-label"><?php echo $dayName; ?></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="time" class="form-control form-control-sm" name="day_start[<?php echo $dayKey; ?>]"
+                                               value="<?php echo $schedulePerDay[$dayKey]['start'] ?? '08:00'; ?>">
+                                    </div>
+                                    <div class="col-1 text-center">-</div>
+                                    <div class="col-4">
+                                        <input type="time" class="form-control form-control-sm" name="day_end[<?php echo $dayKey; ?>]"
+                                               value="<?php echo $schedulePerDay[$dayKey]['end'] ?? '22:00'; ?>">
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="copyToAllDays()">
+                                <i class="fas fa-copy"></i> Copy Senin ke Semua Hari
+                            </button>
                         </div>
                     </div>
 
@@ -345,6 +448,25 @@ $todayStats = $stmt->fetch();
                                    value="<?php echo $robotSettings['max_loss_limit']; ?>" min="10" step="5">
                         </div>
                         <small class="text-muted">Robot will auto-stop when daily loss reaches this limit</small>
+                    </div>
+
+                    <!-- Resume Behavior -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-redo text-info me-1"></i> Resume Behavior (After Auto-Pause)
+                        </label>
+                        <select name="resume_behavior" class="form-select">
+                            <option value="next_session" <?php echo ($robotSettings['resume_behavior'] ?? 'next_session') === 'next_session' ? 'selected' : ''; ?>>
+                                Resume di sesi berikutnya
+                            </option>
+                            <option value="next_day" <?php echo ($robotSettings['resume_behavior'] ?? '') === 'next_day' ? 'selected' : ''; ?>>
+                                Resume besok (reset at midnight)
+                            </option>
+                            <option value="manual_only" <?php echo ($robotSettings['resume_behavior'] ?? '') === 'manual_only' ? 'selected' : ''; ?>>
+                                Manual resume saja
+                            </option>
+                        </select>
+                        <small class="text-muted">Bagaimana robot melanjutkan setelah auto-pause</small>
                     </div>
 
                     <div class="alert alert-info py-2 mb-0">
@@ -521,6 +643,133 @@ $todayStats = $stmt->fetch();
     padding: 1rem 1.25rem 0.5rem;
     margin-top: 0.5rem;
 }
+
+/* Schedule UI Panels */
+.schedule-ui-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.day-schedule-row {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+
+.session-row {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.session-row .btn-remove {
+    color: var(--danger);
+    cursor: pointer;
+}
+
+.session-row .btn-remove:hover {
+    color: #ff4757;
+}
 </style>
+
+<script>
+// Schedule sessions data
+let sessions = <?php echo json_encode(json_decode($robotSettings['schedule_sessions'] ?? '[]', true) ?: [['start' => '08:00', 'end' => '12:00'], ['start' => '14:00', 'end' => '22:00']]); ?>;
+
+// Toggle Schedule UI based on selected mode
+function toggleScheduleUI() {
+    const mode = document.getElementById('scheduleMode').value;
+
+    // Hide all panels first
+    document.querySelectorAll('.schedule-ui-panel').forEach(panel => {
+        panel.style.display = 'none';
+    });
+
+    // Show relevant panel
+    if (mode === 'custom_single') {
+        document.getElementById('customSingleUI').style.display = 'block';
+    } else if (mode === 'multi_session') {
+        document.getElementById('multiSessionUI').style.display = 'block';
+        renderSessions();
+    } else if (mode === 'per_day') {
+        document.getElementById('perDayUI').style.display = 'block';
+    }
+}
+
+// Render multi-session rows
+function renderSessions() {
+    const container = document.getElementById('sessionsContainer');
+    container.innerHTML = '';
+
+    sessions.forEach((session, index) => {
+        const row = document.createElement('div');
+        row.className = 'session-row';
+        row.innerHTML = `
+            <span class="badge badge-primary">Sesi ${index + 1}</span>
+            <input type="time" class="form-control form-control-sm" style="width: 120px;"
+                   value="${session.start}" onchange="updateSession(${index}, 'start', this.value)">
+            <span>-</span>
+            <input type="time" class="form-control form-control-sm" style="width: 120px;"
+                   value="${session.end}" onchange="updateSession(${index}, 'end', this.value)">
+            ${index > 0 ? `<span class="btn-remove" onclick="removeSession(${index})"><i class="fas fa-trash"></i></span>` : ''}
+        `;
+        container.appendChild(row);
+    });
+
+    // Update hidden input
+    document.getElementById('scheduleSessionsInput').value = JSON.stringify(sessions);
+}
+
+// Add new session
+function addSession() {
+    if (sessions.length < 5) {
+        sessions.push({ start: '08:00', end: '12:00' });
+        renderSessions();
+    } else {
+        alert('Maximum 5 sessions allowed!');
+    }
+}
+
+// Remove session
+function removeSession(index) {
+    if (sessions.length > 1) {
+        sessions.splice(index, 1);
+        renderSessions();
+    }
+}
+
+// Update session time
+function updateSession(index, field, value) {
+    sessions[index][field] = value;
+    document.getElementById('scheduleSessionsInput').value = JSON.stringify(sessions);
+}
+
+// Copy Monday schedule to all days
+function copyToAllDays() {
+    const mondayStart = document.querySelector('input[name="day_start[monday]"]').value;
+    const mondayEnd = document.querySelector('input[name="day_end[monday]"]').value;
+    const mondayEnabled = document.querySelector('input[name="day_enabled[monday]"]').checked;
+
+    ['tuesday', 'wednesday', 'thursday', 'friday'].forEach(day => {
+        document.querySelector(`input[name="day_start[${day}]"]`).value = mondayStart;
+        document.querySelector(`input[name="day_end[${day}]"]`).value = mondayEnd;
+        document.querySelector(`input[name="day_enabled[${day}]"]`).checked = mondayEnabled;
+    });
+
+    alert('Jadwal Senin berhasil dicopy ke semua hari!');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleScheduleUI();
+});
+</script>
 
 <?php require_once 'includes/admin-footer.php'; ?>

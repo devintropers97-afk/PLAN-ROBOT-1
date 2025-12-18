@@ -625,6 +625,228 @@ function selectStrategy(element) {
 setInterval(function() {
     // AJAX refresh could be added here
 }, 30000);
+
+// Check auto-pause status periodically
+function checkAutoPauseStatus() {
+    fetch('/api/check-autopause.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.auto_paused) {
+                if (data.reason === 'take_profit') {
+                    showAutoPauseModal('tp', data);
+                } else if (data.reason === 'max_loss') {
+                    showAutoPauseModal('ml', data);
+                }
+            }
+        })
+        .catch(err => console.log('Auto-pause check error:', err));
+}
+
+// Show auto-pause modal
+function showAutoPauseModal(type, data) {
+    const modal = document.getElementById(type === 'tp' ? 'tpReachedModal' : 'mlReachedModal');
+    if (modal) {
+        modal.style.display = 'flex';
+
+        // Update values in modal
+        if (type === 'tp') {
+            document.getElementById('tpAmount').textContent = '$' + (data.current_profit || 0).toFixed(2);
+        } else {
+            document.getElementById('mlAmount').textContent = '$' + Math.abs(data.current_loss || 0).toFixed(2);
+        }
+    }
+}
+
+// Close modal
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Resume robot after auto-pause
+function resumeRobot() {
+    fetch('/api/resume-robot.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'resume' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Robot berhasil di-resume!', 'success');
+            location.reload();
+        } else {
+            showToast(data.message || 'Gagal resume robot', 'danger');
+        }
+    })
+    .catch(err => {
+        showToast('Error: ' + err.message, 'danger');
+    });
+}
+
+// Check auto-pause every 30 seconds
+setInterval(checkAutoPauseStatus, 30000);
+
+// Check on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial check
+    checkAutoPauseStatus();
+});
 </script>
+
+<!-- Take Profit Reached Modal -->
+<div id="tpReachedModal" class="autopause-modal" style="display: none;">
+    <div class="autopause-modal-content success">
+        <div class="autopause-modal-icon">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <h3>Target Profit Tercapai!</h3>
+        <p class="autopause-modal-amount" id="tpAmount">$0.00</p>
+        <p class="autopause-modal-message">
+            Selamat! Robot telah di-pause karena target profit harian tercapai.
+            Pertimbangkan untuk withdraw sebagian profit Anda.
+        </p>
+        <div class="autopause-modal-actions">
+            <button class="db-btn db-btn-outline" onclick="closeModal('tpReachedModal')">
+                <i class="fas fa-times"></i> Tutup
+            </button>
+            <button class="db-btn db-btn-success" onclick="resumeRobot()">
+                <i class="fas fa-play"></i> Resume Robot
+            </button>
+        </div>
+        <p class="autopause-modal-note">
+            <i class="fas fa-info-circle"></i> Robot akan auto-resume sesuai pengaturan Resume Behavior
+        </p>
+    </div>
+</div>
+
+<!-- Max Loss Reached Modal -->
+<div id="mlReachedModal" class="autopause-modal" style="display: none;">
+    <div class="autopause-modal-content danger">
+        <div class="autopause-modal-icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Batas Loss Tercapai</h3>
+        <p class="autopause-modal-amount danger" id="mlAmount">-$0.00</p>
+        <p class="autopause-modal-message">
+            Robot telah di-pause untuk melindungi modal Anda.
+            Evaluasi strategi dan kondisi market sebelum melanjutkan.
+        </p>
+        <div class="autopause-modal-actions">
+            <button class="db-btn db-btn-outline" onclick="closeModal('mlReachedModal')">
+                <i class="fas fa-times"></i> Tutup
+            </button>
+            <button class="db-btn db-btn-warning" onclick="resumeRobot()">
+                <i class="fas fa-play"></i> Resume Robot
+            </button>
+        </div>
+        <p class="autopause-modal-note">
+            <i class="fas fa-exclamation-triangle"></i> Pastikan Anda siap sebelum melanjutkan trading
+        </p>
+    </div>
+</div>
+
+<style>
+/* Auto-Pause Modal Styles */
+.autopause-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.autopause-modal-content {
+    background: var(--db-surface);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.autopause-modal-content.success {
+    border: 2px solid var(--db-success);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+}
+
+.autopause-modal-content.danger {
+    border: 2px solid var(--db-danger);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.autopause-modal-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+}
+
+.autopause-modal-content.success .autopause-modal-icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--db-success);
+}
+
+.autopause-modal-content.danger .autopause-modal-icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--db-danger);
+}
+
+.autopause-modal-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.autopause-modal-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--db-success);
+    margin-bottom: 1rem;
+}
+
+.autopause-modal-amount.danger {
+    color: var(--db-danger);
+}
+
+.autopause-modal-message {
+    color: var(--db-text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.autopause-modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.autopause-modal-note {
+    font-size: 0.85rem;
+    color: var(--db-text-muted);
+    margin: 0;
+}
+</style>
 
 <?php require_once 'dashboard/includes/dashboard-footer.php'; ?>
