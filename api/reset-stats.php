@@ -36,7 +36,7 @@ try {
     $today = date('Y-m-d');
     $stmt = $pdo->prepare("
         UPDATE daily_stats
-        SET total_trades = 0, wins = 0, losses = 0, total_pnl = 0, updated_at = NOW()
+        SET total_trades = 0, trades = 0, wins = 0, losses = 0, profit_loss = 0, profit = 0, win_rate = 0, updated_at = NOW()
         WHERE user_id = ? AND date = ?
     ");
     $stmt->execute([$userId, $today]);
