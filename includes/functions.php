@@ -1124,12 +1124,12 @@ function getStrategyById($id) {
  */
 
 // Create notification
-function createNotification($user_id, $type, $message) {
+function createNotification($user_id, $type, $message, $title = null) {
     $db = getDBConnection();
     if (!$db) return false;
 
-    $stmt = $db->prepare("INSERT INTO notifications (user_id, type, message, created_at) VALUES (?, ?, ?, NOW())");
-    return $stmt->execute([$user_id, $type, $message]);
+    $stmt = $db->prepare("INSERT INTO notifications (user_id, type, title, message, created_at) VALUES (?, ?, ?, ?, NOW())");
+    return $stmt->execute([$user_id, $type, $title, $message]);
 }
 
 // Get user notifications

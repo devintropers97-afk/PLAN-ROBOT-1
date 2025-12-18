@@ -155,6 +155,13 @@ CREATE TABLE `robot_settings` (
     `notify_on_error` TINYINT(1) DEFAULT 1,
     `notify_on_pause` TINYINT(1) DEFAULT 1,
 
+    -- Resume Behavior After Auto-Pause
+    `resume_behavior` ENUM('next_session', 'next_day', 'manual_only') DEFAULT 'next_session' COMMENT 'How robot resumes after auto-pause',
+
+    -- UI Preferences
+    `notification_enabled` TINYINT(1) DEFAULT 1 COMMENT 'Browser notifications',
+    `sound_enabled` TINYINT(1) DEFAULT 1 COMMENT 'Sound effects',
+
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE

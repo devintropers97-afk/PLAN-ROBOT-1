@@ -140,6 +140,9 @@ CREATE TABLE `robot_settings` (
     `notify_on_trade` TINYINT(1) DEFAULT 1,
     `notify_on_error` TINYINT(1) DEFAULT 1,
     `notify_on_pause` TINYINT(1) DEFAULT 1,
+    `resume_behavior` ENUM('next_session', 'next_day', 'manual_only') DEFAULT 'next_session',
+    `notification_enabled` TINYINT(1) DEFAULT 1,
+    `sound_enabled` TINYINT(1) DEFAULT 1,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE

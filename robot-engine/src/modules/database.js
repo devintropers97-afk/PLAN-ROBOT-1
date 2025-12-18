@@ -348,12 +348,12 @@ class Database {
     /**
      * Create notification for user
      */
-    async createNotification(userId, type, message) {
+    async createNotification(userId, type, message, title = null) {
         try {
             await this.pool.execute(`
-                INSERT INTO notifications (user_id, type, message, created_at)
-                VALUES (?, ?, ?, NOW())
-            `, [userId, type, message]);
+                INSERT INTO notifications (user_id, type, title, message, created_at)
+                VALUES (?, ?, ?, ?, NOW())
+            `, [userId, type, title, message]);
             return true;
         } catch (error) {
             logger.error(`Error creating notification for user ${userId}:`, error);
