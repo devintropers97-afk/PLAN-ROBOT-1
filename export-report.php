@@ -26,7 +26,7 @@ if (isset($_GET['export'])) {
     exit;
 }
 
-$page_title = 'Export Laporan';
+$page_title = __('export_title');
 require_once 'includes/header.php';
 ?>
 
@@ -35,9 +35,9 @@ require_once 'includes/header.php';
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="section-header text-center mb-4">
-                    <span class="section-badge"><i class="fas fa-file-pdf me-2"></i>Export</span>
-                    <h1 class="section-title">Export Laporan Trading</h1>
-                    <p class="section-desc">Download laporan performa trading Anda dalam format PDF</p>
+                    <span class="section-badge"><i class="fas fa-file-pdf me-2"></i><?php _e('export_badge'); ?></span>
+                    <h1 class="section-title"><?php _e('export_heading'); ?></h1>
+                    <p class="section-desc"><?php _e('export_desc'); ?></p>
                 </div>
 
                 <!-- Export Form -->
@@ -48,13 +48,13 @@ require_once 'includes/header.php';
 
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <label class="form-label">Tanggal Mulai</label>
+                                    <label class="form-label"><?php _e('export_start_date'); ?></label>
                                     <input type="date" name="start" class="form-control"
                                            value="<?php echo date('Y-m-d', strtotime('-30 days')); ?>"
                                            max="<?php echo date('Y-m-d'); ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Tanggal Akhir</label>
+                                    <label class="form-label"><?php _e('export_end_date'); ?></label>
                                     <input type="date" name="end" class="form-control"
                                            value="<?php echo date('Y-m-d'); ?>"
                                            max="<?php echo date('Y-m-d'); ?>">
@@ -63,25 +63,25 @@ require_once 'includes/header.php';
 
                             <!-- Quick Select -->
                             <div class="quick-select mt-4">
-                                <label class="form-label">Pilih Cepat:</label>
+                                <label class="form-label"><?php _e('export_quick_select'); ?></label>
                                 <div class="d-flex flex-wrap gap-2">
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="setDateRange(7)">
-                                        7 Hari
+                                        <?php _e('export_7_days'); ?>
                                     </button>
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="setDateRange(30)">
-                                        30 Hari
+                                        <?php _e('export_30_days'); ?>
                                     </button>
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="setDateRange(90)">
-                                        3 Bulan
+                                        <?php _e('export_3_months'); ?>
                                     </button>
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="setDateRange(180)">
-                                        6 Bulan
+                                        <?php _e('export_6_months'); ?>
                                     </button>
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="setDateRange(365)">
-                                        1 Tahun
+                                        <?php _e('export_1_year'); ?>
                                     </button>
                                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="setThisMonth()">
-                                        Bulan Ini
+                                        <?php _e('export_this_month'); ?>
                                     </button>
                                 </div>
                             </div>
@@ -90,18 +90,18 @@ require_once 'includes/header.php';
 
                             <!-- Report Preview Info -->
                             <div class="report-info mb-4">
-                                <h6><i class="fas fa-info-circle me-2 text-primary"></i>Laporan akan mencakup:</h6>
+                                <h6><i class="fas fa-info-circle me-2 text-primary"></i><?php _e('export_includes'); ?></h6>
                                 <ul class="list-unstyled mt-3">
-                                    <li><i class="fas fa-check text-success me-2"></i>Ringkasan profit/loss</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Win rate keseluruhan</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Performa per strategi</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Riwayat trading (max 50 trade)</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Ringkasan harian</li>
+                                    <li><i class="fas fa-check text-success me-2"></i><?php _e('export_pnl_summary'); ?></li>
+                                    <li><i class="fas fa-check text-success me-2"></i><?php _e('export_winrate'); ?></li>
+                                    <li><i class="fas fa-check text-success me-2"></i><?php _e('export_strategy_perf'); ?></li>
+                                    <li><i class="fas fa-check text-success me-2"></i><?php _e('export_trade_history'); ?></li>
+                                    <li><i class="fas fa-check text-success me-2"></i><?php _e('export_daily_summary'); ?></li>
                                 </ul>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-download me-2"></i>Generate & Download PDF
+                                <i class="fas fa-download me-2"></i><?php _e('export_generate'); ?>
                             </button>
                         </form>
                     </div>
@@ -110,21 +110,21 @@ require_once 'includes/header.php';
                 <!-- Export History (Optional) -->
                 <div class="card mt-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Tips Export</h5>
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i><?php _e('export_tips'); ?></h5>
                     </div>
                     <div class="card-body">
                         <div class="tips-list">
                             <div class="tip-item">
                                 <i class="fas fa-lightbulb text-warning"></i>
-                                <p><strong>Print ke PDF:</strong> Setelah halaman terbuka, gunakan Ctrl+P (atau Cmd+P di Mac) untuk save sebagai PDF.</p>
+                                <p><strong><?php _e('export_tip1_title'); ?></strong> <?php _e('export_tip1_desc'); ?></p>
                             </div>
                             <div class="tip-item">
                                 <i class="fas fa-lightbulb text-warning"></i>
-                                <p><strong>Best Practice:</strong> Export laporan bulanan untuk tracking performa jangka panjang.</p>
+                                <p><strong><?php _e('export_tip2_title'); ?></strong> <?php _e('export_tip2_desc'); ?></p>
                             </div>
                             <div class="tip-item">
                                 <i class="fas fa-lightbulb text-warning"></i>
-                                <p><strong>Analisis:</strong> Gunakan laporan untuk mengidentifikasi strategi terbaik Anda.</p>
+                                <p><strong><?php _e('export_tip3_title'); ?></strong> <?php _e('export_tip3_desc'); ?></p>
                             </div>
                         </div>
                     </div>
@@ -210,7 +210,7 @@ document.getElementById('exportForm').addEventListener('submit', function(e) {
 
     if (start > end) {
         e.preventDefault();
-        alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir!');
+        alert('<?php echo addslashes(__('export_date_error')); ?>');
     }
 });
 </script>

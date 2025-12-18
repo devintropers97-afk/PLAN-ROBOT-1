@@ -1,15 +1,15 @@
 <?php
-$page_title = 'Download Aplikasi Mobile';
+$page_title = __('mobile_title');
 require_once 'includes/header.php';
 ?>
 
 <section class="section" style="padding-top: calc(var(--navbar-height) + 3rem);">
     <div class="container">
         <div class="section-header fade-in">
-            <span class="section-badge">Mobile App</span>
-            <h1 class="section-title">Trading di Mana Saja</h1>
+            <span class="section-badge"><?php _e('mobile_badge'); ?></span>
+            <h1 class="section-title"><?php _e('mobile_heading'); ?></h1>
             <p class="section-desc">
-                Akses ZYN Trade System dari smartphone Anda. Tersedia untuk Android dan iOS.
+                <?php _e('mobile_desc'); ?>
             </p>
         </div>
 
@@ -22,10 +22,9 @@ require_once 'includes/header.php';
                         <div class="mobile-icon android-icon mb-4">
                             <i class="fab fa-android"></i>
                         </div>
-                        <h3 class="mb-3">Android</h3>
+                        <h3 class="mb-3"><?php _e('mobile_android'); ?></h3>
                         <p class="text-muted mb-4">
-                            Download APK langsung untuk perangkat Android Anda.
-                            Tidak perlu Play Store, install langsung!
+                            <?php _e('mobile_android_desc'); ?>
                         </p>
                         <div class="app-specs mb-4">
                             <span class="badge bg-dark me-2">APK v3.0.0</span>
@@ -33,11 +32,11 @@ require_once 'includes/header.php';
                             <span class="badge bg-dark">Android 6.0+</span>
                         </div>
                         <a href="downloads/zyn-trade-v3.0.0.apk" class="btn btn-success btn-lg w-100 mb-3" download>
-                            <i class="fas fa-download me-2"></i>Download APK
+                            <i class="fas fa-download me-2"></i><?php _e('mobile_download_apk'); ?>
                         </a>
                         <small class="d-block text-muted">
                             <i class="fas fa-shield-alt me-1"></i>
-                            Aman & Bebas Virus (Verified)
+                            <?php _e('mobile_safe_verified'); ?>
                         </small>
                     </div>
                 </div>
@@ -50,10 +49,9 @@ require_once 'includes/header.php';
                         <div class="mobile-icon ios-icon mb-4">
                             <i class="fab fa-apple"></i>
                         </div>
-                        <h3 class="mb-3">iPhone / iPad</h3>
+                        <h3 class="mb-3"><?php _e('mobile_ios'); ?></h3>
                         <p class="text-muted mb-4">
-                            Tambahkan ke Home Screen untuk pengalaman seperti aplikasi native.
-                            Cepat dan ringan!
+                            <?php _e('mobile_ios_desc'); ?>
                         </p>
                         <div class="app-specs mb-4">
                             <span class="badge bg-dark me-2">Web App</span>
@@ -61,11 +59,11 @@ require_once 'includes/header.php';
                             <span class="badge bg-dark">iOS 12+</span>
                         </div>
                         <button class="btn btn-outline-light btn-lg w-100 mb-3" data-bs-toggle="modal" data-bs-target="#iosGuideModal">
-                            <i class="fas fa-plus-square me-2"></i>Cara Install
+                            <i class="fas fa-plus-square me-2"></i><?php _e('mobile_how_install'); ?>
                         </button>
                         <small class="d-block text-muted">
                             <i class="fas fa-info-circle me-1"></i>
-                            Ikuti panduan untuk menambahkan ke Home Screen
+                            <?php _e('mobile_ios_guide'); ?>
                         </small>
                     </div>
                 </div>
@@ -76,7 +74,7 @@ require_once 'includes/header.php';
         <div class="fade-in mb-5">
             <h3 class="text-center mb-4">
                 <i class="fas fa-mobile-alt me-2 text-primary"></i>
-                Fitur Aplikasi Mobile
+                <?php _e('mobile_features'); ?>
             </h3>
             <div class="row g-4">
                 <div class="col-md-4">
@@ -84,8 +82,8 @@ require_once 'includes/header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-bolt"></i>
                         </div>
-                        <h5>Akses Cepat</h5>
-                        <p class="text-muted">Buka langsung dari home screen tanpa perlu ketik URL</p>
+                        <h5><?php _e('mobile_quick_access'); ?></h5>
+                        <p class="text-muted"><?php _e('mobile_quick_access_desc'); ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -93,8 +91,8 @@ require_once 'includes/header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-bell"></i>
                         </div>
-                        <h5>Notifikasi Real-time</h5>
-                        <p class="text-muted">Dapatkan alert signal trading langsung ke HP Anda</p>
+                        <h5><?php _e('mobile_notifications'); ?></h5>
+                        <p class="text-muted"><?php _e('mobile_notifications_desc'); ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -102,8 +100,8 @@ require_once 'includes/header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-expand"></i>
                         </div>
-                        <h5>Fullscreen Mode</h5>
-                        <p class="text-muted">Tampilan penuh tanpa browser bar untuk fokus trading</p>
+                        <h5><?php _e('mobile_fullscreen'); ?></h5>
+                        <p class="text-muted"><?php _e('mobile_fullscreen_desc'); ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -111,8 +109,8 @@ require_once 'includes/header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-sync-alt"></i>
                         </div>
-                        <h5>Auto Update</h5>
-                        <p class="text-muted">Selalu mendapat versi terbaru secara otomatis</p>
+                        <h5><?php _e('mobile_auto_update'); ?></h5>
+                        <p class="text-muted"><?php _e('mobile_auto_update_desc'); ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -120,8 +118,8 @@ require_once 'includes/header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-lock"></i>
                         </div>
-                        <h5>Secure Login</h5>
-                        <p class="text-muted">Login dengan License Key tersimpan aman</p>
+                        <h5><?php _e('mobile_secure_login'); ?></h5>
+                        <p class="text-muted"><?php _e('mobile_secure_login_desc'); ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -129,8 +127,8 @@ require_once 'includes/header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <h5>Monitor Trading</h5>
-                        <p class="text-muted">Pantau performa robot dari mana saja</p>
+                        <h5><?php _e('mobile_monitor'); ?></h5>
+                        <p class="text-muted"><?php _e('mobile_monitor_desc'); ?></p>
                     </div>
                 </div>
             </div>
@@ -140,7 +138,7 @@ require_once 'includes/header.php';
         <div class="fade-in mb-5">
             <h3 class="text-center mb-4">
                 <i class="fab fa-android me-2 text-success"></i>
-                Cara Install APK di Android
+                <?php _e('mobile_android_install'); ?>
             </h3>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -148,29 +146,29 @@ require_once 'includes/header.php';
                         <div class="step-item">
                             <div class="step-number">1</div>
                             <div class="step-content">
-                                <h5>Download APK</h5>
-                                <p class="text-muted mb-0">Klik tombol "Download APK" di atas untuk mengunduh file instalasi</p>
+                                <h5><?php _e('mobile_step1'); ?></h5>
+                                <p class="text-muted mb-0"><?php _e('mobile_step1_desc'); ?></p>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-number">2</div>
                             <div class="step-content">
-                                <h5>Izinkan Sumber Tidak Dikenal</h5>
-                                <p class="text-muted mb-0">Buka <strong>Pengaturan > Keamanan > Sumber Tidak Dikenal</strong> dan aktifkan opsi ini</p>
+                                <h5><?php _e('mobile_step2'); ?></h5>
+                                <p class="text-muted mb-0"><?php _e('mobile_step2_desc'); ?></p>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-number">3</div>
                             <div class="step-content">
-                                <h5>Buka File APK</h5>
-                                <p class="text-muted mb-0">Buka file yang sudah didownload dari notifikasi atau folder Download</p>
+                                <h5><?php _e('mobile_step3'); ?></h5>
+                                <p class="text-muted mb-0"><?php _e('mobile_step3_desc'); ?></p>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-number">4</div>
                             <div class="step-content">
-                                <h5>Install & Selesai!</h5>
-                                <p class="text-muted mb-0">Klik "Install" dan tunggu hingga proses selesai. Aplikasi siap digunakan!</p>
+                                <h5><?php _e('mobile_step4'); ?></h5>
+                                <p class="text-muted mb-0"><?php _e('mobile_step4_desc'); ?></p>
                             </div>
                         </div>
                     </div>
@@ -183,9 +181,9 @@ require_once 'includes/header.php';
             <div class="qr-section text-center">
                 <h4 class="mb-3">
                     <i class="fas fa-qrcode me-2"></i>
-                    Scan QR Code untuk Download
+                    <?php _e('mobile_qr_title'); ?>
                 </h4>
-                <p class="text-muted mb-4">Scan dengan kamera HP untuk download langsung</p>
+                <p class="text-muted mb-4"><?php _e('mobile_qr_desc'); ?></p>
                 <div class="qr-code-placeholder">
                     <div class="qr-code-box">
                         <i class="fas fa-qrcode"></i>
@@ -202,7 +200,7 @@ require_once 'includes/header.php';
         <div class="fade-in">
             <h3 class="text-center mb-4">
                 <i class="fas fa-question-circle me-2 text-primary"></i>
-                Pertanyaan Umum
+                <?php _e('mobile_faq'); ?>
             </h3>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -211,12 +209,12 @@ require_once 'includes/header.php';
                             <h2 class="accordion-header">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#mfaq1">
                                     <i class="fas fa-shield-alt me-2 text-success"></i>
-                                    Apakah APK ini aman?
+                                    <?php _e('mobile_faq_safe'); ?>
                                 </button>
                             </h2>
                             <div id="mfaq1" class="accordion-collapse collapse show" data-bs-parent="#mobileFaq">
                                 <div class="accordion-body">
-                                    <strong>Ya, 100% aman!</strong> APK ini dikembangkan langsung oleh tim ZYN Trade System dan telah melalui proses verifikasi keamanan. Tidak ada malware atau virus.
+                                    <?php _e('mobile_faq_safe_answer'); ?>
                                 </div>
                             </div>
                         </div>
@@ -225,12 +223,12 @@ require_once 'includes/header.php';
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mfaq2">
                                     <i class="fas fa-sync-alt me-2 text-primary"></i>
-                                    Bagaimana cara update aplikasi?
+                                    <?php _e('mobile_faq_update'); ?>
                                 </button>
                             </h2>
                             <div id="mfaq2" class="accordion-collapse collapse" data-bs-parent="#mobileFaq">
                                 <div class="accordion-body">
-                                    Anda akan mendapat notifikasi saat ada update baru. Download APK versi terbaru dan install seperti biasa. Data Anda akan tetap tersimpan.
+                                    <?php _e('mobile_faq_update_answer'); ?>
                                 </div>
                             </div>
                         </div>
@@ -239,12 +237,12 @@ require_once 'includes/header.php';
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mfaq3">
                                     <i class="fab fa-apple me-2 text-info"></i>
-                                    Kenapa tidak ada di App Store?
+                                    <?php _e('mobile_faq_appstore'); ?>
                                 </button>
                             </h2>
                             <div id="mfaq3" class="accordion-collapse collapse" data-bs-parent="#mobileFaq">
                                 <div class="accordion-body">
-                                    Apple memiliki kebijakan ketat untuk aplikasi trading. Sebagai alternatif, Anda bisa menggunakan Web App (PWA) yang memberikan pengalaman hampir sama dengan aplikasi native.
+                                    <?php _e('mobile_faq_appstore_answer'); ?>
                                 </div>
                             </div>
                         </div>
@@ -253,13 +251,12 @@ require_once 'includes/header.php';
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mfaq4">
                                     <i class="fas fa-mobile-alt me-2 text-warning"></i>
-                                    Apa bedanya APK dengan Web App?
+                                    <?php _e('mobile_faq_diff'); ?>
                                 </button>
                             </h2>
                             <div id="mfaq4" class="accordion-collapse collapse" data-bs-parent="#mobileFaq">
                                 <div class="accordion-body">
-                                    <strong>APK (Android)</strong>: Aplikasi native dengan akses penuh ke fitur HP seperti notifikasi push.<br>
-                                    <strong>Web App (iOS/Android)</strong>: Shortcut ke website yang berjalan seperti aplikasi, lebih ringan dan selalu up-to-date.
+                                    <?php _e('mobile_faq_diff_answer'); ?>
                                 </div>
                             </div>
                         </div>
@@ -268,12 +265,12 @@ require_once 'includes/header.php';
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mfaq5">
                                     <i class="fas fa-database me-2 text-danger"></i>
-                                    Apakah data saya aman?
+                                    <?php _e('mobile_faq_data'); ?>
                                 </button>
                             </h2>
                             <div id="mfaq5" class="accordion-collapse collapse" data-bs-parent="#mobileFaq">
                                 <div class="accordion-body">
-                                    <strong>Ya!</strong> Semua data Anda tersimpan di server yang terenkripsi. Aplikasi mobile hanya berfungsi sebagai interface untuk mengakses akun Anda dengan aman.
+                                    <?php _e('mobile_faq_data_answer'); ?>
                                 </div>
                             </div>
                         </div>
@@ -285,10 +282,10 @@ require_once 'includes/header.php';
         <!-- CTA Section -->
         <div class="mt-5 pt-4 fade-in">
             <div class="cta-box text-center">
-                <h3 class="mb-3">Belum Punya Akun?</h3>
-                <p class="text-muted mb-4">Daftar gratis dan mulai trading otomatis dengan robot cerdas</p>
+                <h3 class="mb-3"><?php _e('mobile_no_account'); ?></h3>
+                <p class="text-muted mb-4"><?php _e('mobile_no_account_desc'); ?></p>
                 <a href="register.php" class="btn btn-primary btn-lg">
-                    <i class="fas fa-rocket me-2"></i>Daftar Gratis Sekarang
+                    <i class="fas fa-rocket me-2"></i><?php _e('mobile_register_free'); ?>
                 </a>
             </div>
         </div>
@@ -301,7 +298,7 @@ require_once 'includes/header.php';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fab fa-apple me-2"></i>Cara Tambahkan ke Home Screen (iOS)
+                    <i class="fab fa-apple me-2"></i><?php _e('mobile_ios_modal_title'); ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -310,36 +307,36 @@ require_once 'includes/header.php';
                     <div class="ios-step">
                         <div class="ios-step-number">1</div>
                         <div class="ios-step-content">
-                            <h6>Buka Safari</h6>
-                            <p class="text-muted mb-0">Buka website ZYN Trade System menggunakan browser Safari (bukan Chrome)</p>
+                            <h6><?php _e('mobile_ios_step1'); ?></h6>
+                            <p class="text-muted mb-0"><?php _e('mobile_ios_step1_desc'); ?></p>
                         </div>
                     </div>
                     <div class="ios-step">
                         <div class="ios-step-number">2</div>
                         <div class="ios-step-content">
-                            <h6>Tap Tombol Share</h6>
-                            <p class="text-muted mb-0">Ketuk ikon <i class="fas fa-share-square"></i> (kotak dengan panah ke atas) di bagian bawah browser</p>
+                            <h6><?php _e('mobile_ios_step2'); ?></h6>
+                            <p class="text-muted mb-0"><?php _e('mobile_ios_step2_desc'); ?></p>
                         </div>
                     </div>
                     <div class="ios-step">
                         <div class="ios-step-number">3</div>
                         <div class="ios-step-content">
-                            <h6>Pilih "Add to Home Screen"</h6>
-                            <p class="text-muted mb-0">Scroll ke bawah dan ketuk opsi "Add to Home Screen" / "Tambahkan ke Layar Utama"</p>
+                            <h6><?php _e('mobile_ios_step3'); ?></h6>
+                            <p class="text-muted mb-0"><?php _e('mobile_ios_step3_desc'); ?></p>
                         </div>
                     </div>
                     <div class="ios-step">
                         <div class="ios-step-number">4</div>
                         <div class="ios-step-content">
-                            <h6>Tap "Add"</h6>
-                            <p class="text-muted mb-0">Beri nama aplikasi (opsional) lalu ketuk "Add" di pojok kanan atas. Selesai!</p>
+                            <h6><?php _e('mobile_ios_step4'); ?></h6>
+                            <p class="text-muted mb-0"><?php _e('mobile_ios_step4_desc'); ?></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                    <i class="fas fa-check me-1"></i>Mengerti
+                    <i class="fas fa-check me-1"></i><?php _e('mobile_understood'); ?>
                 </button>
             </div>
         </div>
