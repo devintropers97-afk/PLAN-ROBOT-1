@@ -1,0 +1,39 @@
+# API folder configuration
+# All API endpoints are PHP files that should be accessible
+
+# Disable directory listing
+Options -Indexes
+
+# Set default handler for PHP
+DirectoryIndex index.php
+
+# Security headers for API responses
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Allow CORS for API (controlled by PHP)
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, X-API-Key, Authorization"
+</IfModule>
+
+# Only allow PHP files
+<FilesMatch "\.php$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+</FilesMatch>
+
+# Block non-PHP files
+<FilesMatch "\.(txt|md|log|json|sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

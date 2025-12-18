@@ -1,0 +1,27 @@
+# Downloads folder protection
+# APK files stored here should only be accessible via PHP download script
+
+# Disable directory listing
+Options -Indexes
+
+# Allow only specific file types for direct download
+<FilesMatch "\.(apk|zip)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+
+# Block direct access to other file types
+<FilesMatch "\.(php|txt|md|log)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
