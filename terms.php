@@ -11,13 +11,13 @@ require_once 'includes/header.php';
         <div class="legal-header legal-fade-in">
             <div class="legal-badge">
                 <i class="fas fa-file-contract"></i>
-                Legal Document
+                <?php _e('terms_badge'); ?>
             </div>
-            <h1 class="legal-title">Terms of Service</h1>
-            <p class="legal-subtitle">Ketentuan penggunaan layanan ZYN Trade System</p>
+            <h1 class="legal-title"><?php _e('terms_heading'); ?></h1>
+            <p class="legal-subtitle"><?php _e('terms_subtitle'); ?></p>
             <div class="legal-updated">
                 <i class="fas fa-calendar-alt"></i>
-                Last updated: <?php echo date('F d, Y'); ?>
+                <?php _e('terms_updated'); ?>: <?php echo date('F d, Y'); ?>
             </div>
         </div>
 

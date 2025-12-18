@@ -9,10 +9,9 @@ $strategies = getAllStrategies();
     <div class="container">
         <div class="section-header fade-in">
             <span class="section-badge">ZYN Quant Logic</span>
-            <h1 class="section-title">10 Powerful Trading Strategies</h1>
+            <h1 class="section-title"><?php _e('strat_heading'); ?></h1>
             <p class="section-desc">
-                Setiap strategi dirancang algoritmik untuk kondisi market tertentu.
-                Pilih yang sesuai dengan gaya trading kamu!
+                <?php _e('strat_desc'); ?>
             </p>
             <!-- Frequency Legend -->
             <div class="frequency-legend mt-3">

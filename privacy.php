@@ -11,13 +11,13 @@ require_once 'includes/header.php';
         <div class="legal-header legal-fade-in">
             <div class="legal-badge">
                 <i class="fas fa-shield-alt"></i>
-                Privacy & Security
+                <?php _e('privacy_badge'); ?>
             </div>
-            <h1 class="legal-title">Privacy Policy</h1>
-            <p class="legal-subtitle">Bagaimana kami melindungi dan mengelola data Anda</p>
+            <h1 class="legal-title"><?php _e('privacy_heading'); ?></h1>
+            <p class="legal-subtitle"><?php _e('privacy_subtitle'); ?></p>
             <div class="legal-updated">
                 <i class="fas fa-calendar-alt"></i>
-                Last updated: <?php echo date('F d, Y'); ?>
+                <?php _e('privacy_updated'); ?>: <?php echo date('F d, Y'); ?>
             </div>
         </div>
 

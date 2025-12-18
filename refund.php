@@ -7,8 +7,8 @@ require_once 'includes/header.php';
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h1 class="mb-4">Refund Policy</h1>
-                <p class="text-muted mb-4">Last updated: <?php echo date('F d, Y'); ?></p>
+                <h1 class="mb-4"><?php _e('refund_heading'); ?></h1>
+                <p class="text-muted mb-4"><?php _e('refund_updated'); ?>: <?php echo date('F d, Y'); ?></p>
 
                 <div class="card mb-4">
                     <div class="card-body">
