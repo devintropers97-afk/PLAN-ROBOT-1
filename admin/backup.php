@@ -16,6 +16,7 @@
 
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
+require_once '../includes/language.php';
 require_once '../includes/logger.php';
 
 // Check if running from cron
