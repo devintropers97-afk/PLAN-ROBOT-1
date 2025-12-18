@@ -27,7 +27,7 @@ require_once 'includes/header.php';
                 <div class="legal-toc legal-fade-in">
                     <div class="legal-toc-title">
                         <i class="fas fa-list"></i>
-                        Daftar Isi
+                        <?php _e('legal_toc'); ?>
                     </div>
                     <ul class="legal-toc-list">
                         <li><a href="#introduction">Introduction</a></li>
@@ -254,7 +254,7 @@ require_once 'includes/header.php';
                     <div class="legal-section" id="contact">
                         <h3 class="legal-section-title">
                             <span class="section-number">12</span>
-                            Contact Us
+                            <?php _e('legal_contact'); ?>
                         </h3>
                         <p>For privacy-related inquiries, questions, or to exercise your data rights, please contact us:</p>
                         <ul class="legal-list">

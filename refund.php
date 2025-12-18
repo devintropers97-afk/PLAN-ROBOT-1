@@ -12,17 +12,17 @@ require_once 'includes/header.php';
 
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h4>Overview</h4>
-                        <p>We want you to be satisfied with ZYN Trade System. This policy outlines when refunds are available and how to request one.</p>
+                        <h4><?php _e('refund_overview'); ?></h4>
+                        <p><?php _e('refund_overview_text'); ?></p>
 
-                        <h4 class="mt-4">Refund Eligibility</h4>
+                        <h4 class="mt-4"><?php _e('refund_eligibility'); ?></h4>
 
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Condition</th>
-                                        <th>Refund Status</th>
+                                        <th><?php _e('refund_condition'); ?></th>
+                                        <th><?php _e('refund_status'); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -50,10 +50,10 @@ require_once 'includes/header.php';
                             </table>
                         </div>
 
-                        <h4 class="mt-4">Free Trial</h4>
+                        <h4 class="mt-4"><?php _e('refund_free_trial'); ?></h4>
                         <p>Free trial accounts are not eligible for refunds as no payment is made. If you're unsatisfied during the trial period, simply do not subscribe to a paid plan.</p>
 
-                        <h4 class="mt-4">How to Request a Refund</h4>
+                        <h4 class="mt-4"><?php _e('refund_how_to_request'); ?></h4>
                         <p>To request a refund:</p>
                         <ol>
                             <li>Contact us via Telegram: <a href="<?php echo TELEGRAM_SUPPORT; ?>"><?php echo TELEGRAM_SUPPORT; ?></a></li>
@@ -63,7 +63,7 @@ require_once 'includes/header.php';
                             <li>If approved, refund will be processed within 5-10 business days</li>
                         </ol>
 
-                        <h4 class="mt-4">Refund Processing</h4>
+                        <h4 class="mt-4"><?php _e('refund_processing'); ?></h4>
                         <ul>
                             <li><strong>Stripe/PayPal:</strong> Refunded to original payment method (5-10 business days)</li>
                             <li><strong>QRIS:</strong> Refunded via bank transfer (requires bank details)</li>
@@ -71,7 +71,7 @@ require_once 'includes/header.php';
                             <li><strong>Bitcoin:</strong> Refunded to provided wallet address (may incur network fees)</li>
                         </ul>
 
-                        <h4 class="mt-4">Non-Refundable Items</h4>
+                        <h4 class="mt-4"><?php _e('refund_non_refundable'); ?></h4>
                         <ul>
                             <li>Subscription fees after any trade has been executed</li>
                             <li>News Hunter addon if signals have been received</li>
@@ -79,7 +79,7 @@ require_once 'includes/header.php';
                             <li>Payment processing fees (charged by payment providers)</li>
                         </ul>
 
-                        <h4 class="mt-4">Subscription Cancellation</h4>
+                        <h4 class="mt-4"><?php _e('refund_cancellation'); ?></h4>
                         <p>You can cancel your subscription anytime:</p>
                         <ul>
                             <li>Go to Dashboard > Settings > Subscription</li>
@@ -88,7 +88,7 @@ require_once 'includes/header.php';
                             <li>No refund for the remaining days</li>
                         </ul>
 
-                        <h4 class="mt-4">Disputes</h4>
+                        <h4 class="mt-4"><?php _e('refund_disputes'); ?></h4>
                         <p>If you dispute a charge with your payment provider (chargeback) without first contacting us:</p>
                         <ul>
                             <li>Your account will be immediately suspended</li>
@@ -97,7 +97,7 @@ require_once 'includes/header.php';
                         </ul>
                         <p>Please contact us first to resolve any issues before initiating a dispute.</p>
 
-                        <h4 class="mt-4">Contact</h4>
+                        <h4 class="mt-4"><?php _e('legal_contact'); ?></h4>
                         <p>For refund requests or questions:</p>
                         <ul>
                             <li>Telegram: <a href="<?php echo TELEGRAM_SUPPORT; ?>"><?php echo TELEGRAM_SUPPORT; ?></a></li>

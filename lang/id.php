@@ -1364,4 +1364,24 @@ return [
 
     // OlympTrade Setup
     'olymptrade_setup_title' => 'Setup OlympTrade',
+
+    // Legal Pages - Common Elements
+    'legal_toc' => 'Daftar Isi',
+    'legal_contact' => 'Hubungi Kami',
+    'legal_contact_info' => 'Informasi Kontak',
+
+    // Refund Page - Sections
+    'refund_overview' => 'Ringkasan',
+    'refund_overview_text' => 'Kami ingin Anda puas dengan ZYN Trade System. Kebijakan ini menjelaskan kapan refund tersedia dan cara mengajukannya.',
+    'refund_eligibility' => 'Kelayakan Refund',
+    'refund_condition' => 'Kondisi',
+    'refund_status' => 'Status Refund',
+    'refund_full_available' => 'Refund Penuh Tersedia',
+    'refund_no_refund' => 'Tidak Ada Refund',
+    'refund_free_trial' => 'Free Trial',
+    'refund_how_to_request' => 'Cara Mengajukan Refund',
+    'refund_processing' => 'Proses Refund',
+    'refund_non_refundable' => 'Item Non-Refundable',
+    'refund_cancellation' => 'Pembatalan Subscription',
+    'refund_disputes' => 'Disputes',
 ];

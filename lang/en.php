@@ -1363,4 +1363,24 @@ return [
 
     // OlympTrade Setup
     'olymptrade_setup_title' => 'OlympTrade Setup',
+
+    // Legal Pages - Common Elements
+    'legal_toc' => 'Table of Contents',
+    'legal_contact' => 'Contact Us',
+    'legal_contact_info' => 'Contact Information',
+
+    // Refund Page - Sections
+    'refund_overview' => 'Overview',
+    'refund_overview_text' => 'We want you to be satisfied with ZYN Trade System. This policy outlines when refunds are available and how to request one.',
+    'refund_eligibility' => 'Refund Eligibility',
+    'refund_condition' => 'Condition',
+    'refund_status' => 'Refund Status',
+    'refund_full_available' => 'Full Refund Available',
+    'refund_no_refund' => 'No Refund',
+    'refund_free_trial' => 'Free Trial',
+    'refund_how_to_request' => 'How to Request a Refund',
+    'refund_processing' => 'Refund Processing',
+    'refund_non_refundable' => 'Non-Refundable Items',
+    'refund_cancellation' => 'Subscription Cancellation',
+    'refund_disputes' => 'Disputes',
 ];
