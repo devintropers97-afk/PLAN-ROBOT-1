@@ -1,5 +1,5 @@
 <?php
-$page_title = 'FAQ';
+$page_title = __('faq_title');
 require_once 'includes/header.php';
 ?>
 
@@ -11,10 +11,10 @@ require_once 'includes/header.php';
         <div class="legal-header legal-fade-in">
             <div class="legal-badge">
                 <i class="fas fa-question-circle"></i>
-                Help Center
+                <?php _e('faq_badge'); ?>
             </div>
-            <h1 class="legal-title">Frequently Asked Questions</h1>
-            <p class="legal-subtitle">Temukan jawaban untuk pertanyaan umum tentang ZYN Trade System</p>
+            <h1 class="legal-title"><?php _e('faq_heading'); ?></h1>
+            <p class="legal-subtitle"><?php _e('faq_subtitle'); ?></p>
         </div>
 
         <div class="row justify-content-center">
@@ -23,14 +23,14 @@ require_once 'includes/header.php';
                 <div class="legal-toc legal-fade-in">
                     <div class="legal-toc-title">
                         <i class="fas fa-bolt"></i>
-                        Quick Navigation
+                        <?php _e('faq_quick_nav'); ?>
                     </div>
                     <ul class="legal-toc-list">
-                        <li><a href="#getting-started">Getting Started</a></li>
-                        <li><a href="#trading">Trading</a></li>
-                        <li><a href="#risk-management">Risk Management</a></li>
-                        <li><a href="#billing">Billing & Subscription</a></li>
-                        <li><a href="#support">Support</a></li>
+                        <li><a href="#getting-started"><?php _e('faq_getting_started'); ?></a></li>
+                        <li><a href="#trading"><?php _e('faq_trading'); ?></a></li>
+                        <li><a href="#risk-management"><?php _e('faq_risk_management'); ?></a></li>
+                        <li><a href="#billing"><?php _e('faq_billing'); ?></a></li>
+                        <li><a href="#support"><?php _e('faq_support'); ?></a></li>
                     </ul>
                 </div>
 
@@ -41,7 +41,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="getting-started">
                         <div class="faq-section-title">
                             <i class="fas fa-rocket"></i>
-                            Getting Started
+                            <?php _e('faq_getting_started'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item active">
@@ -119,7 +119,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="trading">
                         <div class="faq-section-title">
                             <i class="fas fa-chart-line"></i>
-                            Trading
+                            <?php _e('faq_trading'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item">

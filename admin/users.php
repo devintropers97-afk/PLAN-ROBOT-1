@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Manage Users';
+$page_title = __('admin_users_title');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             case 'suspend':
                 $stmt = $db->prepare("UPDATE users SET status = 'suspended' WHERE id = ? AND role != 'admin'");
                 $stmt->execute([$user_id]);
-                $message = "User #$user_id has been suspended.";
+                $message = __('admin_user_suspended') . " #$user_id.";
                 break;
 
             case 'activate':
                 $stmt = $db->prepare("UPDATE users SET status = 'active' WHERE id = ?");
                 $stmt->execute([$user_id]);
-                $message = "User #$user_id has been activated.";
+                $message = __('admin_user_activated') . " #$user_id.";
                 break;
 
             case 'upgrade':
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
                 $stmt = $db->prepare("UPDATE users SET package = ?, package_expiry = ? WHERE id = ?");
                 $stmt->execute([$package, $expiry, $user_id]);
-                $message = "User #$user_id upgraded to " . strtoupper($package) . " for $days days.";
+                $message = __('admin_user_upgraded') . " " . strtoupper($package) . " " . __('admin_for') . " $days " . __('admin_days') . " (User #$user_id)";
                 break;
 
             case 'reset_password':
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
                 $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
                 $stmt->execute([$hashed, $user_id]);
-                $message = "Password reset for User #$user_id. New password: <code class='text-warning'>$new_password</code>";
+                $message = __('admin_password_reset') . " #$user_id. " . __('admin_new_password') . ": <code class='text-warning'>$new_password</code>";
                 break;
         }
     }
@@ -91,11 +91,11 @@ while ($row = $stmt->fetch()) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-users"></i> Manage Users</h1>
-        <p class="page-subtitle"><?php echo array_sum($counts); ?> total users registered</p>
+        <h1 class="page-title"><i class="fas fa-users"></i> <?php _e('admin_users_title'); ?></h1>
+        <p class="page-subtitle"><?php echo array_sum($counts); ?> <?php _e('admin_users_subtitle'); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -111,15 +111,15 @@ while ($row = $stmt->fetch()) {
 <div class="stat-grid" style="grid-template-columns: repeat(6, 1fr);">
     <div class="stat-card primary fade-in">
         <div class="stat-value"><?php echo array_sum($counts); ?></div>
-        <div class="stat-label">Total Users</div>
+        <div class="stat-label"><?php _e('admin_total_users'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-value"><?php echo $counts['active'] ?? 0; ?></div>
-        <div class="stat-label">Active</div>
+        <div class="stat-label"><?php _e('admin_active'); ?></div>
     </div>
     <div class="stat-card warning fade-in">
         <div class="stat-value"><?php echo $counts['pending'] ?? 0; ?></div>
-        <div class="stat-label">Pending</div>
+        <div class="stat-label"><?php _e('admin_pending'); ?></div>
     </div>
     <div class="stat-card info fade-in">
         <div class="stat-value"><?php echo $packageCounts['pro'] ?? 0; ?></div>
@@ -140,14 +140,14 @@ while ($row = $stmt->fetch()) {
     <div class="admin-card-body py-3">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label small">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Name, email, OT ID, or license key..." value="<?php echo htmlspecialchars($search); ?>">
+                <label class="form-label small"><?php _e('admin_search'); ?></label>
+                <input type="text" name="search" class="form-control" placeholder="<?php _e('admin_search_placeholder'); ?>" value="<?php echo htmlspecialchars($search); ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label small">Status Filter</label>
+                <label class="form-label small"><?php _e('admin_status_filter'); ?></label>
                 <select name="filter" class="form-select">
-                    <option value="all" <?php echo $filter === 'all' ? 'selected' : ''; ?>>All Status</option>
-                    <option value="active" <?php echo $filter === 'active' ? 'selected' : ''; ?>>Active</option>
+                    <option value="all" <?php echo $filter === 'all' ? 'selected' : ''; ?>><?php _e('admin_all_status'); ?></option>
+                    <option value="active" <?php echo $filter === 'active' ? 'selected' : ''; ?>><?php _e('admin_active'); ?></option>
                     <option value="pending" <?php echo $filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
                     <option value="rejected" <?php echo $filter === 'rejected' ? 'selected' : ''; ?>>Rejected</option>
                     <option value="suspended" <?php echo $filter === 'suspended' ? 'selected' : ''; ?>>Suspended</option>
@@ -155,13 +155,13 @@ while ($row = $stmt->fetch()) {
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Search
+                    <i class="fas fa-search me-2"></i><?php _e('admin_search'); ?>
                 </button>
             </div>
             <?php if ($search || $filter !== 'all'): ?>
             <div class="col-md-2">
                 <a href="users.php" class="btn btn-outline-secondary w-100">
-                    <i class="fas fa-times me-2"></i>Clear
+                    <i class="fas fa-times me-2"></i><?php _e('admin_reset'); ?>
                 </a>
             </div>
             <?php endif; ?>
@@ -172,15 +172,15 @@ while ($row = $stmt->fetch()) {
 <!-- Users Table -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-list"></i> Users List</h5>
+        <h5 class="admin-card-title"><i class="fas fa-list"></i> <?php _e('admin_user_list'); ?></h5>
         <span class="badge badge-primary"><?php echo count($users); ?> results</span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($users)): ?>
         <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-users"></i></div>
-            <h4 class="empty-state-title">No Users Found</h4>
-            <p class="empty-state-desc">No users match your search criteria.</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_users'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_users'); ?></p>
         </div>
         <?php else: ?>
         <div class="table-responsive">
@@ -188,13 +188,13 @@ while ($row = $stmt->fetch()) {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>User</th>
+                        <th><?php _e('admin_user'); ?></th>
                         <th>OlympTrade</th>
                         <th>Country</th>
-                        <th>Package</th>
-                        <th>Status</th>
-                        <th>Registered</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_package'); ?></th>
+                        <th><?php _e('admin_status'); ?></th>
+                        <th><?php _e('admin_registered'); ?></th>
+                        <th><?php _e('admin_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>

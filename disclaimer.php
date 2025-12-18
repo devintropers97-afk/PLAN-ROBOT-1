@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Risk Disclaimer';
+$page_title = __('disclaimer_title');
 require_once 'includes/header.php';
 ?>
 
@@ -11,13 +11,13 @@ require_once 'includes/header.php';
         <div class="legal-header legal-fade-in">
             <div class="legal-badge" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">
                 <i class="fas fa-exclamation-triangle"></i>
-                Risk Warning
+                <?php _e('disclaimer_badge'); ?>
             </div>
-            <h1 class="legal-title">Risk Disclaimer</h1>
-            <p class="legal-subtitle">Peringatan risiko penting sebelum menggunakan layanan trading</p>
+            <h1 class="legal-title"><?php _e('disclaimer_heading'); ?></h1>
+            <p class="legal-subtitle"><?php _e('disclaimer_subtitle'); ?></p>
             <div class="legal-updated">
                 <i class="fas fa-calendar-alt"></i>
-                Last updated: <?php echo date('F d, Y'); ?>
+                <?php _e('disclaimer_updated'); ?>: <?php echo date('F d, Y'); ?>
             </div>
         </div>
 
@@ -27,8 +27,8 @@ require_once 'includes/header.php';
                 <div class="legal-alert danger legal-fade-in" style="margin-bottom: 2rem;">
                     <div class="legal-alert-icon"><i class="fas fa-exclamation-circle"></i></div>
                     <div class="legal-alert-content">
-                        <div class="legal-alert-title">Critical Risk Warning</div>
-                        <p class="legal-alert-text">Trading mengandung risiko tinggi. Tidak ada sistem yang menjamin profit. Anda dapat kehilangan sebagian atau seluruh modal yang diinvestasikan. Bacalah disclaimer ini dengan seksama sebelum menggunakan ZYN Trade System.</p>
+                        <div class="legal-alert-title"><?php _e('disclaimer_critical'); ?></div>
+                        <p class="legal-alert-text"><?php _e('disclaimer_critical_text'); ?></p>
                     </div>
                 </div>
 

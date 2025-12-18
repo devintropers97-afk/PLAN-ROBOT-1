@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Trade History';
+$page_title = __('admin_trades_title');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -68,11 +68,11 @@ $strategies = $stmt->fetchAll();
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-chart-line"></i> Trade History</h1>
-        <p class="page-subtitle">Viewing trades from <?php echo date('M d', strtotime($date_from)); ?> to <?php echo date('M d, Y', strtotime($date_to)); ?></p>
+        <h1 class="page-title"><i class="fas fa-chart-line"></i> <?php _e('admin_trades_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_viewing_trades'); ?> <?php echo date('M d', strtotime($date_from)); ?> <?php _e('admin_to'); ?> <?php echo date('M d, Y', strtotime($date_to)); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -81,49 +81,49 @@ $strategies = $stmt->fetchAll();
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
         <div class="stat-value" data-count="<?php echo $stats['total_trades'] ?? 0; ?>"><?php echo number_format($stats['total_trades'] ?? 0); ?></div>
-        <div class="stat-label">Total Trades</div>
+        <div class="stat-label"><?php _e('admin_total_trades'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-value" data-count="<?php echo $stats['wins'] ?? 0; ?>"><?php echo number_format($stats['wins'] ?? 0); ?></div>
-        <div class="stat-label">Wins</div>
+        <div class="stat-label"><?php _e('admin_wins'); ?></div>
     </div>
     <div class="stat-card danger fade-in">
         <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
         <div class="stat-value" data-count="<?php echo $stats['losses'] ?? 0; ?>"><?php echo number_format($stats['losses'] ?? 0); ?></div>
-        <div class="stat-label">Losses</div>
+        <div class="stat-label"><?php _e('admin_losses'); ?></div>
     </div>
     <div class="stat-card <?php echo ($stats['total_pnl'] ?? 0) >= 0 ? 'success' : 'danger'; ?> fade-in">
         <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
         <div class="stat-value"><?php echo ($stats['total_pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($stats['total_pnl'] ?? 0, 2); ?></div>
-        <div class="stat-label">Total P/L</div>
+        <div class="stat-label"><?php _e('admin_total_pnl'); ?></div>
     </div>
     <div class="stat-card <?php echo ($stats['win_rate'] ?? 0) >= 60 ? 'success' : (($stats['win_rate'] ?? 0) >= 50 ? 'warning' : 'danger'); ?> fade-in">
         <div class="stat-icon"><i class="fas fa-percentage"></i></div>
         <div class="stat-value"><?php echo number_format($stats['win_rate'] ?? 0, 1); ?>%</div>
-        <div class="stat-label">Win Rate</div>
+        <div class="stat-label"><?php _e('admin_win_rate'); ?></div>
     </div>
 </div>
 
 <!-- Filters -->
 <div class="admin-card mb-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-filter"></i> Filters</h5>
+        <h5 class="admin-card-title"><i class="fas fa-filter"></i> <?php _e('admin_filters'); ?></h5>
     </div>
     <div class="admin-card-body">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-2">
-                <label class="form-label small">From Date</label>
+                <label class="form-label small"><?php _e('admin_from_date'); ?></label>
                 <input type="date" name="date_from" class="form-control" value="<?php echo $date_from; ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">To Date</label>
+                <label class="form-label small"><?php _e('admin_to_date'); ?></label>
                 <input type="date" name="date_to" class="form-control" value="<?php echo $date_to; ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">User</label>
+                <label class="form-label small"><?php _e('admin_user'); ?></label>
                 <select name="user" class="form-select">
-                    <option value="">All Users</option>
+                    <option value=""><?php _e('admin_all_users'); ?></option>
                     <?php foreach ($allUsers as $u): ?>
                     <option value="<?php echo $u['id']; ?>" <?php echo $user_filter == $u['id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($u['fullname']); ?>
@@ -132,9 +132,9 @@ $strategies = $stmt->fetchAll();
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Strategy</label>
+                <label class="form-label small"><?php _e('admin_strategy'); ?></label>
                 <select name="strategy" class="form-select">
-                    <option value="">All Strategies</option>
+                    <option value=""><?php _e('admin_all_strategies'); ?></option>
                     <?php foreach ($strategies as $s): ?>
                     <option value="<?php echo $s['strategy_id']; ?>" <?php echo $strategy_filter == $s['strategy_id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($s['strategy']); ?>
@@ -143,11 +143,11 @@ $strategies = $stmt->fetchAll();
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Result</label>
+                <label class="form-label small"><?php _e('admin_result'); ?></label>
                 <select name="result" class="form-select">
-                    <option value="">All Results</option>
-                    <option value="win" <?php echo $result_filter === 'win' ? 'selected' : ''; ?>>Win</option>
-                    <option value="loss" <?php echo $result_filter === 'loss' ? 'selected' : ''; ?>>Loss</option>
+                    <option value=""><?php _e('admin_all_results'); ?></option>
+                    <option value="win" <?php echo $result_filter === 'win' ? 'selected' : ''; ?>><?php _e('admin_wins'); ?></option>
+                    <option value="loss" <?php echo $result_filter === 'loss' ? 'selected' : ''; ?>><?php _e('admin_losses'); ?></option>
                     <option value="tie" <?php echo $result_filter === 'tie' ? 'selected' : ''; ?>>Tie</option>
                 </select>
             </div>
