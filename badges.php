@@ -47,15 +47,15 @@ if (isLoggedIn()) {
 
 // Category labels
 $categoryLabels = [
-    'all' => 'Semua',
-    'milestone' => 'Trading Milestone',
-    'profit' => 'Profit',
-    'skill' => 'Win Rate',
-    'streak' => 'Streak',
-    'special' => 'Special',
-    'social' => 'Social',
-    'achievement' => 'Achievement',
-    'dedication' => 'Dedication'
+    'all' => __('badges_cat_all'),
+    'milestone' => __('badges_cat_milestone'),
+    'profit' => __('badges_cat_profit'),
+    'skill' => __('badges_cat_skill'),
+    'streak' => __('badges_cat_streak'),
+    'special' => __('badges_cat_special'),
+    'social' => __('badges_cat_social'),
+    'achievement' => __('badges_cat_achievement'),
+    'dedication' => __('badges_cat_dedication')
 ];
 
 $lang = $_SESSION['lang'] ?? 'id';
@@ -68,9 +68,9 @@ $lang = $_SESSION['lang'] ?? 'id';
         <!-- Page Header -->
         <div class="page-header text-center mb-4">
             <h1 class="page-title">
-                <i class="fas fa-award text-warning"></i> Badges & Achievements
+                <i class="fas fa-award text-warning"></i> <?php _e('badges_title'); ?>
             </h1>
-            <p class="text-muted">Kumpulkan badges dengan mencapai milestone trading</p>
+            <p class="text-muted"><?php _e('badges_subtitle'); ?></p>
         </div>
 
         <?php if (isLoggedIn()): ?>
@@ -86,20 +86,20 @@ $lang = $_SESSION['lang'] ?? 'id';
                                 </div>
                             </div>
                             <div class="col">
-                                <h4 class="mb-0"><?php echo $userBadgeRank['rank']; ?> Rank</h4>
-                                <p class="text-muted mb-0"><?php echo $userBadgePoints; ?> badge points</p>
+                                <h4 class="mb-0"><?php echo $userBadgeRank['rank']; ?> <?php _e('badges_rank'); ?></h4>
+                                <p class="text-muted mb-0"><?php echo $userBadgePoints; ?> <?php _e('leaderboard_badge_points'); ?></p>
                             </div>
                             <div class="col-auto text-center px-4 border-start">
                                 <h3 class="mb-0 text-primary"><?php echo count($userBadges); ?></h3>
-                                <small class="text-muted">Badges Earned</small>
+                                <small class="text-muted"><?php _e('badges_earned'); ?></small>
                             </div>
                             <div class="col-auto text-center px-4 border-start">
                                 <h3 class="mb-0"><?php echo count($allBadges); ?></h3>
-                                <small class="text-muted">Total Badges</small>
+                                <small class="text-muted"><?php _e('badges_total'); ?></small>
                             </div>
                             <div class="col-auto text-center px-4 border-start">
                                 <h3 class="mb-0 text-success"><?php echo round((count($userBadges) / count($allBadges)) * 100); ?>%</h3>
-                                <small class="text-muted">Completion</small>
+                                <small class="text-muted"><?php _e('badges_completion'); ?></small>
                             </div>
                         </div>
                     </div>
@@ -108,7 +108,7 @@ $lang = $_SESSION['lang'] ?? 'id';
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-header">
-                        <h6 class="mb-0"><i class="fas fa-chart-line"></i> Next Badges</h6>
+                        <h6 class="mb-0"><i class="fas fa-chart-line"></i> <?php _e('badges_next'); ?></h6>
                     </div>
                     <div class="card-body p-2">
                         <?php if (!empty($badgeProgress)): ?>
@@ -129,7 +129,7 @@ $lang = $_SESSION['lang'] ?? 'id';
                             </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p class="text-muted text-center mb-0">Semua badge sudah didapat!</p>
+                            <p class="text-muted text-center mb-0"><?php _e('badges_all_earned'); ?></p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -212,10 +212,10 @@ $lang = $_SESSION['lang'] ?? 'id';
         <!-- CTA for non-logged in -->
         <div class="card mt-4 bg-gradient-primary text-white">
             <div class="card-body text-center py-4">
-                <h4>Mulai Kumpulkan Badges!</h4>
-                <p class="mb-3">Daftar dan raih achievements untuk mendapat badge points!</p>
+                <h4><?php _e('badges_cta_title'); ?></h4>
+                <p class="mb-3"><?php _e('badges_cta_desc'); ?></p>
                 <a href="register.php" class="btn btn-light btn-lg">
-                    <i class="fas fa-rocket"></i> Mulai Gratis
+                    <i class="fas fa-rocket"></i> <?php _e('leaderboard_start_free'); ?>
                 </a>
             </div>
         </div>
@@ -224,7 +224,7 @@ $lang = $_SESSION['lang'] ?? 'id';
         <!-- Rarity Legend -->
         <div class="card mt-4">
             <div class="card-body">
-                <h6 class="mb-3"><i class="fas fa-info-circle"></i> Badge Rarity</h6>
+                <h6 class="mb-3"><i class="fas fa-info-circle"></i> <?php _e('badges_rarity'); ?></h6>
                 <div class="d-flex flex-wrap gap-3 justify-content-center">
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge-rarity-tag rarity-common">Common</span>
