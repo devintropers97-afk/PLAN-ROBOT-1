@@ -80,8 +80,8 @@ if ($db) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
-        <p class="page-subtitle">Welcome back! Here's your system overview</p>
+        <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> <?php _e('admin_dashboard'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_welcome'); ?></p>
     </div>
     <div class="d-flex gap-2">
         <span class="admin-clock badge badge-primary">
@@ -95,7 +95,7 @@ if ($db) {
 <div class="alert alert-danger fade-in">
     <i class="fas fa-database"></i>
     <div>
-        <strong>Database Connection Error!</strong> Unable to connect to database. Please check your database configuration.
+        <strong><?php _e('admin_db_error'); ?></strong> <?php _e('admin_db_error_desc'); ?>
     </div>
 </div>
 <?php endif; ?>
@@ -107,7 +107,7 @@ if ($db) {
             <i class="fas fa-users"></i>
         </div>
         <div class="stat-value" data-count="<?php echo $totalUsers; ?>"><?php echo $totalUsers; ?></div>
-        <div class="stat-label">Total Users</div>
+        <div class="stat-label"><?php _e('admin_total_users'); ?></div>
     </div>
 
     <div class="stat-card warning fade-in">
@@ -115,7 +115,7 @@ if ($db) {
             <i class="fas fa-user-clock"></i>
         </div>
         <div class="stat-value" data-count="<?php echo $pendingVerifications; ?>"><?php echo $pendingVerifications; ?></div>
-        <div class="stat-label">Pending Verification</div>
+        <div class="stat-label"><?php _e('admin_pending_verification'); ?></div>
     </div>
 
     <div class="stat-card success fade-in">
@@ -123,7 +123,7 @@ if ($db) {
             <i class="fas fa-user-check"></i>
         </div>
         <div class="stat-value" data-count="<?php echo $activeUsers; ?>"><?php echo $activeUsers; ?></div>
-        <div class="stat-label">Active Users</div>
+        <div class="stat-label"><?php _e('admin_active_users'); ?></div>
     </div>
 
     <div class="stat-card info fade-in">
@@ -131,7 +131,7 @@ if ($db) {
             <i class="fas fa-chart-line"></i>
         </div>
         <div class="stat-value" data-count="<?php echo $todayTrades; ?>"><?php echo $todayTrades; ?></div>
-        <div class="stat-label">Today's Trades</div>
+        <div class="stat-label"><?php _e('admin_today_trades'); ?></div>
     </div>
 
     <div class="stat-card <?php echo $winRate >= 70 ? 'success' : ($winRate >= 50 ? 'warning' : 'danger'); ?> fade-in">
@@ -139,7 +139,7 @@ if ($db) {
             <i class="fas fa-percentage"></i>
         </div>
         <div class="stat-value"><?php echo $winRate; ?>%</div>
-        <div class="stat-label">Today's Win Rate</div>
+        <div class="stat-label"><?php _e('admin_today_winrate'); ?></div>
     </div>
 
     <div class="stat-card primary fade-in">
@@ -147,7 +147,7 @@ if ($db) {
             <i class="fas fa-dollar-sign"></i>
         </div>
         <div class="stat-value">$<?php echo number_format($monthlyRevenue); ?></div>
-        <div class="stat-label">Monthly Revenue</div>
+        <div class="stat-label"><?php _e('admin_monthly_revenue'); ?></div>
     </div>
 </div>
 
@@ -156,8 +156,8 @@ if ($db) {
 <div class="alert alert-warning fade-in">
     <i class="fas fa-exclamation-triangle"></i>
     <div>
-        <strong><?php echo $pendingVerifications; ?> users</strong> pending verification.
-        <a href="verify-users.php" class="ms-2">Review now <i class="fas fa-arrow-right"></i></a>
+        <strong><?php echo $pendingVerifications; ?></strong> <?php _e('admin_pending_alert'); ?>
+        <a href="verify-users.php" class="ms-2"><?php _e('admin_review_now'); ?> <i class="fas fa-arrow-right"></i></a>
     </div>
 </div>
 <?php endif; ?>
@@ -167,7 +167,7 @@ if ($db) {
     <div class="col-lg-4">
         <div class="admin-card fade-in">
             <div class="admin-card-header">
-                <h5 class="admin-card-title"><i class="fas fa-pie-chart"></i> Package Distribution</h5>
+                <h5 class="admin-card-title"><i class="fas fa-pie-chart"></i> <?php _e('admin_package_dist'); ?></h5>
             </div>
             <div class="admin-card-body">
                 <div class="package-stats">
@@ -203,25 +203,25 @@ if ($db) {
     <div class="col-lg-8">
         <div class="admin-card fade-in">
             <div class="admin-card-header">
-                <h5 class="admin-card-title"><i class="fas fa-history"></i> Recent Trades</h5>
-                <a href="trades.php" class="btn btn-sm btn-outline-primary">View All</a>
+                <h5 class="admin-card-title"><i class="fas fa-history"></i> <?php _e('admin_recent_trades'); ?></h5>
+                <a href="trades.php" class="btn btn-sm btn-outline-primary"><?php _e('admin_view_all'); ?></a>
             </div>
             <div class="admin-card-body" style="padding: 0;">
                 <?php if (empty($recentTrades)): ?>
                 <div class="empty-state">
                     <div class="empty-state-icon"><i class="fas fa-chart-line"></i></div>
-                    <p class="empty-state-desc">No trades recorded yet</p>
+                    <p class="empty-state-desc"><?php _e('admin_no_trades'); ?></p>
                 </div>
                 <?php else: ?>
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Strategy</th>
-                            <th>Direction</th>
-                            <th>Result</th>
-                            <th>P/L</th>
-                            <th>Time</th>
+                            <th><?php _e('admin_user'); ?></th>
+                            <th><?php _e('admin_strategy'); ?></th>
+                            <th><?php _e('admin_direction'); ?></th>
+                            <th><?php _e('admin_result'); ?></th>
+                            <th><?php _e('admin_pnl'); ?></th>
+                            <th><?php _e('admin_time'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -261,22 +261,22 @@ if ($db) {
 <!-- Recent Users -->
 <div class="admin-card mt-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-user-plus"></i> Recent Registrations</h5>
-        <a href="users.php" class="btn btn-sm btn-outline-primary">View All</a>
+        <h5 class="admin-card-title"><i class="fas fa-user-plus"></i> <?php _e('admin_recent_reg'); ?></h5>
+        <a href="users.php" class="btn btn-sm btn-outline-primary"><?php _e('admin_view_all'); ?></a>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>User</th>
-                        <th>Email</th>
-                        <th>Country</th>
-                        <th>OlympTrade ID</th>
-                        <th>Package</th>
-                        <th>Status</th>
-                        <th>Registered</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_user'); ?></th>
+                        <th><?php _e('admin_email'); ?></th>
+                        <th><?php _e('admin_country'); ?></th>
+                        <th><?php _e('admin_ot_id'); ?></th>
+                        <th><?php _e('admin_package'); ?></th>
+                        <th><?php _e('admin_status'); ?></th>
+                        <th><?php _e('admin_registered'); ?></th>
+                        <th><?php _e('admin_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -306,12 +306,12 @@ if ($db) {
                         <td>
                             <?php if ($user['status'] === 'pending'): ?>
                             <div class="action-btns">
-                                <a href="verify-users.php" class="btn btn-sm btn-success btn-icon" title="Review User">
+                                <a href="verify-users.php" class="btn btn-sm btn-success btn-icon" title="<?php _e('admin_review_user'); ?>">
                                     <i class="fas fa-user-check"></i>
                                 </a>
                             </div>
                             <?php else: ?>
-                            <a href="users.php?search=<?php echo urlencode($user['email']); ?>" class="btn btn-sm btn-outline-primary btn-icon" title="View Details">
+                            <a href="users.php?search=<?php echo urlencode($user['email']); ?>" class="btn btn-sm btn-outline-primary btn-icon" title="<?php _e('admin_view_details'); ?>">
                                 <i class="fas fa-eye"></i>
                             </a>
                             <?php endif; ?>
