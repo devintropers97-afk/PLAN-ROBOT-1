@@ -1428,4 +1428,17 @@ return [
     'refund_dispute3' => 'We reserve the right to dispute the chargeback with evidence',
     'refund_dispute_note' => 'Please contact us first to resolve any issues before initiating a dispute.',
     'refund_contact_intro' => 'For refund requests or questions:',
+
+    // Error Pages - Additional
+    'error_suggestions' => 'You might be looking for:',
+    'error_status_server' => 'Server Status',
+    'error_status_database' => 'Database',
+    'error_status_api' => 'API',
+    'error_status_checking' => 'Checking...',
+    'error_status_fixing' => 'Being Fixed',
+    'error_status_ok' => 'OK',
+    'error_retry' => 'Try Again',
+    'error_previous_page' => 'Previous Page',
+    'error_need_help' => 'Need help urgently?',
+    'error_contact_whatsapp' => 'Contact Support via WhatsApp',
 ];

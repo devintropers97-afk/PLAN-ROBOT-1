@@ -236,7 +236,7 @@ $page_title = $lang_loaded ? __('error_500_title') : 'Server Error';
 
         <div class="error-actions">
             <button onclick="window.location.reload()" class="btn btn-primary">
-                <i class="fas fa-sync-alt"></i> <?php echo $lang_loaded ? __('loading') : 'Coba Lagi'; ?>
+                <i class="fas fa-sync-alt"></i> <?php echo $lang_loaded ? __('error_retry') : 'Coba Lagi'; ?>
             </button>
             <a href="/" class="btn btn-secondary">
                 <i class="fas fa-home"></i> <?php echo $lang_loaded ? __('error_back_home') : 'Kembali ke Home'; ?>
@@ -245,22 +245,22 @@ $page_title = $lang_loaded ? __('error_500_title') : 'Server Error';
 
         <div class="status-box">
             <div class="status-item">
-                <span class="status-label">Status Server</span>
-                <span class="status-value checking" id="server-status">Mengecek...</span>
+                <span class="status-label"><?php echo $lang_loaded ? __('error_status_server') : 'Status Server'; ?></span>
+                <span class="status-value checking" id="server-status"><?php echo $lang_loaded ? __('error_status_checking') : 'Mengecek...'; ?></span>
             </div>
             <div class="status-item">
-                <span class="status-label">Database</span>
-                <span class="status-value checking" id="db-status">Mengecek...</span>
+                <span class="status-label"><?php echo $lang_loaded ? __('error_status_database') : 'Database'; ?></span>
+                <span class="status-value checking" id="db-status"><?php echo $lang_loaded ? __('error_status_checking') : 'Mengecek...'; ?></span>
             </div>
             <div class="status-item">
-                <span class="status-label">API</span>
-                <span class="status-value checking" id="api-status">Mengecek...</span>
+                <span class="status-label"><?php echo $lang_loaded ? __('error_status_api') : 'API'; ?></span>
+                <span class="status-value checking" id="api-status"><?php echo $lang_loaded ? __('error_status_checking') : 'Mengecek...'; ?></span>
             </div>
         </div>
 
         <div class="contact-support">
             <i class="fab fa-whatsapp"></i>
-            <?php echo $lang_loaded ? __('error_contact_support') : 'Butuh bantuan segera?'; ?> <a href="https://wa.me/6281234567890" target="_blank"><?php echo $lang_loaded ? __('login_help') : 'Hubungi Support via WhatsApp'; ?></a>
+            <?php echo $lang_loaded ? __('error_need_help') : 'Butuh bantuan segera?'; ?> <a href="https://wa.me/6281234567890" target="_blank"><?php echo $lang_loaded ? __('error_contact_whatsapp') : 'Hubungi Support via WhatsApp'; ?></a>
         </div>
     </div>
 

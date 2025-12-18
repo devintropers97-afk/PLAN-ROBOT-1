@@ -1429,4 +1429,17 @@ return [
     'refund_dispute3' => 'Kami berhak mendispute chargeback dengan bukti',
     'refund_dispute_note' => 'Silakan hubungi kami terlebih dahulu untuk menyelesaikan masalah sebelum memulai dispute.',
     'refund_contact_intro' => 'Untuk permintaan refund atau pertanyaan:',
+
+    // Error Pages - Additional
+    'error_suggestions' => 'Mungkin Anda mencari:',
+    'error_status_server' => 'Status Server',
+    'error_status_database' => 'Database',
+    'error_status_api' => 'API',
+    'error_status_checking' => 'Mengecek...',
+    'error_status_fixing' => 'Sedang Diperbaiki',
+    'error_status_ok' => 'OK',
+    'error_retry' => 'Coba Lagi',
+    'error_previous_page' => 'Halaman Sebelumnya',
+    'error_need_help' => 'Butuh bantuan segera?',
+    'error_contact_whatsapp' => 'Hubungi Support via WhatsApp',
 ];

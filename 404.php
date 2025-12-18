@@ -213,12 +213,12 @@ $page_title = $lang_loaded ? __('error_404_title') : 'Halaman Tidak Ditemukan';
                 <i class="fas fa-home"></i> <?php echo $lang_loaded ? __('error_back_home') : 'Kembali ke Home'; ?>
             </a>
             <a href="javascript:history.back()" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> <?php echo $lang_loaded ? __('common_back') : 'Halaman Sebelumnya'; ?>
+                <i class="fas fa-arrow-left"></i> <?php echo $lang_loaded ? __('error_previous_page') : 'Halaman Sebelumnya'; ?>
             </a>
         </div>
 
         <div class="suggestions">
-            <h4><i class="fas fa-lightbulb"></i> Mungkin Anda mencari:</h4>
+            <h4><i class="fas fa-lightbulb"></i> <?php echo $lang_loaded ? __('error_suggestions') : 'Mungkin Anda mencari:'; ?></h4>
             <ul class="suggestions-list">
                 <li><a href="/dashboard.php">Dashboard</a></li>
                 <li><a href="/strategies.php">Strategi</a></li>
