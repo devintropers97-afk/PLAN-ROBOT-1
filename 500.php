@@ -8,14 +8,16 @@
 
 http_response_code(500);
 
-// Try to include config for language support, fallback to defaults if unavailable
+// Try to include config and language for i18n support, fallback to defaults if unavailable
 $lang_loaded = false;
-if (file_exists(__DIR__ . '/includes/config.php')) {
+if (file_exists(__DIR__ . '/includes/config.php') && file_exists(__DIR__ . '/includes/language.php')) {
     try {
         require_once __DIR__ . '/includes/config.php';
-        $lang_loaded = true;
+        require_once __DIR__ . '/includes/language.php';
+        $lang_loaded = function_exists('__');
     } catch (Exception $e) {
-        // Config failed to load, use defaults
+        // Config or language failed to load, use defaults
+        $lang_loaded = false;
     }
 }
 
