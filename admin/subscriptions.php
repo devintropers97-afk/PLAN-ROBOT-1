@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Manage Subscriptions';
+$page_title = __('admin_subscriptions');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

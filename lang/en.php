@@ -1309,6 +1309,11 @@ return [
     'subscribe_instructions' => 'Payment Instructions',
     'subscribe_contact_support' => 'Contact support to confirm payment',
 
+    // Strategies Page
+    'strat_title' => 'Trading Strategies',
+    'strat_heading' => '10 Powerful Trading Strategies',
+    'strat_desc' => 'Each strategy is algorithmically designed for specific market conditions.',
+
     // Strategy Comparison Page
     'strat_compare_title' => 'Strategy Comparison',
     'strat_compare_heading' => 'Compare Strategies',
@@ -1320,4 +1325,37 @@ return [
     'strat_compare_timeframe' => 'Timeframe',
     'strat_compare_assets' => 'Assets',
     'strat_compare_package' => 'Package',
+
+    // Refund Policy Page
+    'refund_title' => 'Refund Policy',
+    'refund_heading' => 'Refund Policy',
+    'refund_updated' => 'Last updated',
+
+    // Security Settings Page
+    'security_title' => 'Security Settings',
+    'security_heading' => 'Security Settings',
+    'security_subtitle' => 'Manage your account security and authentication',
+    'security_2fa' => 'Two-Factor Authentication',
+    'security_last_login' => 'Last Login',
+    'security_active_sessions' => 'Active Sessions',
+    'security_change_password' => 'Change Password',
+    'security_login_history' => 'Login History',
+    'security_tips' => 'Security Tips',
+    'security_logout_all' => 'Logout All',
+    'security_enable_2fa' => 'Enable 2FA',
+    'security_disable_2fa' => 'Disable 2FA',
+    'security_backup_codes' => 'Backup Codes',
+    'security_current_password' => 'Current Password',
+    'security_new_password' => 'New Password',
+    'security_confirm_password' => 'Confirm Password',
+    'security_update_password' => 'Update Password',
+
+    // Admin Pages
+    'admin_robot_monitoring' => 'Robot Monitoring',
+    'admin_subscriptions' => 'Manage Subscriptions',
+    'admin_my_robot' => 'My Robot',
+    'admin_signals' => 'Signal History',
+    'admin_settings' => 'System Settings',
+    'admin_license_keys' => 'License Keys',
+    'admin_my_trading' => 'My Trading',
 ];

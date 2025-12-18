@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Subscribe';
+$page_title = __('subscribe_title');
 require_once 'includes/header.php';
 
 // Require login

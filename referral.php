@@ -3,7 +3,7 @@
  * ZYN Trade System - Referral Reward System
  * FASE 3: Referral Reward System (FINAL ZYN - Inovasi #12)
  */
-$page_title = 'Referral Program';
+$page_title = __('referral_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Get user referral data

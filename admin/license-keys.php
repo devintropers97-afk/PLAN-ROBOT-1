@@ -1,5 +1,5 @@
 <?php
-$page_title = 'License Keys';
+$page_title = __('admin_license_keys');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

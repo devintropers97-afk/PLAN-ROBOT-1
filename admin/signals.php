@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Signal History';
+$page_title = __('admin_signals');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

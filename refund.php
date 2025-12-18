@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Refund Policy';
+$page_title = __('refund_title');
 require_once 'includes/header.php';
 ?>
 

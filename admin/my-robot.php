@@ -1,5 +1,5 @@
 <?php
-$page_title = 'My Robot';
+$page_title = __('admin_my_robot');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

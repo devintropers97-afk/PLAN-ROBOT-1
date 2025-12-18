@@ -1,5 +1,5 @@
 <?php
-$page_title = 'System Settings';
+$page_title = __('admin_settings');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

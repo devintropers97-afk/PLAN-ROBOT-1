@@ -3,7 +3,7 @@
  * ZYN Trade System - Announcements & News Feed
  * FASE 3: In-App Announcements Feed
  */
-$page_title = 'Announcements';
+$page_title = __('announcements_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Mock announcements data

@@ -1,5 +1,5 @@
 <?php
-$page_title = 'My Trading';
+$page_title = __('admin_my_trading');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

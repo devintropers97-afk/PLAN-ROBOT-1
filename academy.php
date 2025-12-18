@@ -3,7 +3,7 @@
  * ZYN Trade System - Academy / Education Center
  * FASE 3: ZYN Academy / Edukasi (FINAL ZYN - Inovasi #9)
  */
-$page_title = 'ZYN Academy';
+$page_title = __('academy_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Academy Modules

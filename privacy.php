@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Privacy Policy';
+$page_title = __('privacy_title');
 require_once 'includes/header.php';
 ?>
 

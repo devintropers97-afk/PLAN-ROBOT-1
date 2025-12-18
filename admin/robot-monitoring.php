@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Robot Monitoring';
+$page_title = __('admin_robot_monitoring');
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();

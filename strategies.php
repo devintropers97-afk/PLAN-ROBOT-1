@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Trading Strategies';
+$page_title = __('strat_title');
 require_once 'includes/header.php';
 
 $strategies = getAllStrategies();

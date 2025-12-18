@@ -3,7 +3,7 @@
  * ZYN Trade System - Trading Challenges / Gamification
  * FASE 3/4: Gamification - Trading Challenges (FINAL ZYN - Inovasi #16)
  */
-$page_title = 'Trading Challenges';
+$page_title = __('challenges_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Get user data

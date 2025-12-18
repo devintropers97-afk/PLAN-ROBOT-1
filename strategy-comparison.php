@@ -3,7 +3,7 @@
  * ZYN Trade System - Strategy Performance Comparison
  * FASE 3: Strategy Performance Comparison (FINAL ZYN - Inovasi #11)
  */
-$page_title = 'Strategy Comparison';
+$page_title = __('strat_compare_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Strategy data with historical performance

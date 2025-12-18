@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Terms of Service';
+$page_title = __('terms_title');
 require_once 'includes/header.php';
 ?>
 

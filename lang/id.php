@@ -1310,6 +1310,11 @@ return [
     'subscribe_instructions' => 'Instruksi Pembayaran',
     'subscribe_contact_support' => 'Hubungi support untuk konfirmasi pembayaran',
 
+    // Strategies Page
+    'strat_title' => 'Strategi Trading',
+    'strat_heading' => '10 Strategi Trading Powerful',
+    'strat_desc' => 'Setiap strategi dirancang algoritmik untuk kondisi market tertentu.',
+
     // Strategy Comparison Page
     'strat_compare_title' => 'Perbandingan Strategi',
     'strat_compare_heading' => 'Bandingkan Strategi',
@@ -1321,4 +1326,37 @@ return [
     'strat_compare_timeframe' => 'Timeframe',
     'strat_compare_assets' => 'Assets',
     'strat_compare_package' => 'Paket',
+
+    // Refund Policy Page
+    'refund_title' => 'Kebijakan Refund',
+    'refund_heading' => 'Kebijakan Refund',
+    'refund_updated' => 'Terakhir diperbarui',
+
+    // Security Settings Page
+    'security_title' => 'Pengaturan Keamanan',
+    'security_heading' => 'Pengaturan Keamanan',
+    'security_subtitle' => 'Kelola keamanan akun dan autentikasi Anda',
+    'security_2fa' => 'Autentikasi Dua Faktor',
+    'security_last_login' => 'Login Terakhir',
+    'security_active_sessions' => 'Sesi Aktif',
+    'security_change_password' => 'Ubah Password',
+    'security_login_history' => 'Riwayat Login',
+    'security_tips' => 'Tips Keamanan',
+    'security_logout_all' => 'Logout Semua',
+    'security_enable_2fa' => 'Aktifkan 2FA',
+    'security_disable_2fa' => 'Nonaktifkan 2FA',
+    'security_backup_codes' => 'Kode Cadangan',
+    'security_current_password' => 'Password Saat Ini',
+    'security_new_password' => 'Password Baru',
+    'security_confirm_password' => 'Konfirmasi Password',
+    'security_update_password' => 'Update Password',
+
+    // Admin Pages
+    'admin_robot_monitoring' => 'Robot Monitoring',
+    'admin_subscriptions' => 'Kelola Subscription',
+    'admin_my_robot' => 'Robot Saya',
+    'admin_signals' => 'Riwayat Signal',
+    'admin_settings' => 'Pengaturan Sistem',
+    'admin_license_keys' => 'License Keys',
+    'admin_my_trading' => 'Trading Saya',
 ];

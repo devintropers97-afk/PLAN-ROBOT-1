@@ -3,7 +3,7 @@
  * ZYN Trade System - Security & 2FA Settings
  * FASE 3: 2FA Authentication (FINAL ZYN - Inovasi #15)
  */
-$page_title = 'Security Settings';
+$page_title = __('security_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Get user security settings
@@ -91,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 <!-- Page Header -->
 <div class="db-page-header">
     <div>
-        <h1 class="db-page-title"><i class="fas fa-shield-alt"></i> Security Settings</h1>
-        <p class="db-page-subtitle">Manage your account security and authentication</p>
+        <h1 class="db-page-title"><i class="fas fa-shield-alt"></i> <?php _e('security_heading'); ?></h1>
+        <p class="db-page-subtitle"><?php _e('security_subtitle'); ?></p>
     </div>
 </div>
 
