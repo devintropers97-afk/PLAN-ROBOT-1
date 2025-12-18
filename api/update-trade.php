@@ -12,6 +12,9 @@ header('Access-Control-Allow-Headers: Content-Type, X-API-Key');
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 
+// Validate Robot API Key
+requireRobotApiKey();
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }

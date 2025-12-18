@@ -33,6 +33,9 @@ header('X-Content-Type-Options: nosniff');
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+// Validate Robot API Key
+requireRobotApiKey();
+
 // API Version
 define('API_VERSION', '1.0.1');
 

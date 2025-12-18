@@ -2543,4 +2543,56 @@ function checkAndAutoResumeAllRobots() {
 
     return $count;
 }
+
+/**
+ * Validate Robot Engine API Key
+ * Used for Robot Engine -> PHP API authentication
+ *
+ * @param string|null $provided_key The API key from the request
+ * @return bool True if valid, false otherwise
+ */
+function validateRobotApiKey($provided_key = null) {
+    // Get key from header if not provided
+    if ($provided_key === null) {
+        $provided_key = $_SERVER['HTTP_X_API_KEY'] ?? null;
+
+        // Also check Authorization header
+        if (!$provided_key) {
+            $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+            if (preg_match('/^Bearer\s+(.+)$/i', $auth_header, $matches)) {
+                $provided_key = $matches[1];
+            }
+        }
+    }
+
+    if (empty($provided_key)) {
+        return false;
+    }
+
+    // Compare with constant (timing-safe comparison)
+    return hash_equals(ROBOT_API_SECRET_KEY, $provided_key);
+}
+
+/**
+ * Send JSON error response for API
+ */
+function sendApiError($message, $code = 'ERROR', $http_code = 400) {
+    http_response_code($http_code);
+    echo json_encode([
+        'success' => false,
+        'error' => $message,
+        'code' => $code,
+        'timestamp' => date('c')
+    ]);
+    exit;
+}
+
+/**
+ * Require valid Robot API key or exit
+ */
+function requireRobotApiKey() {
+    if (!validateRobotApiKey()) {
+        sendApiError('Invalid or missing API key', 'UNAUTHORIZED', 401);
+    }
+}
 ?>

@@ -8,6 +8,7 @@
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
 require_once 'includes/language.php';
+require_once 'includes/security.php';
 
 // Check if already logged in - redirect BEFORE any output
 if (isLoggedIn()) {
@@ -24,8 +25,12 @@ $success = '';
 
 // Handle login form submission BEFORE any output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Rate limiting check
+    if (!check_rate_limit('login', MAX_LOGIN_ATTEMPTS, LOGIN_LOCKOUT_TIME)) {
+        $error = __('login_error_too_many_attempts') ?: 'Too many login attempts. Please try again in ' . ceil(LOGIN_LOCKOUT_TIME / 60) . ' minutes.';
+    }
     // Verify CSRF token
-    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    elseif (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = __('login_error_invalid_request');
     } else {
         $license_key = strtoupper(cleanInput($_POST['license_key'] ?? ''));
@@ -36,6 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = loginWithLicenseKey($license_key);
 
             if ($result['success']) {
+                // Reset rate limit on successful login
+                reset_rate_limit('login');
+
                 // Redirect admin to admin panel, users to dashboard
                 if (isset($result['user']['role']) && $result['user']['role'] === 'admin') {
                     redirect('admin/index.php');

@@ -6,6 +6,7 @@
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
 require_once 'includes/language.php';
+require_once 'includes/security.php';
 
 // Redirect if already logged in - MUST be before any HTML output
 if (isLoggedIn()) {
@@ -63,8 +64,12 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
 // Handle registration form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Rate limiting - allow 3 registration attempts per 10 minutes
+    if (!check_rate_limit('register', 3, 600)) {
+        $error = __('register_error_too_many_attempts') ?: 'Too many registration attempts. Please try again in 10 minutes.';
+    }
     // Verify CSRF token
-    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    elseif (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = __('register_error_invalid_request');
     } else {
         $email = cleanInput($_POST['email'] ?? '');

@@ -9,6 +9,9 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+// Validate Robot API Key
+requireRobotApiKey();
+
 // Get user_id from request
 $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 

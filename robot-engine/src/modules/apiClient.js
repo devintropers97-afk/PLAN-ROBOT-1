@@ -9,7 +9,7 @@ const logger = require('../utils/logger');
 class APIClient {
     constructor(baseUrl, apiKey = null) {
         this.baseUrl = baseUrl || process.env.API_BASE_URL;
-        this.apiKey = apiKey || process.env.API_KEY;
+        this.apiKey = apiKey || process.env.API_SECRET_KEY;
 
         this.client = axios.create({
             baseURL: this.baseUrl,
