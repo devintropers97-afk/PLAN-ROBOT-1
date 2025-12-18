@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
             case 'reset_password':
                 $new_password = bin2hex(random_bytes(4));
-                $hashed = password_hash($new_password, PASSWORD_DEFAULT);
+                $hashed = password_hash($new_password, PASSWORD_BCRYPT, ['cost' => HASH_COST]);
 
                 $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
                 $stmt->execute([$hashed, $user_id]);
