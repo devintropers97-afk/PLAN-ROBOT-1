@@ -54,9 +54,9 @@ if (isLoggedIn()) {
         <!-- Page Header -->
         <div class="page-header text-center mb-4">
             <h1 class="page-title">
-                <i class="fas fa-trophy text-warning"></i> Leaderboard
+                <i class="fas fa-trophy text-warning"></i> <?php _e('leaderboard_title'); ?>
             </h1>
-            <p class="text-muted">Top performers dari ZYN Trade System</p>
+            <p class="text-muted"><?php _e('leaderboard_subtitle'); ?></p>
         </div>
 
         <!-- View Toggle -->
@@ -64,11 +64,11 @@ if (isLoggedIn()) {
             <div class="btn-group w-100" role="group" style="max-width: 400px; margin: 0 auto; display: flex;">
                 <a href="?view=ranking&period=<?php echo $period; ?><?php echo $country ? '&country=' . $country : ''; ?>"
                    class="btn <?php echo $view === 'ranking' ? 'btn-primary' : 'btn-outline-primary'; ?>">
-                    <i class="fas fa-chart-line"></i> Profit Ranking
+                    <i class="fas fa-chart-line"></i> <?php _e('leaderboard_profit_ranking'); ?>
                 </a>
                 <a href="?view=badges"
                    class="btn <?php echo $view === 'badges' ? 'btn-primary' : 'btn-outline-primary'; ?>">
-                    <i class="fas fa-award"></i> Badge Ranking
+                    <i class="fas fa-award"></i> <?php _e('leaderboard_badge_ranking'); ?>
                 </a>
             </div>
         </div>
@@ -84,21 +84,21 @@ if (isLoggedIn()) {
                         <div class="btn-group w-100" role="group">
                             <a href="?period=daily<?php echo $country ? '&country=' . $country : ''; ?>"
                                class="btn <?php echo $period === 'daily' ? 'btn-primary' : 'btn-outline-primary'; ?>">
-                                <i class="fas fa-calendar-day"></i> Hari Ini
+                                <i class="fas fa-calendar-day"></i> <?php _e('leaderboard_today'); ?>
                             </a>
                             <a href="?period=weekly<?php echo $country ? '&country=' . $country : ''; ?>"
                                class="btn <?php echo $period === 'weekly' ? 'btn-primary' : 'btn-outline-primary'; ?>">
-                                <i class="fas fa-calendar-week"></i> Minggu Ini
+                                <i class="fas fa-calendar-week"></i> <?php _e('leaderboard_this_week'); ?>
                             </a>
                             <a href="?period=monthly<?php echo $country ? '&country=' . $country : ''; ?>"
                                class="btn <?php echo $period === 'monthly' ? 'btn-primary' : 'btn-outline-primary'; ?>">
-                                <i class="fas fa-calendar-alt"></i> Bulan Ini
+                                <i class="fas fa-calendar-alt"></i> <?php _e('leaderboard_this_month'); ?>
                             </a>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <select class="form-select" id="countryFilter" onchange="filterByCountry(this.value)">
-                            <option value="">Semua Negara</option>
+                            <option value=""><?php _e('leaderboard_all_countries'); ?></option>
                             <?php foreach ($countries as $c): ?>
                             <option value="<?php echo htmlspecialchars($c['country']); ?>"
                                     <?php echo $country === $c['country'] ? 'selected' : ''; ?>>
@@ -122,25 +122,25 @@ if (isLoggedIn()) {
                         </div>
                     </div>
                     <div class="col">
-                        <h5 class="mb-0">Peringkat Anda</h5>
-                        <small class="text-muted"><?php echo ucfirst($period); ?> ranking</small>
+                        <h5 class="mb-0"><?php _e('leaderboard_your_rank'); ?></h5>
+                        <small class="text-muted"><?php echo ucfirst($period); ?> <?php _e('leaderboard_ranking'); ?></small>
                     </div>
                     <div class="col-auto text-end">
                         <div class="stat-item">
                             <span class="stat-value text-success">+$<?php echo number_format($userRank['total_profit'], 2); ?></span>
-                            <span class="stat-label">Profit</span>
+                            <span class="stat-label"><?php _e('leaderboard_profit'); ?></span>
                         </div>
                     </div>
                     <div class="col-auto text-end">
                         <div class="stat-item">
                             <span class="stat-value"><?php echo number_format($userRank['win_rate'], 1); ?>%</span>
-                            <span class="stat-label">Win Rate</span>
+                            <span class="stat-label"><?php _e('stats_win_rate'); ?></span>
                         </div>
                     </div>
                     <div class="col-auto text-end">
                         <div class="stat-item">
                             <span class="stat-value"><?php echo $userRank['total_trades']; ?></span>
-                            <span class="stat-label">Trades</span>
+                            <span class="stat-label"><?php _e('leaderboard_trades'); ?></span>
                         </div>
                     </div>
                 </div>
@@ -154,21 +154,21 @@ if (isLoggedIn()) {
                 <?php if (empty($leaderboardData)): ?>
                 <div class="text-center py-5">
                     <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
-                    <h5>Belum Ada Data</h5>
-                    <p class="text-muted">Belum ada trading activity untuk periode ini.</p>
+                    <h5><?php _e('leaderboard_no_data'); ?></h5>
+                    <p class="text-muted"><?php _e('leaderboard_no_activity'); ?></p>
                 </div>
                 <?php else: ?>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-dark">
                             <tr>
-                                <th class="text-center" width="80">Rank</th>
-                                <th>Trader</th>
-                                <th class="text-center">Negara</th>
-                                <th class="text-end">Profit</th>
-                                <th class="text-center">Win Rate</th>
-                                <th class="text-center">Trades</th>
-                                <th class="text-center">Package</th>
+                                <th class="text-center" width="80"><?php _e('leaderboard_rank'); ?></th>
+                                <th><?php _e('leaderboard_trader'); ?></th>
+                                <th class="text-center"><?php _e('leaderboard_country'); ?></th>
+                                <th class="text-end"><?php _e('leaderboard_profit'); ?></th>
+                                <th class="text-center"><?php _e('stats_win_rate'); ?></th>
+                                <th class="text-center"><?php _e('leaderboard_trades'); ?></th>
+                                <th class="text-center"><?php _e('leaderboard_package'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -236,29 +236,29 @@ if (isLoggedIn()) {
         <!-- Legend -->
         <div class="card mt-4">
             <div class="card-body">
-                <h6 class="mb-3"><i class="fas fa-info-circle"></i> Keterangan</h6>
+                <h6 class="mb-3"><i class="fas fa-info-circle"></i> <?php _e('leaderboard_legend'); ?></h6>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="d-flex align-items-center mb-2">
                             <span class="rank-badge gold me-2">🥇</span>
-                            <span>Top 1 - Champion</span>
+                            <span>Top 1 - <?php _e('leaderboard_champion'); ?></span>
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="rank-badge silver me-2">🥈</span>
-                            <span>Top 2 - Runner Up</span>
+                            <span>Top 2 - <?php _e('leaderboard_runner_up'); ?></span>
                         </div>
                         <div class="d-flex align-items-center">
                             <span class="rank-badge bronze me-2">🥉</span>
-                            <span>Top 3 - Third Place</span>
+                            <span>Top 3 - <?php _e('leaderboard_third'); ?></span>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <p class="small text-muted mb-1"><i class="fas fa-shield-alt"></i> Username disamarkan untuk privasi</p>
-                        <p class="small text-muted mb-1"><i class="fas fa-sync"></i> Update setiap jam</p>
-                        <p class="small text-muted mb-0"><i class="fas fa-filter"></i> Filter by period & country</p>
+                        <p class="small text-muted mb-1"><i class="fas fa-shield-alt"></i> <?php _e('leaderboard_privacy_note'); ?></p>
+                        <p class="small text-muted mb-1"><i class="fas fa-sync"></i> <?php _e('leaderboard_update_note'); ?></p>
+                        <p class="small text-muted mb-0"><i class="fas fa-filter"></i> <?php _e('leaderboard_filter_note'); ?></p>
                     </div>
                     <div class="col-md-4">
-                        <p class="small text-muted mb-1"><strong>Win Rate Badge:</strong></p>
+                        <p class="small text-muted mb-1"><strong><?php _e('leaderboard_winrate_badge'); ?></strong></p>
                         <span class="badge bg-success me-1">80%+</span>
                         <span class="badge bg-info me-1">70-79%</span>
                         <span class="badge bg-warning text-dark me-1">60-69%</span>
@@ -272,10 +272,10 @@ if (isLoggedIn()) {
         <?php if (!isLoggedIn()): ?>
         <div class="card mt-4 bg-gradient-primary text-white">
             <div class="card-body text-center py-4">
-                <h4>Ingin masuk Leaderboard?</h4>
-                <p class="mb-3">Daftar sekarang dan mulai trading dengan ZYN Trade System!</p>
+                <h4><?php _e('leaderboard_want_join'); ?></h4>
+                <p class="mb-3"><?php _e('leaderboard_join_now'); ?></p>
                 <a href="register.php" class="btn btn-light btn-lg">
-                    <i class="fas fa-rocket"></i> Mulai Gratis
+                    <i class="fas fa-rocket"></i> <?php _e('leaderboard_start_free'); ?>
                 </a>
             </div>
         </div>
@@ -296,24 +296,24 @@ if (isLoggedIn()) {
                         </div>
                     </div>
                     <div class="col">
-                        <h5 class="mb-0">Badge Rank Anda</h5>
-                        <small class="text-muted"><?php echo $userBadgePoints; ?> badge points</small>
+                        <h5 class="mb-0"><?php _e('leaderboard_badge_stats'); ?></h5>
+                        <small class="text-muted"><?php echo $userBadgePoints; ?> <?php _e('leaderboard_badge_points'); ?></small>
                     </div>
                     <div class="col-auto text-end">
                         <div class="stat-item">
                             <span class="stat-value text-primary"><?php echo count($userBadges); ?></span>
-                            <span class="stat-label">Total Badges</span>
+                            <span class="stat-label"><?php _e('leaderboard_total_badges'); ?></span>
                         </div>
                     </div>
                     <div class="col-auto">
                         <a href="badges.php" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-eye"></i> Lihat Semua
+                            <i class="fas fa-eye"></i> <?php _e('leaderboard_view_all'); ?>
                         </a>
                     </div>
                 </div>
                 <?php if (!empty($userBadges)): ?>
                 <div class="mt-3 pt-3 border-top">
-                    <small class="text-muted d-block mb-2">Badge Terbaru:</small>
+                    <small class="text-muted d-block mb-2"><?php _e('leaderboard_recent_badges'); ?></small>
                     <div class="d-flex flex-wrap gap-2">
                         <?php foreach (array_slice($userBadges, 0, 6) as $badge): ?>
                         <?php echo BadgeSystem::renderBadge($badge['id'], 'md', true); ?>
@@ -334,19 +334,19 @@ if (isLoggedIn()) {
                 <?php if (empty($badgeLeaderboard)): ?>
                 <div class="text-center py-5">
                     <i class="fas fa-award fa-3x text-muted mb-3"></i>
-                    <h5>Belum Ada Data</h5>
-                    <p class="text-muted">Belum ada user yang mendapatkan badges.</p>
+                    <h5><?php _e('leaderboard_no_data'); ?></h5>
+                    <p class="text-muted"><?php _e('leaderboard_no_badges'); ?></p>
                 </div>
                 <?php else: ?>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-dark">
                             <tr>
-                                <th class="text-center" width="80">Rank</th>
-                                <th>Trader</th>
-                                <th class="text-center">Badges</th>
-                                <th class="text-center">Points</th>
-                                <th class="text-center">Rank</th>
+                                <th class="text-center" width="80"><?php _e('leaderboard_rank'); ?></th>
+                                <th><?php _e('leaderboard_trader'); ?></th>
+                                <th class="text-center"><?php _e('leaderboard_badges'); ?></th>
+                                <th class="text-center"><?php _e('leaderboard_points'); ?></th>
+                                <th class="text-center"><?php _e('badges_rank'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -407,7 +407,7 @@ if (isLoggedIn()) {
         <!-- Badge Tiers Legend -->
         <div class="card mt-4">
             <div class="card-body">
-                <h6 class="mb-3"><i class="fas fa-info-circle"></i> Badge Rank Tiers</h6>
+                <h6 class="mb-3"><i class="fas fa-info-circle"></i> <?php _e('leaderboard_badge_tiers'); ?></h6>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center mb-2">
@@ -457,10 +457,10 @@ if (isLoggedIn()) {
         <?php if (!isLoggedIn()): ?>
         <div class="card mt-4 bg-gradient-primary text-white">
             <div class="card-body text-center py-4">
-                <h4>Mulai Kumpulkan Badges!</h4>
-                <p class="mb-3">Daftar dan raih achievements untuk mendapat badge points!</p>
+                <h4><?php _e('leaderboard_collect_badges'); ?></h4>
+                <p class="mb-3"><?php _e('leaderboard_collect_desc'); ?></p>
                 <a href="register.php" class="btn btn-light btn-lg">
-                    <i class="fas fa-rocket"></i> Mulai Gratis
+                    <i class="fas fa-rocket"></i> <?php _e('leaderboard_start_free'); ?>
                 </a>
             </div>
         </div>

@@ -65,11 +65,11 @@ function getPerformanceLevelColor($level) {
 <!-- Page Header -->
 <div class="db-page-header">
     <div>
-        <h1 class="db-page-title"><i class="fas fa-chart-bar"></i> Statistics</h1>
-        <p class="db-page-subtitle">Analisis detail performa trading Anda</p>
+        <h1 class="db-page-title"><i class="fas fa-chart-bar"></i> <?php _e('stats_title'); ?></h1>
+        <p class="db-page-subtitle"><?php _e('stats_subtitle'); ?></p>
     </div>
     <a href="dashboard.php" class="db-btn db-btn-outline">
-        <i class="fas fa-arrow-left"></i> Dashboard
+        <i class="fas fa-arrow-left"></i> <?php _e('nav_dashboard'); ?>
     </a>
 </div>
 
@@ -77,12 +77,12 @@ function getPerformanceLevelColor($level) {
 <div class="db-card mb-4 db-fade-in">
     <div class="db-card-body py-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span class="text-muted">Filter Periode:</span>
+            <span class="text-muted"><?php _e('stats_filter_period'); ?></span>
             <div class="d-flex gap-2 flex-wrap">
                 <?php foreach ($validPeriods as $p): ?>
                     <?php
                     $disabled = $p > ($maxPeriod[$package] ?? 30);
-                    $label = $p == 7 ? '7 Hari' : ($p == 30 ? '30 Hari' : ($p == 90 ? '3 Bulan' : ($p == 180 ? '6 Bulan' : '1 Tahun')));
+                    $label = $p == 7 ? __('stats_7_days') : ($p == 30 ? __('stats_30_days') : ($p == 90 ? __('stats_3_months') : ($p == 180 ? __('stats_6_months') : __('stats_1_year'))));
                     ?>
                     <a href="?period=<?php echo $p; ?>"
                        class="db-btn db-btn-sm <?php echo $period == $p ? 'db-btn-primary' : 'db-btn-outline'; ?> <?php echo $disabled ? 'disabled' : ''; ?>"
@@ -106,37 +106,37 @@ function getPerformanceLevelColor($level) {
             <div class="db-stat-card">
                 <div class="db-stat-icon"><i class="fas fa-chart-bar"></i></div>
                 <div class="db-stat-value"><?php echo $stats['overall']['total_trades'] ?? 0; ?></div>
-                <div class="db-stat-label">Total Trades</div>
+                <div class="db-stat-label"><?php _e('stats_total_trades'); ?></div>
             </div>
             <div class="db-stat-card success">
                 <div class="db-stat-icon"><i class="fas fa-check-circle"></i></div>
                 <div class="db-stat-value"><?php echo $stats['overall']['wins'] ?? 0; ?></div>
-                <div class="db-stat-label">Wins</div>
+                <div class="db-stat-label"><?php _e('stats_wins'); ?></div>
             </div>
             <div class="db-stat-card danger">
                 <div class="db-stat-icon"><i class="fas fa-times-circle"></i></div>
                 <div class="db-stat-value"><?php echo $stats['overall']['losses'] ?? 0; ?></div>
-                <div class="db-stat-label">Losses</div>
+                <div class="db-stat-label"><?php _e('stats_losses'); ?></div>
             </div>
             <div class="db-stat-card">
                 <div class="db-stat-icon"><i class="fas fa-percentage"></i></div>
                 <div class="db-stat-value <?php echo ($stats['overall']['win_rate'] ?? 0) >= 70 ? 'text-success' : ''; ?>">
                     <?php echo number_format($stats['overall']['win_rate'] ?? 0, 1); ?>%
                 </div>
-                <div class="db-stat-label">Win Rate</div>
+                <div class="db-stat-label"><?php _e('stats_win_rate'); ?></div>
             </div>
         </div>
 
         <!-- P&L Card -->
         <div class="db-card mb-4 db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-dollar-sign"></i> Profit & Loss</h5>
+                <h5 class="db-card-title"><i class="fas fa-dollar-sign"></i> <?php _e('stats_pnl'); ?></h5>
             </div>
             <div class="db-card-body">
                 <div class="row text-center">
                     <div class="col-md-4 mb-3 mb-md-0">
                         <div class="p-3 rounded" style="background: rgba(var(--db-primary-rgb), 0.05);">
-                            <small class="text-muted d-block mb-1">Total P&L</small>
+                            <small class="text-muted d-block mb-1"><?php _e('stats_total_pnl'); ?></small>
                             <h3 class="mb-0 <?php echo ($stats['overall']['total_pnl'] ?? 0) >= 0 ? 'text-success' : 'text-danger'; ?>">
                                 <?php echo ($stats['overall']['total_pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format(abs($stats['overall']['total_pnl'] ?? 0), 2); ?>
                             </h3>
@@ -144,13 +144,13 @@ function getPerformanceLevelColor($level) {
                     </div>
                     <div class="col-md-4 mb-3 mb-md-0">
                         <div class="p-3 rounded" style="background: rgba(var(--db-success-rgb), 0.05);">
-                            <small class="text-muted d-block mb-1">Best Trade</small>
+                            <small class="text-muted d-block mb-1"><?php _e('stats_best_trade'); ?></small>
                             <h3 class="mb-0 text-success">+$<?php echo number_format($stats['overall']['best_trade'] ?? 0, 2); ?></h3>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3 rounded" style="background: rgba(var(--db-danger-rgb), 0.05);">
-                            <small class="text-muted d-block mb-1">Worst Trade</small>
+                            <small class="text-muted d-block mb-1"><?php _e('stats_worst_trade'); ?></small>
                             <h3 class="mb-0 text-danger">$<?php echo number_format($stats['overall']['worst_trade'] ?? 0, 2); ?></h3>
                         </div>
                     </div>
@@ -158,15 +158,15 @@ function getPerformanceLevelColor($level) {
                 <hr style="border-color: var(--db-border);">
                 <div class="row text-center">
                     <div class="col-4">
-                        <small class="text-muted d-block">Total Profit</small>
+                        <small class="text-muted d-block"><?php _e('stats_total_profit'); ?></small>
                         <span class="text-success fw-bold">+$<?php echo number_format($stats['overall']['total_profit'] ?? 0, 2); ?></span>
                     </div>
                     <div class="col-4">
-                        <small class="text-muted d-block">Total Loss</small>
+                        <small class="text-muted d-block"><?php _e('stats_total_loss'); ?></small>
                         <span class="text-danger fw-bold">-$<?php echo number_format($stats['overall']['total_loss'] ?? 0, 2); ?></span>
                     </div>
                     <div class="col-4">
-                        <small class="text-muted d-block">Avg per Trade</small>
+                        <small class="text-muted d-block"><?php _e('stats_avg_trade'); ?></small>
                         <span class="fw-bold <?php echo ($stats['overall']['avg_trade'] ?? 0) >= 0 ? 'text-success' : 'text-danger'; ?>">
                             $<?php echo number_format($stats['overall']['avg_trade'] ?? 0, 2); ?>
                         </span>
@@ -178,22 +178,22 @@ function getPerformanceLevelColor($level) {
         <!-- Strategy Breakdown -->
         <div class="db-card mb-4 db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-chess"></i> Performa per Strategi</h5>
+                <h5 class="db-card-title"><i class="fas fa-chess"></i> <?php _e('stats_per_strategy'); ?></h5>
             </div>
             <div class="db-card-body" style="padding: 0;">
                 <?php if (empty($stats['by_strategy'])): ?>
                 <div class="text-center py-5">
                     <i class="fas fa-chart-pie fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
-                    <p class="text-muted">Belum ada data trading</p>
+                    <p class="text-muted"><?php _e('stats_no_data'); ?></p>
                 </div>
                 <?php else: ?>
                 <div class="table-responsive">
                     <table class="db-table">
                         <thead>
                             <tr>
-                                <th>Strategi</th>
-                                <th class="text-center">Trades</th>
-                                <th class="text-center">Win Rate</th>
+                                <th><?php _e('stats_strategy'); ?></th>
+                                <th class="text-center"><?php _e('stats_trades'); ?></th>
+                                <th class="text-center"><?php _e('stats_win_rate'); ?></th>
                                 <th class="text-end">P&L</th>
                             </tr>
                         </thead>
@@ -222,7 +222,7 @@ function getPerformanceLevelColor($level) {
         <!-- Trading Calendar -->
         <div class="db-card mb-4 db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-calendar-alt"></i> Trading Calendar</h5>
+                <h5 class="db-card-title"><i class="fas fa-calendar-alt"></i> <?php _e('stats_calendar'); ?></h5>
                 <div class="d-flex gap-1">
                     <?php
                     $prevMonth = $month - 1;
@@ -244,7 +244,7 @@ function getPerformanceLevelColor($level) {
             <div class="db-card-body">
                 <div class="trading-calendar">
                     <div class="calendar-header">
-                        <div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div><div>Min</div>
+                        <div><?php _e('stats_day_mon'); ?></div><div><?php _e('stats_day_tue'); ?></div><div><?php _e('stats_day_wed'); ?></div><div><?php _e('stats_day_thu'); ?></div><div><?php _e('stats_day_fri'); ?></div><div><?php _e('stats_day_sat'); ?></div><div><?php _e('stats_day_sun'); ?></div>
                     </div>
                     <div class="calendar-grid">
                         <?php
@@ -279,10 +279,10 @@ function getPerformanceLevelColor($level) {
                     </div>
                 </div>
                 <div class="mt-3 d-flex gap-3 flex-wrap">
-                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend profit"></span> Profit</span>
-                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend loss"></span> Loss</span>
-                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend no-trade"></span> No Trade</span>
-                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend weekend"></span> Weekend</span>
+                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend profit"></span> <?php _e('stats_legend_profit'); ?></span>
+                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend loss"></span> <?php _e('stats_legend_loss'); ?></span>
+                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend no-trade"></span> <?php _e('stats_legend_no_trade'); ?></span>
+                    <span class="d-flex align-items-center gap-2"><span class="calendar-legend weekend"></span> <?php _e('stats_legend_weekend'); ?></span>
                 </div>
             </div>
         </div>
@@ -292,11 +292,11 @@ function getPerformanceLevelColor($level) {
             <div class="col-md-6">
                 <div class="db-card db-fade-in">
                     <div class="db-card-header">
-                        <h5 class="db-card-title"><i class="fas fa-globe"></i> Per Market</h5>
+                        <h5 class="db-card-title"><i class="fas fa-globe"></i> <?php _e('stats_per_market'); ?></h5>
                     </div>
                     <div class="db-card-body" style="padding: 0;">
                         <?php if (empty($stats['by_market'])): ?>
-                        <div class="text-center py-4"><small class="text-muted">No data</small></div>
+                        <div class="text-center py-4"><small class="text-muted"><?php _e('stats_no_data'); ?></small></div>
                         <?php else: ?>
                         <?php foreach ($stats['by_market'] as $market): ?>
                         <div class="d-flex justify-content-between p-3 border-bottom" style="border-color: var(--db-border) !important;">
@@ -313,11 +313,11 @@ function getPerformanceLevelColor($level) {
             <div class="col-md-6">
                 <div class="db-card db-fade-in">
                     <div class="db-card-header">
-                        <h5 class="db-card-title"><i class="fas fa-clock"></i> Per Timeframe</h5>
+                        <h5 class="db-card-title"><i class="fas fa-clock"></i> <?php _e('stats_per_timeframe'); ?></h5>
                     </div>
                     <div class="db-card-body" style="padding: 0;">
                         <?php if (empty($stats['by_timeframe'])): ?>
-                        <div class="text-center py-4"><small class="text-muted">No data</small></div>
+                        <div class="text-center py-4"><small class="text-muted"><?php _e('stats_no_data'); ?></small></div>
                         <?php else: ?>
                         <?php foreach ($stats['by_timeframe'] as $tf): ?>
                         <div class="d-flex justify-content-between p-3 border-bottom" style="border-color: var(--db-border) !important;">
@@ -339,7 +339,7 @@ function getPerformanceLevelColor($level) {
         <!-- Performance Score -->
         <div class="db-card mb-4 db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-star"></i> Performance Score</h5>
+                <h5 class="db-card-title"><i class="fas fa-star"></i> <?php _e('stats_perf_score'); ?></h5>
             </div>
             <div class="db-card-body text-center">
                 <div class="db-perf-circle mb-3">
@@ -361,11 +361,11 @@ function getPerformanceLevelColor($level) {
                 <div class="mt-4 text-start">
                     <?php
                     $breakdownItems = [
-                        'win_rate' => ['label' => 'Win Rate', 'max' => 35, 'color' => 'success'],
-                        'consistency' => ['label' => 'Konsistensi', 'max' => 25, 'color' => 'info'],
-                        'profit_factor' => ['label' => 'Profit Factor', 'max' => 20, 'color' => 'warning'],
-                        'discipline' => ['label' => 'Disiplin', 'max' => 10, 'color' => 'primary'],
-                        'streak_bonus' => ['label' => 'Streak Bonus', 'max' => 10, 'color' => 'danger']
+                        'win_rate' => ['label' => __('stats_win_rate'), 'max' => 35, 'color' => 'success'],
+                        'consistency' => ['label' => __('stats_consistency'), 'max' => 25, 'color' => 'info'],
+                        'profit_factor' => ['label' => __('stats_profit_factor'), 'max' => 20, 'color' => 'warning'],
+                        'discipline' => ['label' => __('stats_discipline'), 'max' => 10, 'color' => 'primary'],
+                        'streak_bonus' => ['label' => __('stats_streak_bonus'), 'max' => 10, 'color' => 'danger']
                     ];
                     foreach ($breakdownItems as $key => $item):
                         $value = $performanceScore['breakdown'][$key] ?? 0;
@@ -389,7 +389,7 @@ function getPerformanceLevelColor($level) {
         <!-- Streaks -->
         <div class="db-card mb-4 db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-fire"></i> Streaks</h5>
+                <h5 class="db-card-title"><i class="fas fa-fire"></i> <?php _e('stats_streaks'); ?></h5>
             </div>
             <div class="db-card-body">
                 <div class="row text-center">
@@ -397,17 +397,17 @@ function getPerformanceLevelColor($level) {
                         <div class="streak-value <?php echo ($stats['streaks']['current'] ?? 0) > 0 ? 'text-success' : (($stats['streaks']['current'] ?? 0) < 0 ? 'text-danger' : ''); ?>">
                             <?php echo abs($stats['streaks']['current'] ?? 0); ?>
                         </div>
-                        <small class="text-muted">Current</small>
+                        <small class="text-muted"><?php _e('stats_current'); ?></small>
                         <div class="small text-muted"><?php echo ($stats['streaks']['current'] ?? 0) > 0 ? 'Win' : (($stats['streaks']['current'] ?? 0) < 0 ? 'Loss' : '-'); ?></div>
                     </div>
                     <div class="col-4">
                         <div class="streak-value text-success"><?php echo $stats['streaks']['max_win'] ?? 0; ?></div>
-                        <small class="text-muted">Best Win</small>
+                        <small class="text-muted"><?php _e('stats_best_win'); ?></small>
                         <div class="small text-muted">Streak</div>
                     </div>
                     <div class="col-4">
                         <div class="streak-value text-danger"><?php echo $stats['streaks']['max_loss'] ?? 0; ?></div>
-                        <small class="text-muted">Worst Loss</small>
+                        <small class="text-muted"><?php _e('stats_worst_loss'); ?></small>
                         <div class="small text-muted">Streak</div>
                     </div>
                 </div>
@@ -417,7 +417,7 @@ function getPerformanceLevelColor($level) {
         <!-- Achievements -->
         <div class="db-card db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-trophy"></i> Achievements</h5>
+                <h5 class="db-card-title"><i class="fas fa-trophy"></i> <?php _e('stats_achievements'); ?></h5>
             </div>
             <div class="db-card-body">
                 <div class="achievements-grid">
@@ -433,7 +433,7 @@ function getPerformanceLevelColor($level) {
                     <?php endforeach; ?>
                 </div>
                 <div class="mt-3 text-center">
-                    <small class="text-muted"><?php echo count($achievements); ?>/<?php echo count($allAchievements); ?> unlocked</small>
+                    <small class="text-muted"><?php echo count($achievements); ?>/<?php echo count($allAchievements); ?> <?php _e('stats_unlocked'); ?></small>
                 </div>
             </div>
         </div>
