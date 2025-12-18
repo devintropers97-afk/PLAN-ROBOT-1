@@ -232,20 +232,20 @@ require_once 'includes/header.php';
 
                     <!-- CTA Section -->
                     <div class="legal-cta">
-                        <h4 class="legal-cta-title">I Understand the Risks</h4>
-                        <p class="legal-cta-text">By proceeding, you confirm that you have read and understood this Risk Disclaimer</p>
+                        <h4 class="legal-cta-title"><?php _e('disclaimer_cta_title'); ?></h4>
+                        <p class="legal-cta-text"><?php _e('disclaimer_cta_text'); ?></p>
                         <a href="register.php" class="legal-btn">
                             <i class="fas fa-check"></i>
-                            I Accept the Risks - Continue
+                            <?php _e('disclaimer_cta_button'); ?>
                         </a>
                     </div>
 
                     <!-- Navigation -->
                     <div class="legal-nav">
-                        <a href="terms.php">Terms of Service</a>
-                        <a href="privacy.php">Privacy Policy</a>
-                        <a href="refund.php">Refund Policy</a>
-                        <a href="faq.php">FAQ</a>
+                        <a href="terms.php"><?php _e('legal_nav_terms'); ?></a>
+                        <a href="privacy.php"><?php _e('legal_nav_privacy'); ?></a>
+                        <a href="refund.php"><?php _e('legal_nav_refund'); ?></a>
+                        <a href="faq.php"><?php _e('legal_nav_faq'); ?></a>
                     </div>
                 </div>
             </div>

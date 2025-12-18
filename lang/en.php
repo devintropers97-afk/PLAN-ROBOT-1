@@ -1441,4 +1441,21 @@ return [
     'error_previous_page' => 'Previous Page',
     'error_need_help' => 'Need help urgently?',
     'error_contact_whatsapp' => 'Contact Support via WhatsApp',
+
+    // Legal Navigation Links
+    'legal_nav_terms' => 'Terms of Service',
+    'legal_nav_privacy' => 'Privacy Policy',
+    'legal_nav_disclaimer' => 'Risk Disclaimer',
+    'legal_nav_refund' => 'Refund Policy',
+    'legal_nav_faq' => 'FAQ',
+
+    // Terms Page - CTA Section
+    'terms_cta_title' => 'Ready to Start Trading?',
+    'terms_cta_text' => 'By creating an account, you agree to these Terms of Service',
+    'terms_cta_button' => 'I Accept - Create Account',
+
+    // Disclaimer Page - CTA Section
+    'disclaimer_cta_title' => 'I Understand the Risks',
+    'disclaimer_cta_text' => 'By proceeding, you confirm that you have read and understood this Risk Disclaimer',
+    'disclaimer_cta_button' => 'I Accept the Risks - Continue',
 ];

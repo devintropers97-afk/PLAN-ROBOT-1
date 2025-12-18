@@ -1442,4 +1442,21 @@ return [
     'error_previous_page' => 'Halaman Sebelumnya',
     'error_need_help' => 'Butuh bantuan segera?',
     'error_contact_whatsapp' => 'Hubungi Support via WhatsApp',
+
+    // Legal Navigation Links
+    'legal_nav_terms' => 'Syarat & Ketentuan',
+    'legal_nav_privacy' => 'Kebijakan Privasi',
+    'legal_nav_disclaimer' => 'Risk Disclaimer',
+    'legal_nav_refund' => 'Kebijakan Refund',
+    'legal_nav_faq' => 'FAQ',
+
+    // Terms Page - CTA Section
+    'terms_cta_title' => 'Siap Mulai Trading?',
+    'terms_cta_text' => 'Dengan membuat akun, Anda menyetujui Syarat & Ketentuan ini',
+    'terms_cta_button' => 'Saya Setuju - Buat Akun',
+
+    // Disclaimer Page - CTA Section
+    'disclaimer_cta_title' => 'Saya Memahami Risikonya',
+    'disclaimer_cta_text' => 'Dengan melanjutkan, Anda mengkonfirmasi telah membaca dan memahami Risk Disclaimer ini',
+    'disclaimer_cta_button' => 'Saya Terima Risiko - Lanjutkan',
 ];

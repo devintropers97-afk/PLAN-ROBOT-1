@@ -278,20 +278,20 @@ require_once 'includes/header.php';
 
                     <!-- CTA Section -->
                     <div class="legal-cta">
-                        <h4 class="legal-cta-title">Ready to Start Trading?</h4>
-                        <p class="legal-cta-text">By creating an account, you agree to these Terms of Service</p>
+                        <h4 class="legal-cta-title"><?php _e('terms_cta_title'); ?></h4>
+                        <p class="legal-cta-text"><?php _e('terms_cta_text'); ?></p>
                         <a href="register.php" class="legal-btn">
                             <i class="fas fa-check-circle"></i>
-                            I Accept - Create Account
+                            <?php _e('terms_cta_button'); ?>
                         </a>
                     </div>
 
                     <!-- Navigation -->
                     <div class="legal-nav">
-                        <a href="privacy.php">Privacy Policy</a>
-                        <a href="disclaimer.php">Risk Disclaimer</a>
-                        <a href="refund.php">Refund Policy</a>
-                        <a href="faq.php">FAQ</a>
+                        <a href="privacy.php"><?php _e('legal_nav_privacy'); ?></a>
+                        <a href="disclaimer.php"><?php _e('legal_nav_disclaimer'); ?></a>
+                        <a href="refund.php"><?php _e('legal_nav_refund'); ?></a>
+                        <a href="faq.php"><?php _e('legal_nav_faq'); ?></a>
                     </div>
                 </div>
             </div>

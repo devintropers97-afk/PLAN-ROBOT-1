@@ -266,10 +266,10 @@ require_once 'includes/header.php';
 
                     <!-- Navigation -->
                     <div class="legal-nav">
-                        <a href="terms.php">Terms of Service</a>
-                        <a href="disclaimer.php">Risk Disclaimer</a>
-                        <a href="refund.php">Refund Policy</a>
-                        <a href="faq.php">FAQ</a>
+                        <a href="terms.php"><?php _e('legal_nav_terms'); ?></a>
+                        <a href="disclaimer.php"><?php _e('legal_nav_disclaimer'); ?></a>
+                        <a href="refund.php"><?php _e('legal_nav_refund'); ?></a>
+                        <a href="faq.php"><?php _e('legal_nav_faq'); ?></a>
                     </div>
                 </div>
             </div>

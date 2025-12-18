@@ -370,10 +370,10 @@ require_once 'includes/header.php';
 
                     <!-- Navigation -->
                     <div class="legal-nav">
-                        <a href="terms.php">Terms of Service</a>
-                        <a href="privacy.php">Privacy Policy</a>
-                        <a href="disclaimer.php">Risk Disclaimer</a>
-                        <a href="refund.php">Refund Policy</a>
+                        <a href="terms.php"><?php _e('legal_nav_terms'); ?></a>
+                        <a href="privacy.php"><?php _e('legal_nav_privacy'); ?></a>
+                        <a href="disclaimer.php"><?php _e('legal_nav_disclaimer'); ?></a>
+                        <a href="refund.php"><?php _e('legal_nav_refund'); ?></a>
                     </div>
                 </div>
             </div>
