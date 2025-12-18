@@ -3,7 +3,7 @@
  * ZYN Trade System - Market Sentiment Indicator
  * FASE 3: Market Sentiment Indicator (FINAL ZYN - Inovasi #10)
  */
-$page_title = 'Market Sentiment';
+$page_title = __('sentiment_title');
 require_once 'dashboard/includes/dashboard-header.php';
 
 // Mock market sentiment data
@@ -102,21 +102,21 @@ unset($data);
 <!-- Page Header -->
 <div class="db-page-header">
     <div>
-        <h1 class="db-page-title"><i class="fas fa-compass"></i> Market Sentiment</h1>
-        <p class="db-page-subtitle">Real-time market analysis and trading signals</p>
+        <h1 class="db-page-title"><i class="fas fa-compass"></i> <?php _e('sentiment_heading'); ?></h1>
+        <p class="db-page-subtitle"><?php _e('sentiment_subtitle'); ?></p>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <span class="db-badge info">
-            <i class="fas fa-sync-alt fa-spin me-1"></i> Live Updates
+            <i class="fas fa-sync-alt fa-spin me-1"></i> <?php _e('sentiment_live_updates'); ?>
         </span>
-        <span class="text-muted small">Last update: <?php echo date('H:i:s'); ?> WIB</span>
+        <span class="text-muted small"><?php _e('sentiment_last_update'); ?>: <?php echo date('H:i:s'); ?> WIB</span>
     </div>
 </div>
 
 <!-- Market Sessions -->
 <div class="db-card mb-4 db-fade-in">
     <div class="db-card-header">
-        <h5 class="db-card-title"><i class="fas fa-globe"></i> Market Sessions</h5>
+        <h5 class="db-card-title"><i class="fas fa-globe"></i> <?php _e('sentiment_market_sessions'); ?></h5>
     </div>
     <div class="db-card-body">
         <div class="row g-3">
@@ -169,13 +169,13 @@ unset($data);
                     <div class="recommendation-badge <?php echo strtolower($data['recommendation']); ?>">
                         <?php echo $data['recommendation']; ?>
                     </div>
-                    <small class="text-muted d-block mt-1">Signal Strength: <strong><?php echo ucfirst($data['strength']); ?></strong></small>
+                    <small class="text-muted d-block mt-1"><?php _e('sentiment_signal_strength'); ?>: <strong><?php echo ucfirst($data['strength']); ?></strong></small>
                 </div>
 
                 <!-- Timeframe Breakdown -->
                 <div class="timeframe-breakdown">
                     <div class="d-flex justify-content-between text-muted small mb-2">
-                        <span>Timeframe Analysis</span>
+                        <span><?php _e('sentiment_timeframe_analysis'); ?></span>
                     </div>
                     <?php foreach ($data['timeframes'] as $tf => $tfData): ?>
                     <div class="tf-row">
@@ -205,13 +205,13 @@ unset($data);
                 <!-- Market Conditions -->
                 <div class="market-conditions mt-3 pt-3" style="border-top: 1px solid var(--db-border);">
                     <div class="d-flex justify-content-between small">
-                        <span class="text-muted">News Impact:</span>
+                        <span class="text-muted"><?php _e('sentiment_news_impact'); ?>:</span>
                         <span class="badge bg-<?php echo $data['news_impact'] === 'high' ? 'danger' : ($data['news_impact'] === 'medium' ? 'warning' : 'success'); ?>">
                             <?php echo ucfirst($data['news_impact']); ?>
                         </span>
                     </div>
                     <div class="d-flex justify-content-between small mt-1">
-                        <span class="text-muted">Volatility:</span>
+                        <span class="text-muted"><?php _e('sentiment_volatility'); ?>:</span>
                         <span class="badge bg-<?php echo $data['volatility'] === 'high' ? 'danger' : ($data['volatility'] === 'normal' ? 'warning' : 'success'); ?>">
                             <?php echo ucfirst($data['volatility']); ?>
                         </span>
@@ -226,20 +226,20 @@ unset($data);
 <!-- Upcoming News Events -->
 <div class="db-card db-fade-in">
     <div class="db-card-header">
-        <h5 class="db-card-title"><i class="fas fa-newspaper"></i> Upcoming News Events</h5>
-        <span class="text-muted small">Today, <?php echo date('d M Y'); ?></span>
+        <h5 class="db-card-title"><i class="fas fa-newspaper"></i> <?php _e('sentiment_upcoming_news'); ?></h5>
+        <span class="text-muted small"><?php _e('sentiment_today'); ?>, <?php echo date('d M Y'); ?></span>
     </div>
     <div class="db-card-body" style="padding: 0;">
         <div class="table-responsive">
             <table class="db-table">
                 <thead>
                     <tr>
-                        <th>Time (WIB)</th>
-                        <th>Currency</th>
-                        <th>Event</th>
-                        <th>Impact</th>
-                        <th>Forecast</th>
-                        <th>Action</th>
+                        <th><?php _e('sentiment_time'); ?></th>
+                        <th><?php _e('sentiment_currency'); ?></th>
+                        <th><?php _e('sentiment_event'); ?></th>
+                        <th><?php _e('sentiment_impact'); ?></th>
+                        <th><?php _e('sentiment_forecast'); ?></th>
+                        <th><?php _e('sentiment_action'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -278,7 +278,7 @@ unset($data);
     <div class="d-flex gap-3">
         <i class="fas fa-exclamation-triangle fa-lg mt-1"></i>
         <div>
-            <strong>Disclaimer:</strong> Market sentiment indicators are for informational purposes only. Past performance does not guarantee future results. Always use proper risk management.
+            <strong>Disclaimer:</strong> <?php _e('sentiment_disclaimer'); ?>
         </div>
     </div>
 </div>

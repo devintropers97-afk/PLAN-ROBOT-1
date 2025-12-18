@@ -7,7 +7,19 @@
  */
 
 http_response_code(500);
-$page_title = 'Server Error';
+
+// Try to include config for language support, fallback to defaults if unavailable
+$lang_loaded = false;
+if (file_exists(__DIR__ . '/includes/config.php')) {
+    try {
+        require_once __DIR__ . '/includes/config.php';
+        $lang_loaded = true;
+    } catch (Exception $e) {
+        // Config failed to load, use defaults
+    }
+}
+
+$page_title = $lang_loaded ? __('error_500_title') : 'Server Error';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -214,21 +226,20 @@ $page_title = 'Server Error';
             </div>
         </div>
 
-        <div class="error-code">500</div>
+        <div class="error-code"><?php echo $lang_loaded ? __('error_500_heading') : '500'; ?></div>
 
-        <h1 class="error-title">Terjadi Kesalahan Server</h1>
+        <h1 class="error-title"><?php echo $lang_loaded ? __('error_500_message') : 'Terjadi Kesalahan Server'; ?></h1>
 
         <p class="error-desc">
-            Maaf, server kami sedang mengalami masalah teknis.
-            Tim kami sudah diberitahu dan sedang memperbaiki masalah ini.
+            <?php echo $lang_loaded ? __('error_500_desc') : 'Maaf, server kami sedang mengalami masalah teknis. Tim kami sudah diberitahu dan sedang memperbaiki masalah ini.'; ?>
         </p>
 
         <div class="error-actions">
             <button onclick="window.location.reload()" class="btn btn-primary">
-                <i class="fas fa-sync-alt"></i> Coba Lagi
+                <i class="fas fa-sync-alt"></i> <?php echo $lang_loaded ? __('loading') : 'Coba Lagi'; ?>
             </button>
             <a href="/" class="btn btn-secondary">
-                <i class="fas fa-home"></i> Kembali ke Home
+                <i class="fas fa-home"></i> <?php echo $lang_loaded ? __('error_back_home') : 'Kembali ke Home'; ?>
             </a>
         </div>
 
@@ -249,7 +260,7 @@ $page_title = 'Server Error';
 
         <div class="contact-support">
             <i class="fab fa-whatsapp"></i>
-            Butuh bantuan segera? <a href="https://wa.me/6281234567890" target="_blank">Hubungi Support via WhatsApp</a>
+            <?php echo $lang_loaded ? __('error_contact_support') : 'Butuh bantuan segera?'; ?> <a href="https://wa.me/6281234567890" target="_blank"><?php echo $lang_loaded ? __('login_help') : 'Hubungi Support via WhatsApp'; ?></a>
         </div>
     </div>
 

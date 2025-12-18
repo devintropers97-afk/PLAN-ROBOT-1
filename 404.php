@@ -7,7 +7,19 @@
  */
 
 http_response_code(404);
-$page_title = 'Halaman Tidak Ditemukan';
+
+// Try to include config for language support, fallback to defaults if unavailable
+$lang_loaded = false;
+if (file_exists(__DIR__ . '/includes/config.php')) {
+    try {
+        require_once __DIR__ . '/includes/config.php';
+        $lang_loaded = true;
+    } catch (Exception $e) {
+        // Config failed to load, use defaults
+    }
+}
+
+$page_title = $lang_loaded ? __('error_404_title') : 'Halaman Tidak Ditemukan';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -188,21 +200,20 @@ $page_title = 'Halaman Tidak Ditemukan';
             <i class="fas fa-robot"></i>
         </div>
 
-        <div class="error-code">404</div>
+        <div class="error-code"><?php echo $lang_loaded ? __('error_404_heading') : '404'; ?></div>
 
-        <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+        <h1 class="error-title"><?php echo $lang_loaded ? __('error_404_message') : 'Halaman Tidak Ditemukan'; ?></h1>
 
         <p class="error-desc">
-            Maaf, halaman yang Anda cari tidak ada atau sudah dipindahkan.
-            Robot kami tidak bisa menemukan halaman ini.
+            <?php echo $lang_loaded ? __('error_404_desc') : 'Maaf, halaman yang Anda cari tidak ada atau sudah dipindahkan. Robot kami tidak bisa menemukan halaman ini.'; ?>
         </p>
 
         <div class="error-actions">
             <a href="/" class="btn btn-primary">
-                <i class="fas fa-home"></i> Kembali ke Home
+                <i class="fas fa-home"></i> <?php echo $lang_loaded ? __('error_back_home') : 'Kembali ke Home'; ?>
             </a>
             <a href="javascript:history.back()" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Halaman Sebelumnya
+                <i class="fas fa-arrow-left"></i> <?php echo $lang_loaded ? __('common_back') : 'Halaman Sebelumnya'; ?>
             </a>
         </div>
 
