@@ -389,7 +389,26 @@ function getDefaultRobotSettings($user_id) {
         'current_daily_pnl' => 0,
         'auto_pause_triggered' => 0,
         'auto_pause_on_tp' => 1,
-        'auto_pause_on_ml' => 1
+        'auto_pause_on_ml' => 1,
+        'schedule_mode' => 'auto_24h',
+        'schedule_start_time' => null,
+        'schedule_end_time' => null,
+        'schedule_sessions' => null,
+        'schedule_per_day' => null,
+        'weekend_auto_off' => 1,
+        'resume_behavior' => 'next_session',
+        'notification_enabled' => 1,
+        'sound_enabled' => 1,
+        'money_management_type' => 'flat',
+        'martingale_step' => 0,
+        'martingale_max_steps' => 3,
+        'martingale_multiplier' => 2.00,
+        'martingale_base_amount' => 10000,
+        'notify_on_trade' => 1,
+        'notify_on_error' => 1,
+        'notify_on_pause' => 1,
+        'daily_target_amount' => 50,
+        'daily_target_auto_stop' => 0
     ];
 }
 
@@ -415,7 +434,12 @@ function updateRobotSettings($user_id, $data) {
         'daily_limit', 'take_profit_target', 'max_loss_limit', 'schedule_mode',
         'active_strategies', 'strategy_id', 'markets', 'timeframes',
         'auto_pause_on_tp', 'auto_pause_on_ml', 'current_daily_pnl',
-        'auto_pause_triggered', 'auto_pause_reason'
+        'auto_pause_triggered', 'auto_pause_reason',
+        'schedule_start_time', 'schedule_end_time', 'schedule_sessions', 'schedule_per_day',
+        'weekend_auto_off', 'resume_behavior', 'notification_enabled', 'sound_enabled',
+        'money_management_type', 'martingale_step', 'martingale_max_steps',
+        'martingale_multiplier', 'martingale_base_amount', 'notify_on_trade',
+        'notify_on_error', 'notify_on_pause', 'daily_target_amount', 'daily_target_auto_stop'
     ];
 
     $updates = [];
