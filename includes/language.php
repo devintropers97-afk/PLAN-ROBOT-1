@@ -42,7 +42,13 @@ function initLanguage() {
     if (isset($_GET['lang']) && isValidLanguage($_GET['lang'])) {
         $lang = $_GET['lang'];
         $_SESSION['language'] = $lang;
-        setcookie('language', $lang, time() + (365 * 24 * 60 * 60), '/');
+        setcookie('language', $lang, [
+            'expires' => time() + (365 * 24 * 60 * 60),
+            'path' => '/',
+            'secure' => isset($_SERVER['HTTPS']),
+            'httponly' => false, // Allow JS access for language switcher
+            'samesite' => 'Lax'
+        ]);
     } elseif (isset($_SESSION['language']) && isValidLanguage($_SESSION['language'])) {
         $lang = $_SESSION['language'];
     } elseif (isset($_COOKIE['language']) && isValidLanguage($_COOKIE['language'])) {

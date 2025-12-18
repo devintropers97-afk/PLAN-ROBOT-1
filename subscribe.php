@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
     $payment_method = cleanInput($_POST['payment_method'] ?? '');
     $payment_proof = '';
 
-    // Handle file upload
+    // Handle file upload with security validation
     if (isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = 'uploads/payments/';
         if (!is_dir($upload_dir)) {
@@ -68,14 +68,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
         }
 
         $file_ext = strtolower(pathinfo($_FILES['payment_proof']['name'], PATHINFO_EXTENSION));
-        $allowed = ['jpg', 'jpeg', 'png', 'pdf'];
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'pdf'];
+        $allowed_mime = ['image/jpeg', 'image/png', 'application/pdf'];
 
-        if (in_array($file_ext, $allowed) && $_FILES['payment_proof']['size'] <= MAX_FILE_SIZE) {
-            $filename = 'payment_' . $user['id'] . '_' . time() . '.' . $file_ext;
-            $filepath = $upload_dir . $filename;
+        // Validate extension
+        if (!in_array($file_ext, $allowed_ext)) {
+            $error = 'Invalid file type. Only JPG, PNG, and PDF allowed.';
+        } elseif ($_FILES['payment_proof']['size'] > MAX_FILE_SIZE) {
+            $error = 'File too large. Maximum size is ' . (MAX_FILE_SIZE / 1024 / 1024) . 'MB.';
+        } else {
+            // Validate MIME type using finfo
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mime_type = $finfo->file($_FILES['payment_proof']['tmp_name']);
 
-            if (move_uploaded_file($_FILES['payment_proof']['tmp_name'], $filepath)) {
-                $payment_proof = $filepath;
+            if (!in_array($mime_type, $allowed_mime)) {
+                $error = 'Invalid file content. File must be a valid image or PDF.';
+            } else {
+                // Additional validation for images
+                if (in_array($file_ext, ['jpg', 'jpeg', 'png'])) {
+                    $image_info = @getimagesize($_FILES['payment_proof']['tmp_name']);
+                    if ($image_info === false) {
+                        $error = 'Invalid image file.';
+                    }
+                }
+
+                if (empty($error)) {
+                    // Generate secure filename
+                    $filename = 'payment_' . $user['id'] . '_' . bin2hex(random_bytes(8)) . '.' . $file_ext;
+                    $filepath = $upload_dir . $filename;
+
+                    if (move_uploaded_file($_FILES['payment_proof']['tmp_name'], $filepath)) {
+                        $payment_proof = $filepath;
+                    } else {
+                        $error = 'Failed to upload file. Please try again.';
+                    }
+                }
             }
         }
     }

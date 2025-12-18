@@ -105,7 +105,13 @@ class Referral {
         $_SESSION['referrer_id'] = $referrer['id'];
 
         // Save to cookie (30 days)
-        setcookie('ref', strtoupper($code), time() + (30 * 24 * 60 * 60), '/');
+        setcookie('ref', strtoupper($code), [
+            'expires' => time() + (30 * 24 * 60 * 60),
+            'path' => '/',
+            'secure' => isset($_SERVER['HTTPS']),
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
 
         // Log visit
         self::logReferralVisit($referrer['id'], $code);
@@ -176,7 +182,13 @@ class Referral {
             // Clear session/cookie
             unset($_SESSION['referral_code']);
             unset($_SESSION['referrer_id']);
-            setcookie('ref', '', time() - 3600, '/');
+            setcookie('ref', '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => isset($_SERVER['HTTPS']),
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
 
             return true;
 
