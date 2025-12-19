@@ -9,8 +9,23 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-// Check if user is logged in
-if (!isLoggedIn()) {
+// Allow Robot API key OR session login
+$userId = null;
+
+if (validateRobotApiKey()) {
+    // Robot Engine calling with API key
+    $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
+    if (!$userId) {
+        echo json_encode([
+            'success' => false,
+            'auto_paused' => false,
+            'message' => 'user_id required'
+        ]);
+        exit;
+    }
+} elseif (isLoggedIn()) {
+    $userId = $_SESSION['user_id'];
+} else {
     echo json_encode([
         'success' => false,
         'auto_paused' => false,
@@ -18,8 +33,6 @@ if (!isLoggedIn()) {
     ]);
     exit;
 }
-
-$userId = $_SESSION['user_id'];
 
 // Get robot settings
 $settings = getRobotSettings($userId);

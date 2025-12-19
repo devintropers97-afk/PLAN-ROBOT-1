@@ -18,14 +18,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Handle GET request - Get settings
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Check if logged in via session or API key
-    if (!isLoggedIn()) {
+    // Allow Robot API key OR session login
+    $userId = null;
+
+    if (validateRobotApiKey()) {
+        // Robot Engine calling with API key - get user_id from params
+        $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'user_id required']);
+            exit;
+        }
+    } elseif (isLoggedIn()) {
+        // User logged in via session
+        $userId = $_SESSION['user_id'];
+    } else {
         http_response_code(401);
         echo json_encode(['success' => false, 'error' => 'Unauthorized']);
         exit;
     }
-
-    $userId = $_SESSION['user_id'];
 
     try {
         $settings = getRobotSettings($userId);
