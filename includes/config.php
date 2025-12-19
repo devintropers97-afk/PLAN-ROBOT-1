@@ -211,6 +211,9 @@ define('LOGIN_LOCKOUT_TIME', 900);
 // Robot Engine API Key (must match robot-engine/.env API_SECRET_KEY)
 define('ROBOT_API_SECRET_KEY', getenv('ROBOT_API_SECRET_KEY') ?: 'ZYN_R0B0T_4P1_K3Y_2024!@#$%');
 
+// Encryption key for sensitive data (OlympTrade credentials, etc.)
+define('ENCRYPTION_KEY', getenv('ENCRYPTION_KEY') ?: 'ZYN_3NCRYPT10N_K3Y_2024!@#$%^&*');
+
 // File Upload
 define('MAX_FILE_SIZE', 5 * 1024 * 1024);
 define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif', 'pdf']);
