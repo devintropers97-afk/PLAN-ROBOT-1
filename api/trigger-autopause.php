@@ -43,7 +43,7 @@ if (!in_array($reason, $validReasons)) {
 }
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Update robot settings
     $stmt = $pdo->prepare("

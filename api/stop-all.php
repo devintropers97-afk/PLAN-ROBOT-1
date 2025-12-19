@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $userId = $_SESSION['user_id'];
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Disable robot
     $stmt = $pdo->prepare("UPDATE robot_settings SET robot_enabled = 0, updated_at = NOW() WHERE user_id = ?");

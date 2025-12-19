@@ -38,7 +38,7 @@ if (!$userId || !$activity) {
 }
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Parse details if string
     $detailsJson = is_string($details) ? $details : json_encode($details);

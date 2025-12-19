@@ -38,7 +38,7 @@ if (!$userId) {
 }
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Get current settings
     $stmt = $pdo->prepare("SELECT martingale_max_steps FROM robot_settings WHERE user_id = ?");

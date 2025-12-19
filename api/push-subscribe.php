@@ -42,7 +42,7 @@ if (!$subscription || !isset($subscription['endpoint'])) {
 }
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Check if table exists, create if not
     $pdo->exec("

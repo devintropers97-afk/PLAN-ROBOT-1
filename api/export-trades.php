@@ -21,7 +21,7 @@ $period = isset($_GET['period']) ? (int)$_GET['period'] : 30;
 $period = min($period, 365);
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Get user info
     $stmt = $pdo->prepare("SELECT fullname, email FROM users WHERE id = ?");

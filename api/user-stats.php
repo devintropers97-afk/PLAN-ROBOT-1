@@ -24,7 +24,7 @@ if (!$userId) {
 }
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Get user info
     $stmt = $pdo->prepare("SELECT id, fullname, package, total_trades, wins, losses, total_profit FROM users WHERE id = ?");

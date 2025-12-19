@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $userId = $_SESSION['user_id'];
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Reset today's stats in daily_stats table if exists
     $today = date('Y-m-d');

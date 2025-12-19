@@ -16,7 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-$userId = $_GET['user_id'] ?? $_POST['user_id'] ?? '';
+// POST requires Robot API Key (internal use), GET/PUT require session login
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Creating notifications is internal API - requires robot API key
+    requireRobotApiKey();
+    // Get user_id from JSON body or POST data
+    $input = json_decode(file_get_contents('php://input'), true);
+    $userId = $input['user_id'] ?? $_POST['user_id'] ?? '';
+} else {
+    // Reading/updating notifications requires user login
+    if (!isLoggedIn()) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Authentication required']);
+        exit;
+    }
+    $userId = $_SESSION['user_id'];
+}
 
 if (empty($userId)) {
     http_response_code(400);
@@ -73,7 +88,7 @@ try {
 
         case 'POST':
             // Create notification (internal API)
-            $input = json_decode(file_get_contents('php://input'), true);
+            // $input already parsed at the top for POST requests
             if (!$input) {
                 $input = $_POST;
             }

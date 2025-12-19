@@ -24,7 +24,7 @@ if (!$userId) {
 }
 
 try {
-    global $pdo;
+    $pdo = getDBConnection();
 
     // Get robot settings
     $stmt = $pdo->prepare("
