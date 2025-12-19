@@ -324,7 +324,12 @@ $message = '';
 $message_type = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' || $is_cron) {
-    $action = $_POST['action'] ?? ($is_cron ? 'backup' : '');
+    // Verify CSRF token for web requests (not cron)
+    if (!$is_cron && !verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        $message = __('error_invalid_csrf');
+        $message_type = 'error';
+    } else {
+        $action = $_POST['action'] ?? ($is_cron ? 'backup' : '');
 
     switch ($action) {
         case 'backup':
@@ -363,6 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $is_cron) {
             }
             break;
     }
+    } // end CSRF check else
 }
 
 // If running from cron, exit here
@@ -385,6 +391,7 @@ require_once 'includes/admin-header.php';
             <p class="text-muted mb-0"><?php _e('backup_subtitle'); ?></p>
         </div>
         <form method="POST" class="d-inline">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
             <input type="hidden" name="action" value="backup">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-download me-2"></i><?php _e('backup_now'); ?>
@@ -486,6 +493,7 @@ require_once 'includes/admin-header.php';
                             <td><span class="badge bg-secondary"><?php echo $b['age']; ?></span></td>
                             <td>
                                 <form method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="filename" value="<?php echo htmlspecialchars($b['filename']); ?>">
                                     <button type="submit" name="action" value="download" class="btn btn-sm btn-primary" title="Download">
                                         <i class="fas fa-download"></i>
