@@ -154,15 +154,15 @@ class OlympTradeTest {
         this.log('Navigating to OlympTrade platform...', 'step');
 
         try {
-            // Go to homepage first
-            this.log('Loading OlympTrade homepage...', 'info');
-            await this.page.goto('https://olymptrade.com', {
+            // Go directly to login page
+            this.log('Loading OlympTrade login page...', 'info');
+            await this.page.goto('https://olymptrade.com/login', {
                 waitUntil: 'networkidle2',
                 timeout: 60000
             });
 
             await sleep(3000);
-            await this.screenshot('01_homepage');
+            await this.screenshot('01_login_page');
 
             // Check if geo-blocked
             const pageContent = await this.page.evaluate(() => document.body.innerText.toLowerCase());
@@ -171,35 +171,6 @@ class OlympTradeTest {
                 pageContent.includes('unavailable in your region')) {
                 throw new Error('OlympTrade is geo-blocked from this IP. Try using a VPN.');
             }
-
-            // Find and click Login button on homepage
-            this.log('Looking for Login button...', 'info');
-            const loginClicked = await this.page.evaluate(() => {
-                const elements = document.querySelectorAll('button, a, [role="button"]');
-                for (const el of elements) {
-                    const text = el.textContent.trim();
-                    if (text === 'Login' || text === 'Log in' || text === 'Sign in') {
-                        el.click();
-                        return true;
-                    }
-                }
-                return false;
-            });
-
-            if (loginClicked) {
-                this.log('Clicked Login button', 'success');
-                await sleep(3000);
-            } else {
-                // Try direct navigation to login page
-                this.log('Login button not found, trying direct URL...', 'warn');
-                await this.page.goto('https://olymptrade.com/login', {
-                    waitUntil: 'networkidle2',
-                    timeout: 30000
-                });
-                await sleep(2000);
-            }
-
-            await this.screenshot('02_login_page');
 
             const title = await this.page.title();
             this.log(`Page loaded: ${title}`, 'success');
@@ -250,9 +221,17 @@ class OlympTradeTest {
             const currentUrl = this.page.url();
             this.log(`Current URL: ${currentUrl}`, 'info');
 
-            // Wait for form to appear
+            // Click Login button to open modal (required on /login page)
+            this.log('Clicking Login button to open form...', 'info');
+            await this.page.evaluate(() => {
+                document.querySelectorAll('button').forEach(b => {
+                    if (b.textContent.trim() === 'Login') b.click();
+                });
+            });
+
+            // Wait for modal to appear
             this.log('Waiting for login form...', 'info');
-            await sleep(3000);
+            await sleep(5000);
 
             // Find email input - try multiple selectors
             let emailInput = null;
