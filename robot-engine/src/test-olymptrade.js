@@ -221,23 +221,61 @@ class OlympTradeTest {
             const currentUrl = this.page.url();
             this.log(`Current URL: ${currentUrl}`, 'info');
 
-            // Click "Masuk" tab (Login tab on left) - Indonesian version
+            // Take screenshot to see current state
+            await this.screenshot('before_login_click');
+
+            // Debug: Log all buttons on page
+            const allButtons = await this.page.evaluate(() => {
+                const btns = document.querySelectorAll('button, a, [role="tab"], [class*="tab"]');
+                return Array.from(btns).slice(0, 20).map(b => ({
+                    tag: b.tagName,
+                    text: b.textContent.trim().substring(0, 50),
+                    class: b.className.substring(0, 50)
+                }));
+            });
+            this.log(`Found elements: ${JSON.stringify(allButtons.slice(0, 5))}`, 'info');
+
+            // Click "Masuk" tab (Login tab on left) - try multiple methods
             this.log('Clicking Masuk (Login) tab...', 'info');
-            await this.page.evaluate(() => {
-                const buttons = document.querySelectorAll('button');
+
+            // Method 1: Click by text content
+            let clicked = await this.page.evaluate(() => {
+                // Try buttons first
+                const buttons = document.querySelectorAll('button, a, [role="tab"], span, div');
                 for (const btn of buttons) {
-                    const text = btn.textContent.trim();
-                    // Click "Masuk" tab (Indonesian for Login), not "Pendaftaran" (Registration)
-                    if (text === 'Masuk' || text === 'Login') {
+                    const text = btn.textContent.trim().toLowerCase();
+                    if (text === 'masuk' || text === 'login' || text === 'sign in' || text === 'log in') {
                         btn.click();
-                        return;
+                        return 'clicked: ' + text;
                     }
                 }
+                return null;
             });
+
+            if (clicked) {
+                this.log(`Tab clicked: ${clicked}`, 'success');
+            } else {
+                this.log('Could not find login tab by text', 'warn');
+            }
 
             // Wait for login form to appear
             this.log('Waiting for login form...', 'info');
             await sleep(3000);
+
+            await this.screenshot('after_tab_click');
+
+            // Debug: Log all inputs on page
+            const allInputs = await this.page.evaluate(() => {
+                const inputs = document.querySelectorAll('input');
+                return Array.from(inputs).map(i => ({
+                    type: i.type,
+                    name: i.name,
+                    placeholder: i.placeholder,
+                    visible: i.offsetParent !== null,
+                    class: i.className.substring(0, 30)
+                }));
+            });
+            this.log(`Found inputs: ${JSON.stringify(allInputs)}`, 'info');
 
             // Find email input - try multiple selectors
             let emailInput = null;
@@ -246,37 +284,29 @@ class OlympTradeTest {
                 'input[name="email"]',
                 'input[placeholder*="email" i]',
                 'input[placeholder*="E-mail" i]',
-                'input[autocomplete="email"]'
+                'input[placeholder*="почт" i]',
+                'input[autocomplete="email"]',
+                'input[autocomplete="username"]',
+                'input[type="text"]',
+                'input:not([type="password"]):not([type="hidden"]):not([type="checkbox"])'
             ];
 
             for (const selector of emailSelectors) {
                 try {
-                    emailInput = await this.page.$(selector);
-                    if (emailInput) {
-                        this.log(`Found email input: ${selector}`, 'info');
-                        break;
-                    }
-                } catch {}
-            }
-
-            // If not found by selector, scan all visible inputs
-            if (!emailInput) {
-                this.log('Scanning all inputs...', 'info');
-                const inputs = await this.page.$$('input');
-                for (const input of inputs) {
-                    try {
-                        const info = await this.page.evaluate(el => ({
-                            type: el.type,
-                            visible: el.offsetParent !== null
-                        }), input);
-
-                        if (info.visible && (info.type === 'email' || info.type === 'text')) {
+                    const inputs = await this.page.$$(selector);
+                    for (const input of inputs) {
+                        const isVisible = await this.page.evaluate(el => {
+                            const rect = el.getBoundingClientRect();
+                            return rect.width > 0 && rect.height > 0 && el.offsetParent !== null;
+                        }, input);
+                        if (isVisible) {
                             emailInput = input;
-                            this.log(`Found input by scanning: type=${info.type}`, 'info');
+                            this.log(`Found email input: ${selector}`, 'info');
                             break;
                         }
-                    } catch {}
-                }
+                    }
+                    if (emailInput) break;
+                } catch {}
             }
 
             if (!emailInput) {
