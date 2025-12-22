@@ -221,17 +221,23 @@ class OlympTradeTest {
             const currentUrl = this.page.url();
             this.log(`Current URL: ${currentUrl}`, 'info');
 
-            // Click Login button to open modal (required on /login page)
-            this.log('Clicking Login button to open form...', 'info');
+            // Click "Masuk" tab (Login tab on left) - Indonesian version
+            this.log('Clicking Masuk (Login) tab...', 'info');
             await this.page.evaluate(() => {
-                document.querySelectorAll('button').forEach(b => {
-                    if (b.textContent.trim() === 'Login') b.click();
-                });
+                const buttons = document.querySelectorAll('button');
+                for (const btn of buttons) {
+                    const text = btn.textContent.trim();
+                    // Click "Masuk" tab (Indonesian for Login), not "Pendaftaran" (Registration)
+                    if (text === 'Masuk' || text === 'Login') {
+                        btn.click();
+                        return;
+                    }
+                }
             });
 
-            // Wait for modal to appear
+            // Wait for login form to appear
             this.log('Waiting for login form...', 'info');
-            await sleep(5000);
+            await sleep(3000);
 
             // Find email input - try multiple selectors
             let emailInput = null;
@@ -299,12 +305,13 @@ class OlympTradeTest {
             // Submit - try button first, then Enter
             let submitted = false;
 
-            // Try clicking submit button by text
+            // Try clicking submit button by text (Indonesian: "Masuk")
             const clicked = await this.page.evaluate(() => {
                 const buttons = document.querySelectorAll('button');
                 for (const btn of buttons) {
-                    const text = btn.textContent.toLowerCase();
-                    if (text.includes('log in') || text.includes('login') || text.includes('sign in')) {
+                    const text = btn.textContent.trim().toLowerCase();
+                    // Indonesian "masuk" or English "login/log in/sign in"
+                    if (text === 'masuk' || text.includes('log in') || text.includes('login') || text.includes('sign in')) {
                         btn.click();
                         return true;
                     }
@@ -321,9 +328,9 @@ class OlympTradeTest {
                 submitted = true;
             }
 
-            // Wait for login
-            this.log('Waiting for login to complete...', 'info');
-            await sleep(8000);
+            // Wait for login and platform to fully load
+            this.log('Waiting for login and platform to load...', 'info');
+            await sleep(15000);
 
             await this.screenshot('04_after_login');
 
