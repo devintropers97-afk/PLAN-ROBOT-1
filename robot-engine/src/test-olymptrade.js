@@ -80,6 +80,7 @@ class OlympTradeTest {
         this.page = null;
         this.screenshotDir = ensureScreenshotDir();
         this.stepCount = 0;
+        this.hasActiveSession = false;
     }
 
     log(message, type = 'info') {
@@ -111,8 +112,16 @@ class OlympTradeTest {
     async initialize() {
         this.log('Launching browser...', 'step');
 
+        // Session directory for persistent login
+        const sessionDir = path.join(__dirname, '../sessions/olymptrade');
+        if (!fs.existsSync(sessionDir)) {
+            fs.mkdirSync(sessionDir, { recursive: true });
+        }
+        this.log(`Session directory: ${sessionDir}`, 'info');
+
         const browserOptions = {
             headless: this.args.visible ? false : 'new',
+            userDataDir: sessionDir, // Persist cookies & session
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -154,10 +163,29 @@ class OlympTradeTest {
         this.log('Navigating to OlympTrade platform...', 'step');
 
         try {
-            // Go directly to login page with longer timeout and simpler wait condition
-            this.log('Loading OlympTrade login page...', 'info');
+            // First try going to platform directly (in case we have active session)
+            this.log('Checking for existing session...', 'info');
 
-            // Try with domcontentloaded first (faster)
+            await this.page.goto('https://olymptrade.com/platform', {
+                waitUntil: 'domcontentloaded',
+                timeout: 60000
+            });
+
+            await sleep(3000);
+
+            // Check if we're on the platform (logged in)
+            const currentUrl = this.page.url();
+            if (currentUrl.includes('platform') || currentUrl.includes('trading')) {
+                this.log('Active session found! Already logged in.', 'success');
+                this.hasActiveSession = true;
+                await this.screenshot('01_active_session');
+                return true;
+            }
+
+            // No active session, go to login page
+            this.log('No active session, loading login page...', 'info');
+            this.hasActiveSession = false;
+
             await this.page.goto('https://olymptrade.com/login', {
                 waitUntil: 'domcontentloaded',
                 timeout: 90000
@@ -769,14 +797,16 @@ class OlympTradeTest {
             results.navigation = await this.navigateToOlympTrade();
             if (!results.navigation) throw new Error('Navigation failed');
 
-            // Step 3: Check if already logged in
-            let alreadyLoggedIn = await this.checkIfLoggedIn();
+            // Step 3: Check if already logged in (from session or platform check)
+            let alreadyLoggedIn = this.hasActiveSession || await this.checkIfLoggedIn();
 
             // Step 4: Login if needed
             if (!alreadyLoggedIn) {
+                this.log('No active session, need to login...', 'info');
                 results.login = await this.login();
                 if (!results.login) throw new Error('Login failed');
             } else {
+                this.log('Using existing session - skipping login!', 'success');
                 results.login = true;
             }
 
