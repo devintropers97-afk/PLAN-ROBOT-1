@@ -620,30 +620,23 @@ class OlympTradeTest {
         try {
             await this.screenshot('09_before_trade');
 
-            // Trade button selectors
+            // OlympTrade button selectors (Indonesian: Naik=Up, Turun=Down)
             const callSelectors = [
-                '.btn-call',
-                '.call-button',
-                '[data-qa="call-btn"]',
-                '.up-button',
-                '.green-button',
-                'button.call',
-                '.deal-button--call',
-                '[data-direction="call"]'
+                'button.deal-button_up',
+                '.deal-button_up',
+                'button[class*="deal-button_up"]',
+                'button[class*="deal-button"][class*="up"]'
             ];
 
             const putSelectors = [
-                '.btn-put',
-                '.put-button',
-                '[data-qa="put-btn"]',
-                '.down-button',
-                '.red-button',
-                'button.put',
-                '.deal-button--put',
-                '[data-direction="put"]'
+                'button.deal-button_down',
+                '.deal-button_down',
+                'button[class*="deal-button_down"]',
+                'button[class*="deal-button"][class*="down"]'
             ];
 
             const selectors = direction.toUpperCase() === 'CALL' ? callSelectors : putSelectors;
+            const buttonName = direction.toUpperCase() === 'CALL' ? 'Naik' : 'Turun';
 
             for (const selector of selectors) {
                 const btn = await this.page.$(selector);
@@ -651,12 +644,12 @@ class OlympTradeTest {
                     // Check if button is enabled
                     const isDisabled = await this.page.evaluate(el => el.disabled, btn);
                     if (isDisabled) {
-                        this.log('Trade button is disabled', 'warn');
+                        this.log(`Trade button (${buttonName}) is disabled`, 'warn');
                         continue;
                     }
 
                     await btn.click();
-                    this.log(`Clicked ${direction} button: ${selector}`, 'info');
+                    this.log(`Clicked ${buttonName} (${direction}) button: ${selector}`, 'success');
 
                     await sleep(3000);
                     await this.screenshot('10_after_trade');
@@ -668,6 +661,30 @@ class OlympTradeTest {
                         timestamp: new Date().toISOString()
                     };
                 }
+            }
+
+            // Try by text content as fallback
+            this.log('Trying to find button by text...', 'info');
+            const clicked = await this.page.evaluate((btnText) => {
+                const buttons = document.querySelectorAll('button');
+                for (const btn of buttons) {
+                    if (btn.textContent.includes(btnText)) {
+                        btn.click();
+                        return true;
+                    }
+                }
+                return false;
+            }, buttonName);
+
+            if (clicked) {
+                this.log(`Clicked ${buttonName} button by text`, 'success');
+                await sleep(3000);
+                await this.screenshot('10_after_trade');
+                return {
+                    success: true,
+                    direction: direction,
+                    timestamp: new Date().toISOString()
+                };
             }
 
             this.log('Trade button not found', 'error');
