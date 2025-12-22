@@ -1,0 +1,78 @@
+# ===========================================
+# ZYN Trade System - robots.txt
+# ===========================================
+# File ini memberitahu search engine crawler
+# halaman mana yang boleh dan tidak boleh di-index
+# ===========================================
+
+User-agent: *
+Allow: /
+
+# Halaman yang TIDAK boleh di-index
+Disallow: /admin/
+Disallow: /api/
+Disallow: /includes/
+Disallow: /database/
+Disallow: /uploads/
+Disallow: /logs/
+Disallow: /robot-engine/
+Disallow: /dashboard/
+Disallow: /downloads/*.apk
+
+# File sensitif
+Disallow: /*.sql
+Disallow: /*.log
+Disallow: /*.env
+Disallow: /config.php
+
+# Halaman user (perlu login)
+Disallow: /dashboard.php
+Disallow: /profile.php
+Disallow: /settings.php
+Disallow: /statistics.php
+Disallow: /leaderboard.php
+Disallow: /subscribe.php
+Disallow: /export.php
+Disallow: /logout.php
+
+# Error pages
+Disallow: /404.php
+Disallow: /500.php
+Disallow: /offline.html
+
+# Crawl delay (opsional - untuk mengurangi load server)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://zyntrading.com/sitemap.xml
+
+# ===========================================
+# Specific bot rules
+# ===========================================
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /assets/images/
+Allow: /assets/icons/
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /

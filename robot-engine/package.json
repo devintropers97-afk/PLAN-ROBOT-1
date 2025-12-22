@@ -1,0 +1,54 @@
+{
+  "name": "zyn-trade-robot-engine",
+  "version": "3.1.0",
+  "description": "ZYN Trade System - Robot Engine for OlympTrade Auto Trading (Full Auto Multi-User)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop zyn-robot",
+    "pm2:restart": "pm2 restart zyn-robot",
+    "pm2:logs": "pm2 logs zyn-robot",
+    "pm2:status": "pm2 status",
+    "pm2:monit": "pm2 monit",
+    "test": "node src/test.js",
+    "test:connection": "node src/test-connection.js",
+    "test:olymptrade": "node src/test-olymptrade.js",
+    "test:olymptrade:visible": "node src/test-olymptrade.js --visible",
+    "test:olymptrade:trade": "node src/test-olymptrade.js --trade --demo",
+    "standalone": "node src/standalone-robot.js",
+    "standalone:visible": "node src/standalone-robot.js --visible",
+    "test:encryption": "node -e \"const {encryptPassword,decryptPassword}=require('./src/utils/helpers');const enc=encryptPassword('test123');console.log('Encrypted:',enc);console.log('Decrypted:',decryptPassword(enc));\""
+  },
+  "keywords": [
+    "trading",
+    "bot",
+    "olymptrade",
+    "automation",
+    "puppeteer",
+    "multi-user"
+  ],
+  "author": "ZYN Trade System",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5",
+    "node-cron": "^3.0.3",
+    "puppeteer": "^21.6.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "technicalindicators": "^3.1.0",
+    "winston": "^3.11.0",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
