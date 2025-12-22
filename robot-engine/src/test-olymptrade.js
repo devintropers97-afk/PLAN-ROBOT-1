@@ -667,73 +667,108 @@ class OlympTradeTest {
         this.log(`Executing ${direction} trade...`, 'step');
 
         try {
+            // Wait for platform to fully load
+            this.log('Waiting for trading platform to load...', 'info');
+            await sleep(5000);
+
             await this.screenshot('09_before_trade');
 
-            // OlympTrade button selectors (Indonesian: Naik=Up, Turun=Down)
+            // Debug: Log all buttons on page
+            const allButtons = await this.page.evaluate(() => {
+                const btns = document.querySelectorAll('button');
+                return Array.from(btns).slice(0, 30).map(b => ({
+                    text: b.textContent.trim().substring(0, 30),
+                    class: b.className.substring(0, 50),
+                    disabled: b.disabled
+                }));
+            });
+            this.log(`Found ${allButtons.length} buttons on page`, 'info');
+            this.log(`Sample buttons: ${JSON.stringify(allButtons.slice(0, 5))}`, 'info');
+
+            // OlympTrade button selectors - expanded list
             const callSelectors = [
                 'button.deal-button_up',
                 '.deal-button_up',
                 'button[class*="deal-button_up"]',
-                'button[class*="deal-button"][class*="up"]'
+                'button[class*="deal-button"][class*="up"]',
+                'button[class*="call"]',
+                'button[class*="Call"]',
+                'button[class*="green"]',
+                '[class*="deal-button"][class*="up"]',
+                '[data-testid*="call"]',
+                '[data-testid*="up"]'
             ];
 
             const putSelectors = [
                 'button.deal-button_down',
                 '.deal-button_down',
                 'button[class*="deal-button_down"]',
-                'button[class*="deal-button"][class*="down"]'
+                'button[class*="deal-button"][class*="down"]',
+                'button[class*="put"]',
+                'button[class*="Put"]',
+                'button[class*="red"]',
+                '[class*="deal-button"][class*="down"]',
+                '[data-testid*="put"]',
+                '[data-testid*="down"]'
             ];
 
             const selectors = direction.toUpperCase() === 'CALL' ? callSelectors : putSelectors;
             const buttonName = direction.toUpperCase() === 'CALL' ? 'Naik' : 'Turun';
+            const altButtonNames = direction.toUpperCase() === 'CALL'
+                ? ['Naik', 'Up', 'Call', 'Higher', 'Green']
+                : ['Turun', 'Down', 'Put', 'Lower', 'Red'];
 
             for (const selector of selectors) {
-                const btn = await this.page.$(selector);
-                if (btn) {
-                    // Check if button is enabled
-                    const isDisabled = await this.page.evaluate(el => el.disabled, btn);
-                    if (isDisabled) {
-                        this.log(`Trade button (${buttonName}) is disabled`, 'warn');
-                        continue;
+                try {
+                    const btn = await this.page.$(selector);
+                    if (btn) {
+                        // Check if button is enabled
+                        const isDisabled = await this.page.evaluate(el => el.disabled, btn);
+                        if (isDisabled) {
+                            this.log(`Trade button (${buttonName}) is disabled`, 'warn');
+                            continue;
+                        }
+
+                        await btn.click();
+                        this.log(`Clicked ${buttonName} (${direction}) button: ${selector}`, 'success');
+
+                        await sleep(3000);
+                        await this.screenshot('10_after_trade');
+
+                        this.log(`Trade executed: ${direction}`, 'success');
+                        return {
+                            success: true,
+                            direction: direction,
+                            timestamp: new Date().toISOString()
+                        };
                     }
+                } catch (e) {}
+            }
 
-                    await btn.click();
-                    this.log(`Clicked ${buttonName} (${direction}) button: ${selector}`, 'success');
+            // Try by text content as fallback - try multiple names
+            this.log('Trying to find button by text...', 'info');
+            for (const btnText of altButtonNames) {
+                const clicked = await this.page.evaluate((text) => {
+                    const buttons = document.querySelectorAll('button');
+                    for (const btn of buttons) {
+                        if (btn.textContent.toLowerCase().includes(text.toLowerCase())) {
+                            btn.click();
+                            return text;
+                        }
+                    }
+                    return null;
+                }, btnText);
 
+                if (clicked) {
+                    this.log(`Clicked button with text: ${clicked}`, 'success');
                     await sleep(3000);
                     await this.screenshot('10_after_trade');
-
-                    this.log(`Trade executed: ${direction}`, 'success');
                     return {
                         success: true,
                         direction: direction,
                         timestamp: new Date().toISOString()
                     };
                 }
-            }
-
-            // Try by text content as fallback
-            this.log('Trying to find button by text...', 'info');
-            const clicked = await this.page.evaluate((btnText) => {
-                const buttons = document.querySelectorAll('button');
-                for (const btn of buttons) {
-                    if (btn.textContent.includes(btnText)) {
-                        btn.click();
-                        return true;
-                    }
-                }
-                return false;
-            }, buttonName);
-
-            if (clicked) {
-                this.log(`Clicked ${buttonName} button by text`, 'success');
-                await sleep(3000);
-                await this.screenshot('10_after_trade');
-                return {
-                    success: true,
-                    direction: direction,
-                    timestamp: new Date().toISOString()
-                };
             }
 
             this.log('Trade button not found', 'error');
