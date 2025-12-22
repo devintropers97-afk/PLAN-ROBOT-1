@@ -336,7 +336,7 @@ class OlympTradeTest {
             let submitted = false;
 
             // Try clicking submit button by text (Indonesian: "Masuk")
-            const clicked = await this.page.evaluate(() => {
+            const submitClicked = await this.page.evaluate(() => {
                 const buttons = document.querySelectorAll('button');
                 for (const btn of buttons) {
                     const text = btn.textContent.trim().toLowerCase();
@@ -349,7 +349,7 @@ class OlympTradeTest {
                 return false;
             });
 
-            if (clicked) {
+            if (submitClicked) {
                 submitted = true;
                 this.log('Clicked submit button', 'success');
             } else {
