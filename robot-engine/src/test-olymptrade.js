@@ -154,14 +154,19 @@ class OlympTradeTest {
         this.log('Navigating to OlympTrade platform...', 'step');
 
         try {
-            // Go directly to login page
+            // Go directly to login page with longer timeout and simpler wait condition
             this.log('Loading OlympTrade login page...', 'info');
+
+            // Try with domcontentloaded first (faster)
             await this.page.goto('https://olymptrade.com/login', {
-                waitUntil: 'networkidle2',
-                timeout: 60000
+                waitUntil: 'domcontentloaded',
+                timeout: 90000
             });
 
-            await sleep(3000);
+            this.log('DOM loaded, waiting for page to settle...', 'info');
+
+            // Wait additional time for JavaScript to execute
+            await sleep(5000);
             await this.screenshot('01_login_page');
 
             // Check if geo-blocked
