@@ -154,17 +154,19 @@ class OlympTradeTest {
         this.log('Navigating to OlympTrade platform...', 'step');
 
         try {
-            // Try different OlympTrade URLs - login page first
+            // Try different OlympTrade URLs - multiple domains
             const urls = [
-                'https://olymptrade.com/login',
-                'https://olymptrade.com/en/login',
-                'https://olymptrade.com/platform',
-                'https://olymptrade.com/en-us/platform',
                 'https://olymptrade-vid.com/login',
-                'https://olymptrade-vid.com/platform'
+                'https://olymptrade-vid.com/en/login',
+                'https://olymptrade-vd.com/login',
+                'https://olymptrade-online.com/login',
+                'https://olymptrade.com/login',
+                'https://olymptrade.com/en/login'
             ];
 
             let loaded = false;
+            let geoBlocked = false;
+
             for (const url of urls) {
                 try {
                     this.log(`Trying: ${url}`, 'info');
@@ -172,18 +174,50 @@ class OlympTradeTest {
                         waitUntil: 'networkidle2',
                         timeout: 60000
                     });
-                    loaded = true;
-                    break;
+
+                    await sleep(3000);
+
+                    // Check if geo-blocked
+                    const pageContent = await this.page.evaluate(() => document.body.innerText.toLowerCase());
+                    if (pageContent.includes('registration unavailable') ||
+                        pageContent.includes('not available for clients from your region') ||
+                        pageContent.includes('unavailable in your region') ||
+                        pageContent.includes('geo') ||
+                        pageContent.includes('blocked')) {
+                        this.log(`Geo-blocked on ${url}, trying next...`, 'warn');
+                        geoBlocked = true;
+                        continue;
+                    }
+
+                    // Check if login form exists (has visible input)
+                    const hasForm = await this.page.evaluate(() => {
+                        const inputs = document.querySelectorAll('input[type="email"], input[type="text"], input[name="email"]');
+                        for (const input of inputs) {
+                            if (input.offsetParent !== null) return true;
+                        }
+                        return false;
+                    });
+
+                    if (hasForm) {
+                        loaded = true;
+                        this.log(`Found login form on ${url}`, 'success');
+                        break;
+                    } else {
+                        this.log(`No login form found on ${url}, trying next...`, 'warn');
+                    }
+
                 } catch (e) {
-                    this.log(`URL failed: ${url}`, 'warn');
+                    this.log(`URL failed: ${url} - ${e.message}`, 'warn');
                 }
             }
 
             if (!loaded) {
+                if (geoBlocked) {
+                    throw new Error('All OlympTrade domains are geo-blocked from this IP. Try using a residential VPN or proxy.');
+                }
                 throw new Error('Could not load any OlympTrade URL');
             }
 
-            await sleep(3000);
             await this.screenshot('01_olymptrade_loaded');
 
             const title = await this.page.title();
