@@ -435,9 +435,46 @@ class OlympTradeTest {
         this.log(`Switching to ${accountType} account...`, 'step');
 
         try {
-            await sleep(2000);
+            // Wait for account selection popup or platform to load
+            await sleep(3000);
+            await this.screenshot('05_before_account_switch');
 
-            // OlympTrade account switcher selectors
+            // Debug: Log what's on page
+            const pageText = await this.page.evaluate(() => document.body.innerText.substring(0, 500));
+            this.log(`Page content preview: ${pageText.substring(0, 100)}...`, 'info');
+
+            // Indonesian labels for account selection
+            const demoTexts = ['Akun demo', 'Demo', 'demo', 'Practice', 'Latihan'];
+            const realTexts = ['Akun real', 'Real', 'real', 'Live'];
+            const targetTexts = this.args.isDemo ? demoTexts : realTexts;
+
+            // Method 1: Try clicking by text content (for popup/modal)
+            for (const text of targetTexts) {
+                const clicked = await this.page.evaluate((searchText) => {
+                    // Look for clickable elements with this text
+                    const elements = document.querySelectorAll('button, a, div, span, [role="button"]');
+                    for (const el of elements) {
+                        if (el.textContent.toLowerCase().includes(searchText.toLowerCase())) {
+                            // Check if it's visible
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width > 0 && rect.height > 0) {
+                                el.click();
+                                return searchText;
+                            }
+                        }
+                    }
+                    return null;
+                }, text);
+
+                if (clicked) {
+                    this.log(`Clicked account option: "${clicked}"`, 'success');
+                    await sleep(3000);
+                    await this.screenshot('06_account_selected');
+                    return true;
+                }
+            }
+
+            // Method 2: Try account switcher in header/navbar
             const switcherSelectors = [
                 '.account-switcher',
                 '.balance-selector',
@@ -445,46 +482,46 @@ class OlympTradeTest {
                 '.account-type-switch',
                 '.account-balance',
                 '.balance-block',
-                '.account-info'
+                '.account-info',
+                '[class*="account"]',
+                '[class*="balance"]'
             ];
 
             for (const selector of switcherSelectors) {
-                const switcher = await this.page.$(selector);
-                if (switcher) {
-                    await switcher.click();
-                    await sleep(1500);
-                    this.log(`Clicked account switcher: ${selector}`, 'info');
+                try {
+                    const switcher = await this.page.$(selector);
+                    if (switcher) {
+                        await switcher.click();
+                        await sleep(1500);
+                        this.log(`Clicked account switcher: ${selector}`, 'info');
 
-                    await this.screenshot('06_account_switcher');
+                        await this.screenshot('06_account_switcher');
 
-                    // Select demo or real
-                    const optionSelectors = this.args.isDemo ? [
-                        '.demo-account',
-                        '[data-type="demo"]',
-                        '.practice-account',
-                        '[data-qa="demo-account"]',
-                        'button:contains("Demo")',
-                        'div:contains("Demo")'
-                    ] : [
-                        '.real-account',
-                        '[data-type="real"]',
-                        '.live-account',
-                        '[data-qa="real-account"]',
-                        'button:contains("Real")',
-                        'div:contains("Real")'
-                    ];
+                        // Now try to select demo or real from dropdown
+                        for (const text of targetTexts) {
+                            const clicked = await this.page.evaluate((searchText) => {
+                                const elements = document.querySelectorAll('button, a, div, span, li, [role="option"]');
+                                for (const el of elements) {
+                                    if (el.textContent.toLowerCase().includes(searchText.toLowerCase())) {
+                                        const rect = el.getBoundingClientRect();
+                                        if (rect.width > 0 && rect.height > 0) {
+                                            el.click();
+                                            return searchText;
+                                        }
+                                    }
+                                }
+                                return null;
+                            }, text);
 
-                    for (const optSelector of optionSelectors) {
-                        const option = await this.page.$(optSelector);
-                        if (option) {
-                            await option.click();
-                            await sleep(2000);
-                            this.log(`Switched to ${accountType} account`, 'success');
-                            await this.screenshot('07_account_switched');
-                            return true;
+                            if (clicked) {
+                                this.log(`Selected ${accountType} account`, 'success');
+                                await sleep(2000);
+                                await this.screenshot('07_account_switched');
+                                return true;
+                            }
                         }
                     }
-                }
+                } catch (e) {}
             }
 
             this.log('Account switcher not found, may already be on correct account', 'warn');
