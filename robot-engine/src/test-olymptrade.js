@@ -154,10 +154,13 @@ class OlympTradeTest {
         this.log('Navigating to OlympTrade platform...', 'step');
 
         try {
-            // Try different OlympTrade URLs
+            // Try different OlympTrade URLs - login page first
             const urls = [
+                'https://olymptrade.com/login',
+                'https://olymptrade.com/en/login',
                 'https://olymptrade.com/platform',
                 'https://olymptrade.com/en-us/platform',
+                'https://olymptrade-vid.com/login',
                 'https://olymptrade-vid.com/platform'
             ];
 
@@ -230,64 +233,180 @@ class OlympTradeTest {
             await sleep(2000);
             await this.screenshot('02_before_login');
 
-            // Check if we need to click login button first
-            const loginButtonSelectors = [
+            // Debug: Log current URL and page info
+            const currentUrl = this.page.url();
+            this.log(`Current URL: ${currentUrl}`, 'info');
+
+            // Wait longer for dynamic content to load
+            this.log('Waiting for page to fully load...', 'info');
+            await sleep(5000);
+
+            // Debug: Count all inputs on page
+            const allInputs = await this.page.$$('input');
+            this.log(`Found ${allInputs.length} input elements on page`, 'info');
+
+            // Debug: Log all input details
+            for (let i = 0; i < allInputs.length; i++) {
+                try {
+                    const info = await this.page.evaluate(el => ({
+                        type: el.type,
+                        name: el.name,
+                        id: el.id,
+                        placeholder: el.placeholder,
+                        className: el.className,
+                        visible: el.offsetParent !== null
+                    }), allInputs[i]);
+                    this.log(`  Input ${i}: type=${info.type}, name=${info.name}, id=${info.id}, placeholder=${info.placeholder}, visible=${info.visible}`, 'info');
+                } catch {}
+            }
+
+            // Check for iframes (login might be in iframe)
+            const iframes = await this.page.$$('iframe');
+            this.log(`Found ${iframes.length} iframes on page`, 'info');
+
+            // Try to find login form in main page first
+            let emailInput = null;
+            let targetPage = this.page;
+
+            // Check if we need to click login/signin tab first
+            const tabSelectors = [
                 'a[href*="login"]',
-                '.login-btn',
-                '.btn-login',
-                'button:has-text("Log in")',
-                'a:has-text("Log in")'
+                'a[href*="signin"]',
+                '.login-tab',
+                '.signin-tab',
+                '[data-tab="login"]',
+                '[data-tab="signin"]',
+                'button:contains("Log in")',
+                'button:contains("Sign in")',
+                '.tabs a',
+                '.auth-tabs button'
             ];
 
-            for (const selector of loginButtonSelectors) {
+            for (const selector of tabSelectors) {
                 try {
-                    const btn = await this.page.$(selector);
-                    if (btn) {
-                        await btn.click();
-                        await sleep(2000);
-                        this.log('Clicked login button', 'info');
-                        break;
+                    const tab = await this.page.$(selector);
+                    if (tab) {
+                        const text = await this.page.evaluate(el => el.textContent, tab);
+                        if (text && (text.toLowerCase().includes('log') || text.toLowerCase().includes('sign'))) {
+                            await tab.click();
+                            await sleep(2000);
+                            this.log(`Clicked login tab: ${text.trim()}`, 'info');
+                            break;
+                        }
                     }
                 } catch {}
             }
 
             await this.screenshot('03_login_form');
 
-            // Find email input
+            // Comprehensive email input selectors for OlympTrade
             const emailSelectors = [
                 'input[name="email"]',
                 'input[type="email"]',
                 'input[placeholder*="email" i]',
-                'input[placeholder*="Email" i]',
-                '.login-form input[type="text"]',
+                'input[placeholder*="E-mail" i]',
+                'input[placeholder*="Электронная почта" i]',
+                'input[placeholder*="почта" i]',
                 'input[autocomplete="email"]',
-                '#email'
+                'input[autocomplete="username"]',
+                '#email',
+                '#login-email',
+                '[data-qa="email"]',
+                '[data-qa="email-input"]',
+                '[data-test="email"]',
+                '[name="login"]',
+                '.email-input input',
+                '.login-email input',
+                'form input[type="text"]:first-of-type',
+                'form input[type="email"]',
+                '.auth-form input',
+                '.login-form input',
+                '.signin-form input'
             ];
 
-            let emailInput = null;
+            // Try each selector
             for (const selector of emailSelectors) {
-                emailInput = await this.page.$(selector);
-                if (emailInput) {
-                    this.log(`Found email input: ${selector}`, 'info');
-                    break;
-                }
+                try {
+                    emailInput = await this.page.$(selector);
+                    if (emailInput) {
+                        const isVisible = await this.page.evaluate(el => el.offsetParent !== null, emailInput);
+                        if (isVisible) {
+                            this.log(`Found email input: ${selector}`, 'info');
+                            break;
+                        }
+                        emailInput = null;
+                    }
+                } catch {}
             }
 
+            // If not found, scan all inputs more thoroughly
             if (!emailInput) {
-                // Try to find by evaluating all inputs
+                this.log('Scanning all inputs for email field...', 'info');
                 const inputs = await this.page.$$('input');
                 for (const input of inputs) {
-                    const type = await this.page.evaluate(el => el.type, input);
-                    const placeholder = await this.page.evaluate(el => el.placeholder, input);
-                    if (type === 'email' || type === 'text' && placeholder.toLowerCase().includes('email')) {
-                        emailInput = input;
-                        this.log('Found email input by scanning all inputs', 'info');
-                        break;
-                    }
+                    try {
+                        const info = await this.page.evaluate(el => ({
+                            type: el.type,
+                            name: el.name,
+                            placeholder: el.placeholder || '',
+                            isVisible: el.offsetParent !== null,
+                            isPassword: el.type === 'password'
+                        }), input);
+
+                        // Skip hidden inputs and password fields
+                        if (!info.isVisible || info.isPassword) continue;
+
+                        // Check if this could be an email input
+                        if (info.type === 'email' ||
+                            info.type === 'text' ||
+                            info.name.toLowerCase().includes('email') ||
+                            info.name.toLowerCase().includes('login') ||
+                            info.placeholder.toLowerCase().includes('email') ||
+                            info.placeholder.toLowerCase().includes('e-mail') ||
+                            info.placeholder.toLowerCase().includes('почта')) {
+                            emailInput = input;
+                            this.log(`Found email by scanning: type=${info.type}, name=${info.name}`, 'info');
+                            break;
+                        }
+                    } catch {}
+                }
+            }
+
+            // Try iframes if still not found
+            if (!emailInput && iframes.length > 0) {
+                this.log('Checking iframes for login form...', 'info');
+                for (const iframe of iframes) {
+                    try {
+                        const frame = await iframe.contentFrame();
+                        if (frame) {
+                            const iframeInputs = await frame.$$('input');
+                            this.log(`  Iframe has ${iframeInputs.length} inputs`, 'info');
+
+                            for (const selector of emailSelectors) {
+                                try {
+                                    const input = await frame.$(selector);
+                                    if (input) {
+                                        emailInput = input;
+                                        targetPage = frame;
+                                        this.log(`Found email in iframe: ${selector}`, 'info');
+                                        break;
+                                    }
+                                } catch {}
+                            }
+                            if (emailInput) break;
+                        }
+                    } catch {}
                 }
             }
 
             if (!emailInput) {
+                // Take screenshot of what we see
+                await this.screenshot('error_no_email_input');
+
+                // Log page content for debugging
+                const bodyText = await this.page.evaluate(() => document.body.innerText.substring(0, 500));
+                this.log(`Page content preview: ${bodyText.replace(/\n/g, ' ').substring(0, 200)}...`, 'info');
+
                 throw new Error('Email input not found');
             }
 
@@ -299,20 +418,31 @@ class OlympTradeTest {
 
             await sleep(500);
 
-            // Find password input
+            // Find password input (use targetPage which might be iframe)
             const passwordSelectors = [
                 'input[name="password"]',
                 'input[type="password"]',
-                '#password'
+                '#password',
+                '#login-password',
+                '[data-qa="password"]',
+                '[data-qa="password-input"]',
+                '[data-test="password"]',
+                '.password-input input'
             ];
 
             let passwordInput = null;
             for (const selector of passwordSelectors) {
-                passwordInput = await this.page.$(selector);
-                if (passwordInput) {
-                    this.log(`Found password input: ${selector}`, 'info');
-                    break;
-                }
+                try {
+                    passwordInput = await targetPage.$(selector);
+                    if (passwordInput) {
+                        const isVisible = await targetPage.evaluate(el => el.offsetParent !== null, passwordInput);
+                        if (isVisible) {
+                            this.log(`Found password input: ${selector}`, 'info');
+                            break;
+                        }
+                        passwordInput = null;
+                    }
+                } catch {}
             }
 
             if (!passwordInput) {
@@ -329,28 +459,51 @@ class OlympTradeTest {
                 'button[type="submit"]',
                 '.login-button',
                 '.btn-login',
+                '.signin-button',
                 'button.submit',
                 'button[data-qa="login-button"]',
+                'button[data-qa="signin-button"]',
+                '[data-qa="submit"]',
                 'input[type="submit"]',
-                'button:contains("Log in")',
-                'button:contains("Sign in")',
-                'form button'
+                'form button:not([type="button"])',
+                '.auth-submit',
+                '.form-submit'
             ];
 
             let submitClicked = false;
             for (const selector of submitSelectors) {
                 try {
-                    const btn = await this.page.$(selector);
+                    const btn = await targetPage.$(selector);
                     if (btn) {
-                        const isVisible = await this.page.evaluate(el => {
+                        const isVisible = await targetPage.evaluate(el => {
                             const style = window.getComputedStyle(el);
-                            return style.display !== 'none' && style.visibility !== 'hidden';
+                            return style.display !== 'none' &&
+                                   style.visibility !== 'hidden' &&
+                                   el.offsetParent !== null;
                         }, btn);
 
                         if (isVisible) {
                             await btn.click();
                             submitClicked = true;
                             this.log(`Clicked submit button: ${selector}`, 'info');
+                            break;
+                        }
+                    }
+                } catch {}
+            }
+
+            // Try finding button by text content
+            if (!submitClicked) {
+                try {
+                    const buttons = await targetPage.$$('button');
+                    for (const btn of buttons) {
+                        const text = await targetPage.evaluate(el => el.textContent.toLowerCase(), btn);
+                        if (text.includes('log in') || text.includes('login') ||
+                            text.includes('sign in') || text.includes('signin') ||
+                            text.includes('войти') || text.includes('вход')) {
+                            await btn.click();
+                            submitClicked = true;
+                            this.log(`Clicked button with text: ${text.trim()}`, 'info');
                             break;
                         }
                     }
@@ -365,7 +518,7 @@ class OlympTradeTest {
 
             // Wait for login to process
             this.log('Waiting for login to complete...', 'info');
-            await sleep(8000);
+            await sleep(10000);
 
             await this.screenshot('05_after_login');
 
