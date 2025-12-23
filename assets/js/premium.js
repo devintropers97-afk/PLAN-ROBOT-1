@@ -2221,30 +2221,7 @@ class ToastNotification {
     }
 }
 
-// ===== REVEAL ON SCROLL =====
-class RevealOnScroll {
-    constructor() {
-        this.elements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .reveal-scale, .stagger-reveal');
-        if (this.elements.length === 0) return;
-
-        this.init();
-    }
-
-    init() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        this.elements.forEach(el => observer.observe(el));
-    }
-}
+// ===== REVEAL ON SCROLL (DUPLICATE REMOVED - Using original at line 776) =====
 
 // ===== MORPHING BLOBS =====
 class MorphingBlobs {
@@ -4345,18 +4322,7 @@ class InteractiveGlobe {
     }
 }
 
-// ===== NOISE TEXTURE OVERLAY =====
-class NoiseOverlay {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        const noise = document.createElement('div');
-        noise.className = 'noise-overlay';
-        document.body.appendChild(noise);
-    }
-}
+// ===== NOISE TEXTURE OVERLAY (DUPLICATE REMOVED - Using original at line 803) =====
 
 // ===== GRADIENT MESH ENHANCER =====
 class GradientMeshEnhancer {
@@ -4985,45 +4951,7 @@ class PartnerLogos {
     }
 }
 
-// ===== COOKIE CONSENT BANNER =====
-class CookieConsent {
-    constructor() {
-        if (localStorage.getItem('cookie_consent')) return;
-        this.init();
-    }
-
-    init() {
-        const banner = document.createElement('div');
-        banner.className = 'cookie-consent';
-        banner.innerHTML = `
-            <div class="cookie-consent-inner">
-                <div class="cookie-consent-text">
-                    <h4>🍪 Cookie Notice</h4>
-                    <p>We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies. <a href="#">Learn more</a></p>
-                </div>
-                <div class="cookie-consent-actions">
-                    <button class="cookie-btn decline">Decline</button>
-                    <button class="cookie-btn accept">Accept All</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(banner);
-
-        setTimeout(() => banner.classList.add('show'), 2000);
-
-        banner.querySelector('.accept').addEventListener('click', () => {
-            localStorage.setItem('cookie_consent', 'accepted');
-            banner.classList.remove('show');
-            setTimeout(() => banner.remove(), 500);
-        });
-
-        banner.querySelector('.decline').addEventListener('click', () => {
-            localStorage.setItem('cookie_consent', 'declined');
-            banner.classList.remove('show');
-            setTimeout(() => banner.remove(), 500);
-        });
-    }
-}
+// ===== COOKIE CONSENT BANNER (DUPLICATE REMOVED - Using original at line 957) =====
 
 // ===== EXIT INTENT NEWSLETTER POPUP =====
 class NewsletterPopup {
@@ -5345,53 +5273,7 @@ class SpeedDial {
     }
 }
 
-// ===== CUSTOM CURSOR =====
-class CustomCursor {
-    constructor() {
-        if (window.innerWidth < 768) return;
-        this.init();
-    }
-
-    init() {
-        const cursor = document.createElement('div');
-        cursor.className = 'custom-cursor';
-        document.body.appendChild(cursor);
-
-        const dot = document.createElement('div');
-        dot.className = 'custom-cursor-dot';
-        document.body.appendChild(dot);
-
-        this.cursor = cursor;
-        this.dot = dot;
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = `${e.clientX}px`;
-            cursor.style.top = `${e.clientY}px`;
-            dot.style.left = `${e.clientX}px`;
-            dot.style.top = `${e.clientY}px`;
-        });
-
-        document.addEventListener('mousedown', () => cursor.classList.add('click'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
-
-        // Hover effect on interactive elements
-        const interactiveElements = 'a, button, input, .btn, .card, [onclick]';
-        document.querySelectorAll(interactiveElements).forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-
-        // Hide when leaving window
-        document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
-        document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
-
-        // Hide default cursor
-        document.body.style.cursor = 'none';
-        document.querySelectorAll('*').forEach(el => {
-            el.style.cursor = 'none';
-        });
-    }
-}
+// ===== CUSTOM CURSOR (DUPLICATE REMOVED - Using original at line 76) =====
 
 // ===== SESSION TIME TRACKER =====
 class SessionTimeTracker {
@@ -5495,63 +5377,7 @@ class MorphingText {
     }
 }
 
-// ===== 2. SPOTLIGHT/FLASHLIGHT CURSOR EFFECT =====
-class SpotlightEffect {
-    constructor() {
-        this.isActive = false;
-        this.overlay = null;
-        this.toggle = null;
-
-        this.init();
-    }
-
-    init() {
-        // Create overlay
-        this.overlay = document.createElement('div');
-        this.overlay.className = 'spotlight-overlay';
-        document.body.appendChild(this.overlay);
-
-        // Create toggle button
-        this.toggle = document.createElement('button');
-        this.toggle.className = 'spotlight-toggle';
-        this.toggle.innerHTML = '🔦';
-        this.toggle.title = 'Toggle Spotlight Mode (Alt+F)';
-        document.body.appendChild(this.toggle);
-
-        // Event listeners
-        this.toggle.addEventListener('click', () => this.toggleSpotlight());
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'f' && e.altKey) {
-                e.preventDefault();
-                this.toggleSpotlight();
-            }
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (this.isActive) {
-                this.overlay.style.setProperty('--spotlight-x', e.clientX + 'px');
-                this.overlay.style.setProperty('--spotlight-y', e.clientY + 'px');
-            }
-        });
-    }
-
-    toggleSpotlight() {
-        this.isActive = !this.isActive;
-        document.body.classList.toggle('spotlight-mode', this.isActive);
-        this.toggle.classList.toggle('active', this.isActive);
-
-        if (this.isActive) {
-            window.dynamicIsland?.show({
-                icon: '🔦',
-                title: 'Spotlight Mode',
-                message: 'Focus mode enabled',
-                type: 'info',
-                duration: 2000
-            });
-        }
-    }
-}
+// ===== 2. SPOTLIGHT/FLASHLIGHT CURSOR EFFECT (DUPLICATE REMOVED - Using original at line 1376) =====
 
 // ===== 3. GLITCH TEXT EFFECT =====
 class GlitchText {
@@ -5769,73 +5595,7 @@ class CountdownTimer {
     }
 }
 
-// ===== 7. THEME TOGGLE (DARK/LIGHT/AUTO) =====
-class ThemeToggle {
-    constructor() {
-        this.themes = ['dark', 'light', 'auto'];
-        this.currentTheme = localStorage.getItem('theme') || 'dark';
-        this.container = null;
-
-        this.init();
-    }
-
-    init() {
-        this.container = document.createElement('div');
-        this.container.className = 'theme-toggle-container';
-        this.container.innerHTML = `
-            <button class="theme-toggle-btn" data-theme="${this.currentTheme}" title="Toggle Theme (Alt+T)">
-                <span class="icon-sun">☀️</span>
-                <span class="icon-moon">🌙</span>
-                <span class="icon-auto">🌓</span>
-            </button>
-        `;
-
-        document.body.appendChild(this.container);
-
-        const btn = this.container.querySelector('.theme-toggle-btn');
-        btn.addEventListener('click', () => this.cycleTheme());
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 't' && e.altKey) {
-                e.preventDefault();
-                this.cycleTheme();
-            }
-        });
-
-        this.applyTheme();
-    }
-
-    cycleTheme() {
-        const currentIndex = this.themes.indexOf(this.currentTheme);
-        this.currentTheme = this.themes[(currentIndex + 1) % this.themes.length];
-        localStorage.setItem('theme', this.currentTheme);
-
-        const btn = this.container.querySelector('.theme-toggle-btn');
-        btn.setAttribute('data-theme', this.currentTheme);
-
-        this.applyTheme();
-
-        const themeNames = { dark: 'Dark', light: 'Light', auto: 'Auto' };
-        window.dynamicIsland?.show({
-            icon: this.currentTheme === 'dark' ? '🌙' : this.currentTheme === 'light' ? '☀️' : '🌓',
-            title: 'Theme Changed',
-            message: `${themeNames[this.currentTheme]} mode activated`,
-            type: 'info',
-            duration: 2000
-        });
-    }
-
-    applyTheme() {
-        let effectiveTheme = this.currentTheme;
-
-        if (this.currentTheme === 'auto') {
-            effectiveTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        }
-
-        document.body.classList.remove('theme-light', 'theme-dark');
-        document.body.classList.add(`theme-${effectiveTheme}`);
-    }
-}
+// ===== 7. THEME TOGGLE (DUPLICATE REMOVED - Using original at line 2519) =====
 
 // ===== 8. AUDIO VISUALIZER BACKGROUND =====
 class AudioVisualizer {
@@ -5935,63 +5695,7 @@ class AudioVisualizer {
     }
 }
 
-// ===== 9. TYPEWRITER EFFECT =====
-class TypewriterEffect {
-    constructor(element, options = {}) {
-        this.element = typeof element === 'string' ? document.querySelector(element) : element;
-        if (!this.element) return;
-
-        this.texts = options.texts || [this.element.textContent];
-        this.speed = options.speed || 100;
-        this.deleteSpeed = options.deleteSpeed || 50;
-        this.pauseDuration = options.pauseDuration || 2000;
-        this.loop = options.loop !== undefined ? options.loop : true;
-
-        this.currentTextIndex = 0;
-        this.currentCharIndex = 0;
-        this.isDeleting = false;
-
-        this.init();
-    }
-
-    init() {
-        this.element.classList.add('typewriter');
-        this.element.textContent = '';
-        this.type();
-    }
-
-    type() {
-        const currentText = this.texts[this.currentTextIndex];
-
-        if (this.isDeleting) {
-            this.element.textContent = currentText.substring(0, this.currentCharIndex - 1);
-            this.currentCharIndex--;
-        } else {
-            this.element.textContent = currentText.substring(0, this.currentCharIndex + 1);
-            this.currentCharIndex++;
-        }
-
-        this.element.classList.add('typing');
-
-        let timeout = this.isDeleting ? this.deleteSpeed : this.speed;
-
-        if (!this.isDeleting && this.currentCharIndex === currentText.length) {
-            timeout = this.pauseDuration;
-            this.isDeleting = true;
-            this.element.classList.remove('typing');
-        } else if (this.isDeleting && this.currentCharIndex === 0) {
-            this.isDeleting = false;
-            this.currentTextIndex = (this.currentTextIndex + 1) % this.texts.length;
-            timeout = 500;
-        }
-
-        if (this.loop || this.currentTextIndex < this.texts.length - 1 || this.currentCharIndex < currentText.length) {
-            setTimeout(() => this.type(), timeout);
-        } else {
-            this.element.classList.add('done');
-        }
-    }
-}
+// ===== 9. TYPEWRITER EFFECT (DUPLICATE REMOVED - Using original at line 1171) =====
 
 // ===== 10. QR CODE SHARE WIDGET =====
 class QRShareWidget {
@@ -6557,84 +6261,7 @@ class ScrollReveal {
     }
 }
 
-// ===== 4. TEXT SCRAMBLE EFFECT =====
-class TextScramble {
-    constructor(element, options = {}) {
-        this.element = typeof element === 'string' ? document.querySelector(element) : element;
-        if (!this.element) return;
-
-        this.chars = options.chars || '!<>-_\\/[]{}—=+*^?#________';
-        this.speed = options.speed || 30;
-
-        this.originalText = this.element.textContent;
-        this.queue = [];
-        this.frame = 0;
-        this.frameRequest = null;
-        this.resolve = null;
-    }
-
-    setText(newText) {
-        const oldText = this.element.textContent;
-        const length = Math.max(oldText.length, newText.length);
-
-        return new Promise((resolve) => {
-            this.resolve = resolve;
-            this.queue = [];
-
-            for (let i = 0; i < length; i++) {
-                const from = oldText[i] || '';
-                const to = newText[i] || '';
-                const start = Math.floor(Math.random() * 40);
-                const end = start + Math.floor(Math.random() * 40);
-                this.queue.push({ from, to, start, end });
-            }
-
-            cancelAnimationFrame(this.frameRequest);
-            this.frame = 0;
-            this.update();
-        });
-    }
-
-    update() {
-        let output = '';
-        let complete = 0;
-
-        for (let i = 0; i < this.queue.length; i++) {
-            let { from, to, start, end, char } = this.queue[i];
-
-            if (this.frame >= end) {
-                complete++;
-                output += to;
-            } else if (this.frame >= start) {
-                if (!char || Math.random() < 0.28) {
-                    char = this.chars[Math.floor(Math.random() * this.chars.length)];
-                    this.queue[i].char = char;
-                }
-                output += `<span class="text-scramble-char scrambling">${char}</span>`;
-            } else {
-                output += from;
-            }
-        }
-
-        this.element.innerHTML = output;
-
-        if (complete === this.queue.length) {
-            this.resolve();
-        } else {
-            this.frameRequest = requestAnimationFrame(() => this.update());
-            this.frame++;
-        }
-    }
-
-    async cycle(texts, delay = 3000) {
-        let index = 0;
-        while (true) {
-            await this.setText(texts[index]);
-            await new Promise(r => setTimeout(r, delay));
-            index = (index + 1) % texts.length;
-        }
-    }
-}
+// ===== 4. TEXT SCRAMBLE EFFECT (DUPLICATE REMOVED - Using original at line 1224) =====
 
 // ===== 5. INTERACTIVE BACKGROUND GRID =====
 class InteractiveGrid {
@@ -7958,61 +7585,7 @@ class ButtonLoader {
     }
 }
 
-// ===== 13. KEYBOARD SHORTCUTS MANAGER =====
-class KeyboardShortcuts {
-    constructor() {
-        this.shortcuts = new Map();
-        this.init();
-    }
-
-    init() {
-        document.addEventListener('keydown', (e) => {
-            const key = this.getKeyCombo(e);
-            if (this.shortcuts.has(key)) {
-                e.preventDefault();
-                this.shortcuts.get(key)();
-            }
-        });
-
-        // Register default shortcuts info
-        this.register('Alt+H', () => this.showHelp());
-    }
-
-    getKeyCombo(e) {
-        const parts = [];
-        if (e.ctrlKey) parts.push('Ctrl');
-        if (e.altKey) parts.push('Alt');
-        if (e.shiftKey) parts.push('Shift');
-        if (e.metaKey) parts.push('Meta');
-        parts.push(e.key.toUpperCase());
-        return parts.join('+');
-    }
-
-    register(combo, callback) {
-        this.shortcuts.set(combo, callback);
-    }
-
-    showHelp() {
-        const shortcuts = [
-            'Alt+F - Spotlight Mode',
-            'Alt+T - Theme Toggle',
-            'Alt+M - Matrix Rain',
-            'Alt+G - Interactive Grid',
-            'Alt+P - FPS Counter',
-            'Alt+Y - Party Mode',
-            'Alt+V - Voice Commands',
-            'Alt+I - Session Info',
-            'Alt+H - This Help'
-        ];
-
-        window.modal?.open({
-            title: 'Keyboard Shortcuts',
-            icon: '⌨️',
-            body: `<ul style="list-style: none; padding: 0;">${shortcuts.map(s => `<li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">${s}</li>`).join('')}</ul>`,
-            buttons: [{ text: 'Got it!', type: 'primary' }]
-        });
-    }
-}
+// ===== 13. KEYBOARD SHORTCUTS MANAGER (DUPLICATE REMOVED - Using original at line 2649) =====
 
 // ===== FINAL SUMMARY DISPLAY =====
 class FinalSummary {
