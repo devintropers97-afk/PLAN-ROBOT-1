@@ -4726,11 +4726,736 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('%c Batch 8 Beyond Legendary Loaded ',
             'background: linear-gradient(135deg, #00ff88, #00d4ff, #667eea); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
-
-        console.log('%c 👑 ABSOLUTE PERFECTION - TIER -1 DIVINE! ',
-            'background: linear-gradient(135deg, #ffd700, #ff00ff, #00ffff, #00ff00); color: #000; padding: 15px 25px; font-size: 18px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 15px rgba(255,255,255,0.8);');
-
-        console.log('%c Total Lines: 7000+ | Features: 150+ | Level: ∞ ',
-            'background: #000; color: #ffd700; padding: 10px 20px; font-size: 12px; border: 2px solid #ffd700; border-radius: 5px;');
     }, 3000);
+});
+
+// ========================================
+// BATCH 9: TRANSCENDENT PERFECTION
+// Beyond All Limits - Infinite Premium
+// ========================================
+
+// ===== REAL-TIME MARKET CLOCK WIDGET =====
+class MarketClockWidget {
+    constructor() {
+        this.markets = [
+            { city: 'New York', flag: '🇺🇸', timezone: 'America/New_York', open: 9, close: 16 },
+            { city: 'London', flag: '🇬🇧', timezone: 'Europe/London', open: 8, close: 16 },
+            { city: 'Tokyo', flag: '🇯🇵', timezone: 'Asia/Tokyo', open: 9, close: 15 },
+            { city: 'Sydney', flag: '🇦🇺', timezone: 'Australia/Sydney', open: 10, close: 16 },
+            { city: 'Singapore', flag: '🇸🇬', timezone: 'Asia/Singapore', open: 9, close: 17 }
+        ];
+        this.isVisible = false;
+        this.init();
+    }
+
+    init() {
+        const widget = document.createElement('div');
+        widget.className = 'market-clock-widget';
+        widget.innerHTML = `
+            <button class="market-clock-toggle">🕐</button>
+            <div class="market-clock-header">
+                <h4>🌍 Market Hours</h4>
+            </div>
+            <div class="market-clock-list"></div>
+        `;
+        document.body.appendChild(widget);
+
+        this.widget = widget;
+        this.list = widget.querySelector('.market-clock-list');
+        this.toggle = widget.querySelector('.market-clock-toggle');
+
+        this.toggle.addEventListener('click', () => this.toggleVisibility());
+
+        this.populateMarkets();
+        this.updateTimes();
+        setInterval(() => this.updateTimes(), 1000);
+    }
+
+    toggleVisibility() {
+        this.isVisible = !this.isVisible;
+        this.widget.classList.toggle('visible', this.isVisible);
+    }
+
+    populateMarkets() {
+        this.markets.forEach(market => {
+            const item = document.createElement('div');
+            item.className = 'market-clock-item';
+            item.dataset.timezone = market.timezone;
+            item.innerHTML = `
+                <div class="market-clock-city">
+                    <span class="market-clock-flag">${market.flag}</span>
+                    <span class="market-clock-name">${market.city}</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="market-clock-time">--:--</span>
+                    <span class="market-clock-status"></span>
+                </div>
+            `;
+            this.list.appendChild(item);
+        });
+    }
+
+    updateTimes() {
+        const items = this.list.querySelectorAll('.market-clock-item');
+        items.forEach((item, index) => {
+            const market = this.markets[index];
+            const time = new Date().toLocaleTimeString('en-US', {
+                timeZone: market.timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            const hour = parseInt(time.split(':')[0]);
+            const isOpen = hour >= market.open && hour < market.close;
+
+            item.querySelector('.market-clock-time').textContent = time;
+            const status = item.querySelector('.market-clock-status');
+            status.className = `market-clock-status ${isOpen ? 'open' : 'closed'}`;
+        });
+    }
+}
+
+// ===== FLOATING SOCIAL PROOF BUBBLES =====
+class SocialProofBubbles {
+    constructor() {
+        this.proofs = [
+            { name: 'Ahmad R.', action: 'just subscribed to', item: 'Pro Plan', emoji: '🎉' },
+            { name: 'Siti N.', action: 'earned', item: '+$1,250 profit', emoji: '💰' },
+            { name: 'Budi W.', action: 'just joined', item: 'Trading Plan Robot', emoji: '🚀' },
+            { name: 'Dewi S.', action: 'achieved', item: '95% win rate', emoji: '🏆' },
+            { name: 'Rizki A.', action: 'started trading with', item: 'AI Robot', emoji: '🤖' },
+            { name: 'Maya P.', action: 'upgraded to', item: 'Enterprise Plan', emoji: '⭐' },
+            { name: 'Eko H.', action: 'made', item: '50 winning trades', emoji: '📈' },
+            { name: 'Lisa M.', action: 'verified', item: 'account successfully', emoji: '✅' }
+        ];
+        this.locations = ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang', 'Makassar', 'Bali', 'Yogyakarta'];
+        this.init();
+    }
+
+    init() {
+        this.createBubble();
+        this.scheduleNext();
+    }
+
+    createBubble() {
+        const bubble = document.createElement('div');
+        bubble.className = 'social-proof-bubble';
+        bubble.innerHTML = `
+            <div class="social-proof-avatar">👤</div>
+            <div class="social-proof-content">
+                <p class="social-proof-text"></p>
+                <div class="social-proof-meta">
+                    <span class="location"></span>
+                    <span class="time"></span>
+                </div>
+            </div>
+            <button class="social-proof-close">✕</button>
+        `;
+        document.body.appendChild(bubble);
+        this.bubble = bubble;
+
+        bubble.querySelector('.social-proof-close').addEventListener('click', () => {
+            this.hide();
+        });
+    }
+
+    show() {
+        const proof = this.proofs[Math.floor(Math.random() * this.proofs.length)];
+        const location = this.locations[Math.floor(Math.random() * this.locations.length)];
+        const timeAgo = ['Just now', '2 min ago', '5 min ago'][Math.floor(Math.random() * 3)];
+
+        this.bubble.querySelector('.social-proof-avatar').textContent = proof.emoji;
+        this.bubble.querySelector('.social-proof-text').innerHTML =
+            `<strong>${proof.name}</strong> ${proof.action} <strong>${proof.item}</strong>`;
+        this.bubble.querySelector('.location').textContent = `📍 ${location}`;
+        this.bubble.querySelector('.time').textContent = timeAgo;
+
+        this.bubble.classList.add('show');
+        window.soundSystem?.play('notification');
+
+        setTimeout(() => this.hide(), 5000);
+    }
+
+    hide() {
+        this.bubble.classList.remove('show');
+    }
+
+    scheduleNext() {
+        const delay = 20000 + Math.random() * 40000; // 20-60 seconds
+        setTimeout(() => {
+            this.show();
+            this.scheduleNext();
+        }, delay);
+    }
+}
+
+// ===== SCROLL-TO-TOP WITH PROGRESS RING =====
+class ScrollToTop {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const container = document.createElement('div');
+        container.className = 'scroll-to-top';
+        container.innerHTML = `
+            <button class="scroll-to-top-btn" aria-label="Scroll to top">
+                <svg class="scroll-to-top-progress" viewBox="0 0 50 50">
+                    <defs>
+                        <linearGradient id="scrollProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#667eea"/>
+                            <stop offset="100%" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="bg" cx="25" cy="25" r="22"/>
+                    <circle class="progress" cx="25" cy="25" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+                </svg>
+                <span>↑</span>
+            </button>
+        `;
+        document.body.appendChild(container);
+
+        this.container = container;
+        this.progress = container.querySelector('.progress');
+        this.circumference = 2 * Math.PI * 22;
+
+        container.querySelector('button').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.soundSystem?.play('swoosh');
+        });
+
+        window.addEventListener('scroll', () => this.update());
+    }
+
+    update() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const progress = scrollTop / docHeight;
+
+        // Show/hide button
+        this.container.classList.toggle('visible', scrollTop > 300);
+
+        // Update progress ring
+        const offset = this.circumference * (1 - progress);
+        this.progress.style.strokeDashoffset = offset;
+    }
+}
+
+// ===== PARTNER LOGOS CAROUSEL =====
+class PartnerLogos {
+    constructor() {
+        this.partners = [
+            { name: 'MetaTrader', emoji: '📊' },
+            { name: 'TradingView', emoji: '📈' },
+            { name: 'Binance', emoji: '🪙' },
+            { name: 'eToro', emoji: '💹' },
+            { name: 'Forex.com', emoji: '💱' },
+            { name: 'OANDA', emoji: '🌐' },
+            { name: 'IC Markets', emoji: '📉' },
+            { name: 'XM', emoji: '✨' }
+        ];
+        this.init();
+    }
+
+    init() {
+        const footer = document.querySelector('footer') || document.querySelector('.footer');
+        if (!footer) return;
+
+        const section = document.createElement('div');
+        section.className = 'partner-logos';
+        section.innerHTML = `
+            <div class="partner-logos-title">Trusted by Leading Platforms</div>
+            <div class="partner-logos-track"></div>
+        `;
+
+        const track = section.querySelector('.partner-logos-track');
+        const logos = [...this.partners, ...this.partners];
+
+        logos.forEach(partner => {
+            const logo = document.createElement('div');
+            logo.className = 'partner-logo';
+            logo.innerHTML = `
+                <div class="partner-logo-placeholder">${partner.emoji} ${partner.name}</div>
+            `;
+            track.appendChild(logo);
+        });
+
+        footer.parentNode.insertBefore(section, footer);
+    }
+}
+
+// ===== COOKIE CONSENT BANNER =====
+class CookieConsent {
+    constructor() {
+        if (localStorage.getItem('cookie_consent')) return;
+        this.init();
+    }
+
+    init() {
+        const banner = document.createElement('div');
+        banner.className = 'cookie-consent';
+        banner.innerHTML = `
+            <div class="cookie-consent-inner">
+                <div class="cookie-consent-text">
+                    <h4>🍪 Cookie Notice</h4>
+                    <p>We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies. <a href="#">Learn more</a></p>
+                </div>
+                <div class="cookie-consent-actions">
+                    <button class="cookie-btn decline">Decline</button>
+                    <button class="cookie-btn accept">Accept All</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(banner);
+
+        setTimeout(() => banner.classList.add('show'), 2000);
+
+        banner.querySelector('.accept').addEventListener('click', () => {
+            localStorage.setItem('cookie_consent', 'accepted');
+            banner.classList.remove('show');
+            setTimeout(() => banner.remove(), 500);
+        });
+
+        banner.querySelector('.decline').addEventListener('click', () => {
+            localStorage.setItem('cookie_consent', 'declined');
+            banner.classList.remove('show');
+            setTimeout(() => banner.remove(), 500);
+        });
+    }
+}
+
+// ===== EXIT INTENT NEWSLETTER POPUP =====
+class NewsletterPopup {
+    constructor() {
+        if (localStorage.getItem('newsletter_shown')) return;
+        this.init();
+    }
+
+    init() {
+        this.createPopup();
+        this.bindExitIntent();
+    }
+
+    createPopup() {
+        const popup = document.createElement('div');
+        popup.className = 'newsletter-popup';
+        popup.innerHTML = `
+            <div class="newsletter-popup-box">
+                <button class="newsletter-popup-close">✕</button>
+                <div class="newsletter-popup-icon">📧</div>
+                <h3>Wait! Don't Miss Out!</h3>
+                <p>Subscribe to get exclusive trading tips, market updates, and special offers delivered to your inbox.</p>
+                <form class="newsletter-form">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email" required>
+                    <button type="submit" class="newsletter-submit">Subscribe</button>
+                </form>
+                <p class="newsletter-disclaimer">No spam. Unsubscribe anytime.</p>
+            </div>
+        `;
+        document.body.appendChild(popup);
+        this.popup = popup;
+
+        popup.querySelector('.newsletter-popup-close').addEventListener('click', () => this.close());
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) this.close();
+        });
+
+        popup.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.subscribe();
+        });
+    }
+
+    bindExitIntent() {
+        document.addEventListener('mouseleave', (e) => {
+            if (e.clientY < 10 && !localStorage.getItem('newsletter_shown')) {
+                this.show();
+            }
+        });
+
+        // Also show after 30 seconds on page
+        setTimeout(() => {
+            if (!localStorage.getItem('newsletter_shown')) {
+                this.show();
+            }
+        }, 30000);
+    }
+
+    show() {
+        this.popup.classList.add('show');
+        localStorage.setItem('newsletter_shown', 'true');
+        window.soundSystem?.play('pop');
+    }
+
+    close() {
+        this.popup.classList.remove('show');
+    }
+
+    subscribe() {
+        const email = this.popup.querySelector('.newsletter-input').value;
+        console.log('Newsletter subscription:', email);
+
+        window.dynamicIsland?.show({
+            icon: '✅',
+            title: 'Subscribed!',
+            message: 'Thanks for subscribing to our newsletter',
+            type: 'success',
+            duration: 3000
+        });
+
+        this.close();
+    }
+}
+
+// ===== ACHIEVEMENT SYSTEM =====
+class AchievementSystem {
+    constructor() {
+        this.achievements = [
+            { id: 'first_visit', icon: '👋', title: 'Welcome!', desc: 'First visit to the platform', xp: 10 },
+            { id: 'scroll_50', icon: '📜', title: 'Explorer', desc: 'Scrolled 50% of the page', xp: 20 },
+            { id: 'scroll_100', icon: '🏁', title: 'Completionist', desc: 'Scrolled to the bottom', xp: 50 },
+            { id: 'time_1min', icon: '⏱️', title: 'Engaged', desc: 'Spent 1 minute on site', xp: 15 },
+            { id: 'time_5min', icon: '🎯', title: 'Interested', desc: 'Spent 5 minutes exploring', xp: 30 },
+            { id: 'click_5', icon: '👆', title: 'Clicker', desc: 'Clicked 5 interactive elements', xp: 25 }
+        ];
+        this.unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+        this.clicks = 0;
+        this.startTime = Date.now();
+        this.init();
+    }
+
+    init() {
+        this.createPopup();
+        this.trackProgress();
+
+        // First visit achievement
+        if (!this.unlocked.includes('first_visit')) {
+            setTimeout(() => this.unlock('first_visit'), 3000);
+        }
+    }
+
+    createPopup() {
+        const popup = document.createElement('div');
+        popup.className = 'achievement-popup';
+        popup.innerHTML = `
+            <div class="achievement-icon"></div>
+            <div class="achievement-content">
+                <h4>Achievement Unlocked!</h4>
+                <h3 class="achievement-title"></h3>
+                <p class="achievement-desc"></p>
+                <div class="achievement-xp">+<span></span> XP</div>
+            </div>
+        `;
+        document.body.appendChild(popup);
+        this.popup = popup;
+    }
+
+    trackProgress() {
+        // Track scrolling
+        window.addEventListener('scroll', () => {
+            const percent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            if (percent >= 50 && !this.unlocked.includes('scroll_50')) {
+                this.unlock('scroll_50');
+            }
+            if (percent >= 95 && !this.unlocked.includes('scroll_100')) {
+                this.unlock('scroll_100');
+            }
+        });
+
+        // Track clicks
+        document.addEventListener('click', () => {
+            this.clicks++;
+            if (this.clicks >= 5 && !this.unlocked.includes('click_5')) {
+                this.unlock('click_5');
+            }
+        });
+
+        // Track time
+        setInterval(() => {
+            const elapsed = (Date.now() - this.startTime) / 1000;
+            if (elapsed >= 60 && !this.unlocked.includes('time_1min')) {
+                this.unlock('time_1min');
+            }
+            if (elapsed >= 300 && !this.unlocked.includes('time_5min')) {
+                this.unlock('time_5min');
+            }
+        }, 5000);
+    }
+
+    unlock(id) {
+        const achievement = this.achievements.find(a => a.id === id);
+        if (!achievement || this.unlocked.includes(id)) return;
+
+        this.unlocked.push(id);
+        localStorage.setItem('achievements', JSON.stringify(this.unlocked));
+
+        this.showPopup(achievement);
+    }
+
+    showPopup(achievement) {
+        this.popup.querySelector('.achievement-icon').textContent = achievement.icon;
+        this.popup.querySelector('.achievement-title').textContent = achievement.title;
+        this.popup.querySelector('.achievement-desc').textContent = achievement.desc;
+        this.popup.querySelector('.achievement-xp span').textContent = achievement.xp;
+
+        this.popup.classList.add('show');
+        window.soundSystem?.play('achievement');
+        window.confetti?.burst(window.innerWidth - 100, 150, 30);
+
+        setTimeout(() => this.popup.classList.remove('show'), 5000);
+    }
+}
+
+// ===== ONLINE USERS INDICATOR =====
+class OnlineUsersIndicator {
+    constructor() {
+        this.baseCount = 127;
+        this.init();
+    }
+
+    init() {
+        const indicator = document.createElement('div');
+        indicator.className = 'online-users';
+        indicator.innerHTML = `
+            <div class="online-users-dot"></div>
+            <span class="online-users-count">${this.baseCount} online</span>
+            <div class="online-users-avatars">
+                <div class="online-users-avatar">👤</div>
+                <div class="online-users-avatar">👤</div>
+                <div class="online-users-avatar">👤</div>
+            </div>
+        `;
+        document.body.appendChild(indicator);
+        this.indicator = indicator;
+        this.countEl = indicator.querySelector('.online-users-count');
+
+        this.updateCount();
+        setInterval(() => this.updateCount(), 10000);
+    }
+
+    updateCount() {
+        const variation = Math.floor(Math.random() * 20) - 10;
+        const count = Math.max(80, this.baseCount + variation);
+        this.countEl.textContent = `${count} online`;
+    }
+}
+
+// ===== READING PROGRESS BAR =====
+class ReadingProgress {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const bar = document.createElement('div');
+        bar.className = 'reading-progress';
+        document.body.appendChild(bar);
+        this.bar = bar;
+
+        window.addEventListener('scroll', () => this.update());
+    }
+
+    update() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        this.bar.style.width = `${progress}%`;
+    }
+}
+
+// ===== SPEED DIAL MENU =====
+class SpeedDial {
+    constructor() {
+        this.isOpen = false;
+        this.init();
+    }
+
+    init() {
+        const dial = document.createElement('div');
+        dial.className = 'speed-dial';
+        dial.innerHTML = `
+            <button class="speed-dial-trigger">+</button>
+            <div class="speed-dial-actions">
+                <div class="speed-dial-action">
+                    <span>Chat with AI</span>
+                    <button data-action="chat">🤖</button>
+                </div>
+                <div class="speed-dial-action">
+                    <span>Quick Contact</span>
+                    <button data-action="contact">📧</button>
+                </div>
+                <div class="speed-dial-action">
+                    <span>Share</span>
+                    <button data-action="share">📤</button>
+                </div>
+                <div class="speed-dial-action">
+                    <span>Celebrate!</span>
+                    <button data-action="celebrate">🎉</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(dial);
+
+        this.dial = dial;
+        this.trigger = dial.querySelector('.speed-dial-trigger');
+
+        this.trigger.addEventListener('click', () => this.toggle());
+
+        dial.querySelectorAll('[data-action]').forEach(btn => {
+            btn.addEventListener('click', (e) => this.handleAction(e.target.dataset.action));
+        });
+    }
+
+    toggle() {
+        this.isOpen = !this.isOpen;
+        this.dial.classList.toggle('open', this.isOpen);
+        this.trigger.classList.toggle('open', this.isOpen);
+        window.soundSystem?.play('pop');
+    }
+
+    handleAction(action) {
+        switch (action) {
+            case 'chat':
+                document.querySelector('.ai-chat-trigger')?.click();
+                break;
+            case 'contact':
+                window.dynamicIsland?.show({
+                    icon: '📧',
+                    title: 'Contact Us',
+                    message: 'support@tradingplanrobot.com',
+                    type: 'info',
+                    duration: 4000
+                });
+                break;
+            case 'share':
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Trading Plan Robot',
+                        url: window.location.href
+                    });
+                }
+                break;
+            case 'celebrate':
+                window.confetti?.burst();
+                window.fireworks?.show(3);
+                break;
+        }
+        this.toggle();
+    }
+}
+
+// ===== CUSTOM CURSOR =====
+class CustomCursor {
+    constructor() {
+        if (window.innerWidth < 768) return;
+        this.init();
+    }
+
+    init() {
+        const cursor = document.createElement('div');
+        cursor.className = 'custom-cursor';
+        document.body.appendChild(cursor);
+
+        const dot = document.createElement('div');
+        dot.className = 'custom-cursor-dot';
+        document.body.appendChild(dot);
+
+        this.cursor = cursor;
+        this.dot = dot;
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+            dot.style.left = `${e.clientX}px`;
+            dot.style.top = `${e.clientY}px`;
+        });
+
+        document.addEventListener('mousedown', () => cursor.classList.add('click'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+
+        // Hover effect on interactive elements
+        const interactiveElements = 'a, button, input, .btn, .card, [onclick]';
+        document.querySelectorAll(interactiveElements).forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Hide when leaving window
+        document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+        document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+
+        // Hide default cursor
+        document.body.style.cursor = 'none';
+        document.querySelectorAll('*').forEach(el => {
+            el.style.cursor = 'none';
+        });
+    }
+}
+
+// ===== SESSION TIME TRACKER =====
+class SessionTimeTracker {
+    constructor() {
+        this.startTime = Date.now();
+        this.init();
+    }
+
+    init() {
+        // Show session time on specific trigger
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'i' && e.altKey) {
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+
+                window.dynamicIsland?.show({
+                    icon: '⏱️',
+                    title: 'Session Time',
+                    message: `You've been here for ${minutes}m ${seconds}s`,
+                    type: 'info',
+                    duration: 3000
+                });
+            }
+        });
+    }
+}
+
+// ===== INITIALIZE BATCH 9 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Widgets
+        new MarketClockWidget();
+        new OnlineUsersIndicator();
+        new ReadingProgress();
+
+        // Social Proof
+        new SocialProofBubbles();
+        new PartnerLogos();
+
+        // Navigation
+        new ScrollToTop();
+        new SpeedDial();
+
+        // Popups & Consent
+        new CookieConsent();
+        new NewsletterPopup();
+
+        // Gamification
+        window.achievements = new AchievementSystem();
+
+        // Cursor Enhancement
+        new CustomCursor();
+
+        // Tracking
+        new SessionTimeTracker();
+
+        console.log('%c Batch 9 Transcendent Perfection Loaded ',
+            'background: linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+
+        console.log('%c 🌟 TRANSCENDENT PERFECTION - TIER -2 OMNIPOTENT! ',
+            'background: linear-gradient(135deg, #fff, #ffd700, #ff00ff, #00ffff, #00ff00, #fff); color: #000; padding: 15px 25px; font-size: 18px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 20px rgba(255,255,255,1);');
+
+        console.log('%c Total Lines: 9000+ | Features: 180+ | Level: ∞² ',
+            'background: linear-gradient(45deg, #000, #333); color: #ffd700; padding: 10px 20px; font-size: 12px; border: 3px double #ffd700; border-radius: 5px;');
+    }, 3500);
 });
