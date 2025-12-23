@@ -71,15 +71,8 @@ require_once 'includes/header.php';
                                         <span class="badge bg-primary" id="winRateDisplay">Win Rate: 75%</span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label"><?php _e('calc_payout'); ?></label>
-                                    <input type="range" class="form-range" id="payoutRate" min="70" max="92" value="82" step="1">
-                                    <div class="d-flex justify-content-between">
-                                        <small class="text-muted">70%</small>
-                                        <span class="badge bg-info" id="payoutDisplay">82%</span>
-                                        <small class="text-muted">92%</small>
-                                    </div>
-                                </div>
+                                <!-- Payout rate is fixed at 82% (standard OlympTrade rate) -->
+                                <input type="hidden" id="payoutRate" value="82">
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_trades_per_day'); ?></label>
                                     <input type="number" class="form-control" id="tradesPerDay" value="10" min="1" max="50">
@@ -379,9 +372,7 @@ document.getElementById('strategySelect').addEventListener('change', function() 
     document.getElementById('winRateDisplay').textContent = 'Win Rate: ' + this.value + '%';
 });
 
-document.getElementById('payoutRate').addEventListener('input', function() {
-    document.getElementById('payoutDisplay').textContent = this.value + '%';
-});
+// Payout rate is fixed at 82%
 
 function calculateProfit() {
     const isManualMode = document.getElementById('modeManual').checked;

@@ -14,7 +14,138 @@ DROP TABLE IF EXISTS trader_settings;
 DROP TABLE IF EXISTS traders;
 DROP TABLE IF EXISTS subscription_tiers;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS affiliate_links;
+DROP TABLE IF EXISTS news_signals;
+DROP TABLE IF EXISTS strategies;
+DROP TABLE IF EXISTS settings;
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- =============================================
+-- AFFILIATE LINKS (Per-country affiliate links)
+-- =============================================
+CREATE TABLE affiliate_links (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    country_code VARCHAR(5) NOT NULL UNIQUE,
+    affiliate_link TEXT NOT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    click_count INT UNSIGNED DEFAULT 0,
+    conversion_count INT UNSIGNED DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_country (country_code),
+    INDEX idx_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insert default affiliate links
+INSERT INTO affiliate_links (country_code, affiliate_link, is_active) VALUES
+('id', 'https://olymptrade.com/id/', 1),
+('en', 'https://olymptrade.com/en/', 1);
+
+-- =============================================
+-- STRATEGIES (Trading strategies configuration)
+-- =============================================
+CREATE TABLE strategies (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    tier_required ENUM('FREE', 'PRO', 'ELITE', 'VIP') DEFAULT 'FREE',
+
+    -- Indicators configuration
+    indicators JSON NOT NULL,
+    timeframes JSON DEFAULT '["5m", "15m"]',
+    assets JSON DEFAULT '["EUR/USD"]',
+
+    -- Performance
+    win_rate_backtest DECIMAL(5,2) DEFAULT 0.00,
+    signals_per_day INT UNSIGNED DEFAULT 10,
+    risk_level ENUM('low', 'medium', 'high') DEFAULT 'medium',
+
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_tier (tier_required),
+    INDEX idx_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insert default strategies
+INSERT INTO strategies (code, name, description, tier_required, indicators, win_rate_backtest, signals_per_day, risk_level) VALUES
+('BLITZ-SIGNAL', 'Blitz Signal', 'Fast momentum-based signals using RSI and Bollinger Bands', 'FREE', '{"rsi": {"period": 14, "oversold": 30, "overbought": 70}, "bb": {"period": 20, "stddev": 2}}', 69.00, 20, 'medium'),
+('APEX-HUNTER', 'Apex Hunter', 'Divergence detection for reversal trades', 'FREE', '{"rsi": {"period": 14}, "macd": {"fast": 12, "slow": 26, "signal": 9}}', 55.00, 15, 'high'),
+('TITAN-PULSE', 'Titan Pulse', 'Multi-indicator confirmation for reliable signals', 'PRO', '{"rsi": {"period": 14}, "stoch": {"k": 14, "d": 3}, "ema": [9, 21]}', 75.00, 10, 'low'),
+('SHADOW-EDGE', 'Shadow Edge', 'Price action with indicator confirmation', 'PRO', '{"atr": {"period": 14}, "rsi": {"period": 7}, "ema": [5, 13]}', 73.00, 12, 'medium'),
+('STEALTH-MODE', 'Stealth Mode', 'Hidden divergence detection with volume confirmation', 'ELITE', '{"rsi": {"period": 14}, "obv": true, "macd": {"fast": 12, "slow": 26}}', 83.00, 8, 'low'),
+('PHOENIX-X1', 'Phoenix X1', 'Extreme oversold/overbought detection', 'ELITE', '{"rsi": {"period": 2}, "bb": {"period": 20}, "stoch": {"k": 5}}', 81.00, 10, 'medium'),
+('VORTEX-PRO', 'Vortex Pro', 'Support/resistance with momentum confirmation', 'ELITE', '{"pivot": true, "rsi": {"period": 14}, "atr": {"period": 14}}', 78.00, 6, 'low'),
+('NEXUS-WAVE', 'Nexus Wave', 'Multi-timeframe trend confirmation', 'VIP', '{"ema": [9, 21, 55], "rsi": {"period": 14}, "macd": true}', 87.00, 5, 'low'),
+('QUANTUM-FLOW', 'Quantum Flow', 'Advanced pattern recognition with multiple confirmations', 'VIP', '{"patterns": true, "indicators": ["rsi", "macd", "stoch", "bb"]}', 85.00, 4, 'low'),
+('ORACLE-PRIME', 'Oracle Prime', 'Ultimate multi-layer analysis for highest accuracy', 'VIP', '{"multi_tf": true, "sentiment": true, "all_indicators": true}', 91.00, 3, 'low');
+
+-- =============================================
+-- NEWS SIGNALS (Economic calendar news signals)
+-- =============================================
+CREATE TABLE news_signals (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id VARCHAR(50),
+    event_name VARCHAR(255) NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    impact ENUM('low', 'medium', 'high') DEFAULT 'medium',
+
+    -- Event time
+    event_time TIMESTAMP NOT NULL,
+
+    -- Forecast and actual values
+    previous_value VARCHAR(50),
+    forecast_value VARCHAR(50),
+    actual_value VARCHAR(50),
+
+    -- Trading signal
+    direction ENUM('CALL', 'PUT', 'NEUTRAL'),
+    confidence INT UNSIGNED DEFAULT 50,
+    recommended_asset VARCHAR(20),
+
+    -- Status
+    status ENUM('upcoming', 'released', 'traded', 'skipped') DEFAULT 'upcoming',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_event_time (event_time),
+    INDEX idx_currency (currency),
+    INDEX idx_impact (impact),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- SETTINGS (System-wide settings)
+-- =============================================
+CREATE TABLE settings (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `key` VARCHAR(100) NOT NULL UNIQUE,
+    `value` TEXT,
+    `type` ENUM('string', 'number', 'boolean', 'json') DEFAULT 'string',
+    description VARCHAR(255),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insert default settings
+INSERT INTO settings (`key`, `value`, `type`, description) VALUES
+('site_name', 'ZYN Trade System', 'string', 'Website name'),
+('site_tagline', 'Presisi Diatas Emosi', 'string', 'Website tagline'),
+('default_language', 'id', 'string', 'Default language code'),
+('maintenance_mode', '0', 'boolean', 'Enable maintenance mode'),
+('robot_api_url', 'http://localhost:3001', 'string', 'Robot API URL'),
+('robot_api_key', 'zyn-robot-secret-key', 'string', 'Robot API Key'),
+('news_api_key', '', 'string', 'Economic news API key'),
+('news_api_enabled', '0', 'boolean', 'Enable news-based signals'),
+('telegram_bot_token', '', 'string', 'Telegram bot token'),
+('telegram_channel', '', 'string', 'Telegram channel for signals'),
+('min_deposit', '10', 'number', 'Minimum deposit in USD'),
+('price_pro', '99000', 'number', 'PRO tier price (IDR)'),
+('price_elite', '199000', 'number', 'ELITE tier price (IDR)'),
+('price_vip', '499000', 'number', 'VIP tier price (IDR)');
 
 -- =============================================
 -- SUBSCRIPTION TIERS
