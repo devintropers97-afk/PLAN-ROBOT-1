@@ -1969,3 +1969,544 @@ document.addEventListener('DOMContentLoaded', () => {
             'background: linear-gradient(135deg, #7c3aed, #00d4ff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
     }, 1200);
 });
+
+// ============================================================
+// BATCH 5: ADVANCED VISUAL EFFECTS & ANIMATIONS
+// ============================================================
+
+// ===== SCROLL PROGRESS INDICATOR =====
+class ScrollProgress {
+    constructor() {
+        this.createProgressBar();
+        this.init();
+    }
+
+    createProgressBar() {
+        this.progressBar = document.createElement('div');
+        this.progressBar.className = 'scroll-progress';
+        document.body.appendChild(this.progressBar);
+    }
+
+    init() {
+        window.addEventListener('scroll', () => this.updateProgress(), { passive: true });
+        this.updateProgress();
+    }
+
+    updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        this.progressBar.style.width = `${progress}%`;
+    }
+}
+
+// ===== MOUSE GLOW EFFECT =====
+class MouseGlow {
+    constructor() {
+        if (window.innerWidth <= 768 || 'ontouchstart' in window) return;
+
+        this.createGlow();
+        this.init();
+    }
+
+    createGlow() {
+        this.glow = document.createElement('div');
+        this.glow.className = 'mouse-glow';
+        document.body.appendChild(this.glow);
+    }
+
+    init() {
+        document.addEventListener('mousemove', (e) => {
+            this.glow.style.left = e.clientX + 'px';
+            this.glow.style.top = e.clientY + 'px';
+            this.glow.classList.add('active');
+        });
+
+        document.addEventListener('mouseleave', () => {
+            this.glow.classList.remove('active');
+        });
+    }
+}
+
+// ===== PARALLAX SHAPES =====
+class ParallaxShapes {
+    constructor(containerSelector = '.parallax-container') {
+        this.containers = document.querySelectorAll(containerSelector);
+        if (this.containers.length === 0 || window.innerWidth <= 768) return;
+
+        this.shapes = [
+            { type: 'shape-circle', positions: [{ top: '10%', left: '5%' }, { top: '60%', right: '10%' }] },
+            { type: 'shape-square', positions: [{ top: '30%', right: '5%' }, { bottom: '20%', left: '8%' }] },
+            { type: 'shape-dot', positions: [{ top: '20%', left: '15%' }, { top: '70%', left: '20%' }, { top: '40%', right: '15%' }] },
+            { type: 'shape-plus', positions: [{ top: '50%', left: '3%' }, { bottom: '30%', right: '5%' }] }
+        ];
+
+        this.init();
+    }
+
+    init() {
+        this.containers.forEach(container => {
+            this.addShapes(container);
+        });
+
+        window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
+    }
+
+    addShapes(container) {
+        this.shapes.forEach(shape => {
+            shape.positions.forEach(pos => {
+                const element = document.createElement('div');
+                element.className = `parallax-shape ${shape.type}`;
+                element.dataset.speed = (Math.random() * 0.3 + 0.1).toFixed(2);
+
+                Object.keys(pos).forEach(key => {
+                    element.style[key] = pos[key];
+                });
+
+                container.appendChild(element);
+            });
+        });
+    }
+
+    handleScroll() {
+        const shapes = document.querySelectorAll('.parallax-shape');
+        const scrollY = window.scrollY;
+
+        shapes.forEach(shape => {
+            const speed = parseFloat(shape.dataset.speed) || 0.2;
+            const yOffset = scrollY * speed;
+            shape.style.transform = `translateY(${yOffset}px)`;
+        });
+    }
+}
+
+// ===== FLOATING ACTION MENU =====
+class FloatingActionMenu {
+    constructor() {
+        this.createMenu();
+        this.init();
+    }
+
+    createMenu() {
+        const menu = document.createElement('div');
+        menu.className = 'floating-action-menu';
+        menu.innerHTML = `
+            <button class="fab-main"><i class="fas fa-plus"></i></button>
+            <div class="fab-options">
+                <button class="fab-option" data-action="telegram">
+                    <i class="fab fa-telegram"></i>
+                    <span class="fab-option-tooltip">Telegram Support</span>
+                </button>
+                <button class="fab-option" data-action="calculator">
+                    <i class="fas fa-calculator"></i>
+                    <span class="fab-option-tooltip">Calculator</span>
+                </button>
+                <button class="fab-option" data-action="top">
+                    <i class="fas fa-arrow-up"></i>
+                    <span class="fab-option-tooltip">Back to Top</span>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(menu);
+        this.menu = menu;
+        this.mainBtn = menu.querySelector('.fab-main');
+    }
+
+    init() {
+        this.mainBtn.addEventListener('click', () => {
+            this.menu.classList.toggle('active');
+            this.mainBtn.classList.toggle('active');
+        });
+
+        this.menu.querySelectorAll('.fab-option').forEach(btn => {
+            btn.addEventListener('click', () => this.handleAction(btn.dataset.action));
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.menu.contains(e.target)) {
+                this.menu.classList.remove('active');
+                this.mainBtn.classList.remove('active');
+            }
+        });
+    }
+
+    handleAction(action) {
+        switch(action) {
+            case 'telegram':
+                const telegramLink = document.querySelector('a[href*="t.me"]');
+                if (telegramLink) window.open(telegramLink.href, '_blank');
+                break;
+            case 'calculator':
+                window.location.href = 'calculator.php';
+                break;
+            case 'top':
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                break;
+        }
+        this.menu.classList.remove('active');
+        this.mainBtn.classList.remove('active');
+    }
+}
+
+// ===== TOAST NOTIFICATION SYSTEM =====
+class ToastNotification {
+    constructor() {
+        this.createContainer();
+    }
+
+    createContainer() {
+        this.container = document.createElement('div');
+        this.container.className = 'toast-container';
+        document.body.appendChild(this.container);
+    }
+
+    show(options = {}) {
+        const {
+            title = 'Notification',
+            message = '',
+            type = 'info', // success, error, warning, info
+            duration = 5000
+        } = options;
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="toast-icon ${type}">
+                <i class="fas fa-${this.getIcon(type)}"></i>
+            </div>
+            <div class="toast-content">
+                <h4>${title}</h4>
+                <p>${message}</p>
+            </div>
+            <button class="toast-close"><i class="fas fa-times"></i></button>
+            <div class="toast-progress" style="animation-duration: ${duration}ms;"></div>
+        `;
+
+        this.container.appendChild(toast);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // Close button
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            this.hide(toast);
+        });
+
+        // Auto hide
+        setTimeout(() => {
+            this.hide(toast);
+        }, duration);
+
+        return toast;
+    }
+
+    hide(toast) {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 400);
+    }
+
+    getIcon(type) {
+        const icons = {
+            success: 'check-circle',
+            error: 'exclamation-circle',
+            warning: 'exclamation-triangle',
+            info: 'info-circle'
+        };
+        return icons[type] || 'info-circle';
+    }
+}
+
+// ===== REVEAL ON SCROLL =====
+class RevealOnScroll {
+    constructor() {
+        this.elements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .reveal-scale, .stagger-reveal');
+        if (this.elements.length === 0) return;
+
+        this.init();
+    }
+
+    init() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        this.elements.forEach(el => observer.observe(el));
+    }
+}
+
+// ===== MORPHING BLOBS =====
+class MorphingBlobs {
+    constructor(containerSelector = '.hero-section, .cta-section') {
+        this.containers = document.querySelectorAll(containerSelector);
+        if (this.containers.length === 0 || window.innerWidth <= 768) return;
+
+        this.init();
+    }
+
+    init() {
+        this.containers.forEach(container => {
+            // Only add if container has position relative/absolute
+            const position = getComputedStyle(container).position;
+            if (position === 'static') {
+                container.style.position = 'relative';
+            }
+
+            this.addBlobs(container);
+        });
+    }
+
+    addBlobs(container) {
+        const blobsHTML = `
+            <div class="morphing-blob morphing-blob-1"></div>
+            <div class="morphing-blob morphing-blob-2"></div>
+            <div class="morphing-blob morphing-blob-3"></div>
+        `;
+        container.insertAdjacentHTML('afterbegin', blobsHTML);
+    }
+}
+
+// ===== ANIMATED GRADIENT BACKGROUND =====
+class AnimatedGradientBg {
+    constructor(selector = '.hero-section') {
+        this.container = document.querySelector(selector);
+        if (!this.container) return;
+
+        this.init();
+    }
+
+    init() {
+        // Add gradient background
+        const gradientBg = document.createElement('div');
+        gradientBg.className = 'hero-gradient-bg';
+        this.container.insertAdjacentElement('afterbegin', gradientBg);
+
+        // Add mesh gradient
+        const meshGradient = document.createElement('div');
+        meshGradient.className = 'mesh-gradient';
+        this.container.insertAdjacentElement('afterbegin', meshGradient);
+    }
+}
+
+// ===== TEXT SPLIT ANIMATION =====
+class TextSplitAnimation {
+    constructor(selector = '.split-text') {
+        this.elements = document.querySelectorAll(selector);
+        if (this.elements.length === 0) return;
+
+        this.init();
+    }
+
+    init() {
+        this.elements.forEach(element => {
+            const text = element.textContent;
+            element.innerHTML = '';
+
+            text.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.style.animationDelay = `${index * 0.03}s`;
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                element.appendChild(span);
+            });
+        });
+    }
+}
+
+// ===== BUTTON RIPPLE EFFECT =====
+class ButtonRipple {
+    constructor(selector = '.btn-ripple') {
+        this.buttons = document.querySelectorAll(selector);
+        if (this.buttons.length === 0) return;
+
+        this.init();
+    }
+
+    init() {
+        this.buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple-effect';
+
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                `;
+
+                button.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    }
+}
+
+// ===== DEMO TRADING ANIMATION =====
+class DemoTrading {
+    constructor(selector = '.demo-preview-screen') {
+        this.container = document.querySelector(selector);
+        if (!this.container) return;
+
+        this.init();
+    }
+
+    init() {
+        this.createChart();
+        this.startAnimation();
+    }
+
+    createChart() {
+        const chartHTML = `
+            <div class="demo-chart">
+                <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0" />
+                        </linearGradient>
+                    </defs>
+                    <path class="demo-chart-area" d="M0,150 Q50,120 100,130 T200,100 T300,110 T400,80 L400,200 L0,200 Z"></path>
+                    <path class="demo-chart-line-path" d="M0,150 Q50,120 100,130 T200,100 T300,110 T400,80" fill="none" stroke="url(#chartGradient)" stroke-width="3"></path>
+                </svg>
+            </div>
+            <div class="demo-controls">
+                <button class="demo-btn demo-btn-call"><i class="fas fa-arrow-up"></i> CALL</button>
+                <button class="demo-btn demo-btn-put"><i class="fas fa-arrow-down"></i> PUT</button>
+            </div>
+            <div class="demo-stats">
+                <div class="demo-stat">
+                    <div class="demo-stat-value" data-counter="85" data-suffix="%">0%</div>
+                    <div class="demo-stat-label">Win Rate</div>
+                </div>
+                <div class="demo-stat">
+                    <div class="demo-stat-value" data-counter="247" data-prefix="$">$0</div>
+                    <div class="demo-stat-label">Profit Today</div>
+                </div>
+                <div class="demo-stat">
+                    <div class="demo-stat-value" data-counter="15">0</div>
+                    <div class="demo-stat-label">Trades</div>
+                </div>
+            </div>
+        `;
+        this.container.innerHTML = chartHTML;
+    }
+
+    startAnimation() {
+        // Animate chart line
+        const path = this.container.querySelector('.demo-chart-line-path');
+        if (path) {
+            const length = path.getTotalLength();
+            path.style.strokeDasharray = length;
+            path.style.strokeDashoffset = length;
+
+            const animatePath = () => {
+                path.style.transition = 'none';
+                path.style.strokeDashoffset = length;
+
+                requestAnimationFrame(() => {
+                    path.style.transition = 'stroke-dashoffset 3s ease-out';
+                    path.style.strokeDashoffset = '0';
+                });
+            };
+
+            animatePath();
+            setInterval(animatePath, 5000);
+        }
+
+        // Button click effects
+        this.container.querySelectorAll('.demo-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = '';
+                }, 150);
+
+                // Show toast notification
+                if (window.toastSystem) {
+                    const isCall = btn.classList.contains('demo-btn-call');
+                    window.toastSystem.show({
+                        title: isCall ? 'CALL Trade Placed' : 'PUT Trade Placed',
+                        message: 'Demo trade executed successfully!',
+                        type: 'success',
+                        duration: 3000
+                    });
+                }
+            });
+        });
+    }
+}
+
+// ===== INITIALIZE BATCH 5 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Scroll Progress Indicator
+        new ScrollProgress();
+
+        // Mouse Glow Effect (desktop only)
+        new MouseGlow();
+
+        // Parallax Shapes
+        new ParallaxShapes('.hero-section');
+
+        // Floating Action Menu
+        new FloatingActionMenu();
+
+        // Toast Notification System (make global)
+        window.toastSystem = new ToastNotification();
+
+        // Reveal on Scroll
+        new RevealOnScroll();
+
+        // Morphing Blobs
+        new MorphingBlobs();
+
+        // Animated Gradient Background
+        new AnimatedGradientBg();
+
+        // Text Split Animation
+        new TextSplitAnimation();
+
+        // Button Ripple Effect
+        new ButtonRipple();
+
+        // Demo Trading (if exists)
+        new DemoTrading();
+
+        // Show welcome toast after 3 seconds
+        setTimeout(() => {
+            if (window.toastSystem && window.location.pathname === '/' || window.location.pathname.includes('index')) {
+                window.toastSystem.show({
+                    title: 'Welcome to ZYN Trade!',
+                    message: 'Experience automated trading with AI-powered strategies.',
+                    type: 'info',
+                    duration: 6000
+                });
+            }
+        }, 3000);
+
+        console.log('%c Batch 5 Premium Features Loaded ',
+            'background: linear-gradient(135deg, #00ff88, #7c3aed); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+    }, 1500);
+});

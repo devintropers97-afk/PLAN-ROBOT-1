@@ -489,9 +489,77 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
         </div>
 
         <div class="text-center mt-5 fade-in">
-            <a href="strategies.php" class="btn btn-secondary btn-lg">
+            <a href="strategies.php" class="btn btn-secondary btn-lg btn-shine">
                 <?php _e('strategies_btn_all'); ?> <i class="fas fa-arrow-right ms-2"></i>
             </a>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Demo Preview Section -->
+<section class="section" id="demo">
+    <div class="container">
+        <div class="section-header fade-in">
+            <span class="section-badge"><i class="fas fa-play-circle me-2"></i>Live Preview</span>
+            <h2 class="section-title">Lihat Robot Beraksi</h2>
+            <p class="section-desc">Preview interaktif bagaimana ZYN Trade System melakukan analisis dan eksekusi trading secara otomatis</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="demo-preview reveal-scale">
+                    <div class="demo-preview-dots">
+                        <div class="demo-preview-dot red"></div>
+                        <div class="demo-preview-dot yellow"></div>
+                        <div class="demo-preview-dot green"></div>
+                    </div>
+                    <div class="demo-preview-content">
+                        <div class="demo-preview-screen">
+                            <!-- Demo content will be injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="row g-4 stagger-reveal">
+                    <div class="col-md-4">
+                        <div class="card feature-card text-center h-100 glass-card">
+                            <div class="card-body">
+                                <div class="feature-icon mx-auto mb-3">
+                                    <i class="fas fa-chart-line icon-animated icon-pulse"></i>
+                                </div>
+                                <h5>Real-time Analysis</h5>
+                                <p class="text-muted mb-0">Analisis market secara real-time dengan algoritma canggih</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card text-center h-100 glass-card">
+                            <div class="card-body">
+                                <div class="feature-icon mx-auto mb-3">
+                                    <i class="fas fa-bolt icon-animated icon-bounce"></i>
+                                </div>
+                                <h5>Auto Execution</h5>
+                                <p class="text-muted mb-0">Eksekusi trading otomatis dalam hitungan milidetik</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card text-center h-100 glass-card">
+                            <div class="card-body">
+                                <div class="feature-icon mx-auto mb-3">
+                                    <i class="fas fa-shield-alt icon-animated icon-float"></i>
+                                </div>
+                                <h5>Risk Management</h5>
+                                <p class="text-muted mb-0">Manajemen risiko otomatis untuk melindungi modal Anda</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
