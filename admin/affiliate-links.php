@@ -3,7 +3,7 @@
  * Admin - Affiliate Links Management
  * Manage OlympTrade affiliate links per country
  */
-$page_title = 'Affiliate Links';
+$page_title = __('admin_affiliate_links_title') ?: 'Affiliate Links';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                     updated_at = NOW()
             ");
             $stmt->execute([$countryCode, $affiliateLink, $isActive]);
-            $message = "Affiliate link for " . strtoupper($countryCode) . " updated successfully!";
+            $message = str_replace(':country', strtoupper($countryCode), __('admin_affiliate_updated'));
         }
     } elseif ($action === 'bulk_update') {
         $links = $_POST['links'] ?? [];
@@ -49,13 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             }
         }
 
-        $message = "$updated affiliate links updated successfully!";
+        $message = str_replace(':count', $updated, __('admin_affiliate_bulk_updated'));
     } elseif ($action === 'delete') {
         $countryCode = $_POST['country_code'] ?? '';
         if ($countryCode) {
             $stmt = $db->prepare("DELETE FROM affiliate_links WHERE country_code = ?");
             $stmt->execute([$countryCode]);
-            $message = "Affiliate link for " . strtoupper($countryCode) . " deleted!";
+            $message = str_replace(':country', strtoupper($countryCode), __('admin_affiliate_deleted'));
         }
     }
 }
@@ -155,11 +155,11 @@ foreach ($affiliateLinks as $link) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-link"></i> Affiliate Links</h1>
-        <p class="page-subtitle">Manage OlympTrade affiliate links per country</p>
+        <h1 class="page-title"><i class="fas fa-link"></i> <?php _e('admin_affiliate_links_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_affiliate_links_subtitle'); ?></p>
     </div>
     <a href="settings.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Settings
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_settings'); ?>
     </a>
 </div>
 
@@ -176,29 +176,29 @@ foreach ($affiliateLinks as $link) {
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-globe"></i></div>
         <div class="stat-value"><?php echo $totalCountries; ?></div>
-        <div class="stat-label">Total Countries</div>
+        <div class="stat-label"><?php _e('admin_total_countries'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-link"></i></div>
         <div class="stat-value"><?php echo $configuredLinks; ?></div>
-        <div class="stat-label">Configured Links</div>
+        <div class="stat-label"><?php _e('admin_configured_links'); ?></div>
     </div>
     <div class="stat-card info fade-in">
         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-value"><?php echo $activeLinks; ?></div>
-        <div class="stat-label">Active Links</div>
+        <div class="stat-label"><?php _e('admin_active_links'); ?></div>
     </div>
     <div class="stat-card warning fade-in">
         <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="stat-value"><?php echo $totalCountries - $configuredLinks; ?></div>
-        <div class="stat-label">Missing Links</div>
+        <div class="stat-label"><?php _e('admin_missing_links'); ?></div>
     </div>
 </div>
 
 <!-- Quick Add Form -->
 <div class="admin-card mb-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-plus-circle text-success"></i> Quick Add/Update Link</h5>
+        <h5 class="admin-card-title"><i class="fas fa-plus-circle text-success"></i> <?php _e('admin_quick_add'); ?></h5>
     </div>
     <div class="admin-card-body">
         <form method="POST" class="row g-3">
@@ -206,9 +206,9 @@ foreach ($affiliateLinks as $link) {
             <input type="hidden" name="action" value="update_link">
 
             <div class="col-md-3">
-                <label class="form-label">Country</label>
+                <label class="form-label"><?php _e('admin_th_country'); ?></label>
                 <select name="country_code" class="form-select" required>
-                    <option value="">-- Select Country --</option>
+                    <option value=""><?php _e('admin_select_country'); ?></option>
                     <?php foreach ($countryByRegion as $region => $regionCountries): ?>
                     <optgroup label="<?php echo $region; ?>">
                         <?php foreach ($regionCountries as $code => $country): ?>
@@ -222,16 +222,16 @@ foreach ($affiliateLinks as $link) {
             </div>
 
             <div class="col-md-6">
-                <label class="form-label">Affiliate Link</label>
+                <label class="form-label"><?php _e('admin_affiliate_link'); ?></label>
                 <input type="url" name="affiliate_link" class="form-control" placeholder="https://olymptrade.com/..." required>
-                <small class="text-muted">Paste the full affiliate link from OlympTrade</small>
+                <small class="text-muted"><?php _e('admin_paste_affiliate_hint'); ?></small>
             </div>
 
             <div class="col-md-2">
-                <label class="form-label">Status</label>
+                <label class="form-label"><?php _e('admin_status'); ?></label>
                 <div class="form-check form-switch mt-2">
                     <input class="form-check-input" type="checkbox" name="is_active" id="quickActiveSwitch" checked>
-                    <label class="form-check-label" for="quickActiveSwitch">Active</label>
+                    <label class="form-check-label" for="quickActiveSwitch"><?php _e('admin_active'); ?></label>
                 </div>
             </div>
 
@@ -252,18 +252,18 @@ foreach ($affiliateLinks as $link) {
             <i class="fas fa-globe-<?php echo strtolower($region) === 'asia' ? 'asia' : (strtolower($region) === 'europe' ? 'europe' : (strtolower($region) === 'americas' ? 'americas' : 'africa')); ?> text-primary"></i>
             <?php echo $region; ?>
         </h5>
-        <span class="badge badge-primary"><?php echo count($regionCountries); ?> countries</span>
+        <span class="badge badge-primary"><?php echo str_replace(':count', count($regionCountries), __('admin_countries_count')); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th width="200">Country</th>
-                        <th>Affiliate Link</th>
-                        <th width="100">Status</th>
-                        <th width="150">Last Updated</th>
-                        <th width="100">Actions</th>
+                        <th width="200"><?php _e('admin_th_country'); ?></th>
+                        <th><?php _e('admin_th_affiliate_link'); ?></th>
+                        <th width="100"><?php _e('admin_status'); ?></th>
+                        <th width="150"><?php _e('admin_th_last_updated'); ?></th>
+                        <th width="100"><?php _e('admin_th_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -285,16 +285,16 @@ foreach ($affiliateLinks as $link) {
                                 </button>
                             </div>
                             <?php else: ?>
-                            <span class="text-muted"><i class="fas fa-exclamation-circle text-warning"></i> Not configured</span>
+                            <span class="text-muted"><i class="fas fa-exclamation-circle text-warning"></i> <?php _e('admin_not_configured'); ?></span>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?php if ($link): ?>
                             <span class="badge badge-<?php echo $link['is_active'] ? 'success' : 'secondary'; ?>">
-                                <?php echo $link['is_active'] ? 'Active' : 'Inactive'; ?>
+                                <?php echo $link['is_active'] ? __('admin_active') : __('admin_inactive'); ?>
                             </span>
                             <?php else: ?>
-                            <span class="badge badge-danger">Missing</span>
+                            <span class="badge badge-danger"><?php _e('admin_missing'); ?></span>
                             <?php endif; ?>
                         </td>
                         <td class="text-muted small">
@@ -302,7 +302,7 @@ foreach ($affiliateLinks as $link) {
                         </td>
                         <td>
                             <div class="action-btns">
-                                <button type="button" class="btn btn-sm btn-outline-primary btn-icon" onclick="editLink('<?php echo $code; ?>', '<?php echo $country['name']; ?>', '<?php echo $link ? htmlspecialchars($link['affiliate_link']) : ''; ?>')" title="Edit">
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-icon" onclick="editLink('<?php echo $code; ?>', '<?php echo $country['name']; ?>', '<?php echo $link ? htmlspecialchars($link['affiliate_link']) : ''; ?>')" title="<?php echo __('admin_btn_edit'); ?>">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <?php if ($link): ?>
@@ -310,7 +310,7 @@ foreach ($affiliateLinks as $link) {
                                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="country_code" value="<?php echo $code; ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" onclick="return confirm('Delete link for <?php echo $country['name']; ?>?')" title="Delete">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" onclick="return confirm('<?php echo addslashes(str_replace(':country', $country['name'], __('admin_confirm_delete_link'))); ?>')" title="<?php echo __('admin_btn_delete'); ?>">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -336,28 +336,28 @@ foreach ($affiliateLinks as $link) {
                 <input type="hidden" name="country_code" id="editCountryCode">
 
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Affiliate Link</h5>
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i><?php _e('admin_edit_affiliate_link'); ?></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Country</label>
+                        <label class="form-label"><?php _e('admin_th_country'); ?></label>
                         <input type="text" class="form-control" id="editCountryName" readonly>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Affiliate Link</label>
+                        <label class="form-label"><?php _e('admin_affiliate_link'); ?></label>
                         <textarea name="affiliate_link" id="editAffiliateLink" class="form-control" rows="3" required placeholder="https://olymptrade.com/..."></textarea>
-                        <small class="text-muted">Paste the full affiliate link. When it expires, simply replace with new link.</small>
+                        <small class="text-muted"><?php _e('admin_paste_new_link_hint'); ?></small>
                     </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" name="is_active" id="editIsActive" checked>
-                        <label class="form-check-label" for="editIsActive">Active</label>
+                        <label class="form-check-label" for="editIsActive"><?php _e('admin_active'); ?></label>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?php _e('admin_btn_cancel'); ?></button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Save Changes
+                        <i class="fas fa-save me-2"></i><?php _e('admin_save_changes'); ?>
                     </button>
                 </div>
             </form>

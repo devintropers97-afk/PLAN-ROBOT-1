@@ -298,10 +298,10 @@ class DatabaseBackup {
     private function formatAge($timestamp) {
         $diff = time() - $timestamp;
 
-        if ($diff < 60) return 'Baru saja';
-        if ($diff < 3600) return floor($diff / 60) . ' menit lalu';
-        if ($diff < 86400) return floor($diff / 3600) . ' jam lalu';
-        if ($diff < 2592000) return floor($diff / 86400) . ' hari lalu';
+        if ($diff < 60) return __('admin_just_now') ?: 'Just now';
+        if ($diff < 3600) return str_replace(':count', floor($diff / 60), __('admin_minutes_ago') ?: ':count minutes ago');
+        if ($diff < 86400) return str_replace(':count', floor($diff / 3600), __('admin_hours_ago') ?: ':count hours ago');
+        if ($diff < 2592000) return str_replace(':count', floor($diff / 86400), __('admin_days_ago') ?: ':count days ago');
 
         return date('d M Y', $timestamp);
     }
@@ -329,10 +329,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $is_cron) {
         case 'backup':
             $result = $backup->create();
             if ($result['success']) {
-                $message = "Backup berhasil dibuat: {$result['filename']} ({$backup->formatSize($result['size'])})";
+                $message = str_replace([':filename', ':size'], [$result['filename'], $backup->formatSize($result['size'])], __('admin_backup_success'));
                 $message_type = 'success';
             } else {
-                $message = "Backup gagal: {$result['error']}";
+                $message = str_replace(':error', $result['error'], __('admin_backup_failed'));
                 $message_type = 'error';
             }
             break;
@@ -343,10 +343,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $is_cron) {
 
         case 'delete':
             if ($backup->delete($_POST['filename'])) {
-                $message = "Backup berhasil dihapus";
+                $message = __('admin_backup_deleted');
                 $message_type = 'success';
             } else {
-                $message = "Gagal menghapus backup";
+                $message = __('admin_backup_delete_failed');
                 $message_type = 'error';
             }
             break;
@@ -354,10 +354,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $is_cron) {
         case 'restore':
             $result = $backup->restore($_POST['filename']);
             if ($result['success']) {
-                $message = "Database berhasil di-restore";
+                $message = __('admin_restore_success');
                 $message_type = 'success';
             } else {
-                $message = "Restore gagal: {$result['error']}";
+                $message = str_replace(':error', $result['error'], __('admin_restore_failed'));
                 $message_type = 'error';
             }
             break;
@@ -373,20 +373,20 @@ if ($is_cron) {
 // Get backup list
 $backups = $backup->listBackups();
 
-$page_title = 'Database Backup';
+$page_title = __('admin_backup_title') ?: 'Database Backup';
 require_once 'includes/admin-header.php';
 ?>
 
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0">Database Backup</h1>
-            <p class="text-muted mb-0">Kelola backup database untuk keamanan data</p>
+            <h1 class="h3 mb-0"><?php _e('admin_backup_title'); ?></h1>
+            <p class="text-muted mb-0"><?php _e('admin_backup_subtitle'); ?></p>
         </div>
         <form method="POST" class="d-inline">
             <input type="hidden" name="action" value="backup">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-download me-2"></i>Backup Sekarang
+                <i class="fas fa-download me-2"></i><?php _e('admin_backup_now'); ?>
             </button>
         </form>
     </div>
@@ -409,7 +409,7 @@ require_once 'includes/admin-header.php';
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h5 class="mb-0"><?php echo count($backups); ?></h5>
-                            <small>Total Backup</small>
+                            <small><?php _e('admin_total_backups'); ?></small>
                         </div>
                     </div>
                 </div>
@@ -423,8 +423,8 @@ require_once 'includes/admin-header.php';
                             <i class="fas fa-clock fa-2x"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-0"><?php echo !empty($backups) ? $backups[0]['age'] : 'Belum ada'; ?></h5>
-                            <small>Backup Terakhir</small>
+                            <h5 class="mb-0"><?php echo !empty($backups) ? $backups[0]['age'] : __('admin_no_backup_yet'); ?></h5>
+                            <small><?php _e('admin_last_backup'); ?></small>
                         </div>
                     </div>
                 </div>
@@ -442,7 +442,7 @@ require_once 'includes/admin-header.php';
                             $total_size = array_sum(array_column($backups, 'size'));
                             ?>
                             <h5 class="mb-0"><?php echo $backup->formatSize($total_size); ?></h5>
-                            <small>Total Ukuran</small>
+                            <small><?php _e('admin_total_size'); ?></small>
                         </div>
                     </div>
                 </div>
@@ -453,24 +453,24 @@ require_once 'includes/admin-header.php';
     <!-- Backup List -->
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Daftar Backup</h5>
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i><?php _e('admin_backup_list'); ?></h5>
         </div>
         <div class="card-body">
             <?php if (empty($backups)): ?>
             <div class="text-center py-5">
                 <i class="fas fa-database fa-3x text-muted mb-3"></i>
-                <p class="text-muted">Belum ada backup. Klik tombol "Backup Sekarang" untuk membuat backup pertama.</p>
+                <p class="text-muted"><?php _e('admin_no_backups'); ?></p>
             </div>
             <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Nama File</th>
-                            <th>Ukuran</th>
-                            <th>Tanggal</th>
-                            <th>Usia</th>
-                            <th>Aksi</th>
+                            <th><?php _e('admin_th_filename'); ?></th>
+                            <th><?php _e('admin_th_size'); ?></th>
+                            <th><?php _e('admin_th_date'); ?></th>
+                            <th><?php _e('admin_th_age'); ?></th>
+                            <th><?php _e('admin_th_actions'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -486,13 +486,13 @@ require_once 'includes/admin-header.php';
                             <td>
                                 <form method="POST" class="d-inline">
                                     <input type="hidden" name="filename" value="<?php echo htmlspecialchars($b['filename']); ?>">
-                                    <button type="submit" name="action" value="download" class="btn btn-sm btn-primary" title="Download">
+                                    <button type="submit" name="action" value="download" class="btn btn-sm btn-primary" title="<?php echo __('admin_btn_download'); ?>">
                                         <i class="fas fa-download"></i>
                                     </button>
-                                    <button type="submit" name="action" value="restore" class="btn btn-sm btn-warning" title="Restore" onclick="return confirm('PERINGATAN: Ini akan menimpa database saat ini. Lanjutkan?')">
+                                    <button type="submit" name="action" value="restore" class="btn btn-sm btn-warning" title="<?php echo __('admin_btn_restore'); ?>" onclick="return confirm('<?php echo addslashes(__('admin_restore_warning')); ?>')">
                                         <i class="fas fa-undo"></i>
                                     </button>
-                                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Hapus backup ini?')">
+                                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger" title="<?php echo __('admin_btn_delete'); ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_backup')); ?>')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -509,21 +509,24 @@ require_once 'includes/admin-header.php';
     <!-- Cron Setup Guide -->
     <div class="card mt-4">
         <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Setup Backup Otomatis (Cron Job)</h5>
+            <h5 class="mb-0"><i class="fas fa-cog me-2"></i><?php _e('admin_cron_setup'); ?></h5>
         </div>
         <div class="card-body">
-            <p>Untuk mengaktifkan backup otomatis, tambahkan cron job berikut:</p>
-            <pre class="bg-dark text-light p-3 rounded"><code># Backup setiap hari jam 2 pagi
+            <p><?php _e('admin_cron_instruction'); ?></p>
+            <pre class="bg-dark text-light p-3 rounded"><code># <?php _e('admin_cron_daily'); ?>
+
 0 2 * * * php <?php echo __FILE__; ?> --cron
 
-# Backup setiap 6 jam
+# <?php _e('admin_cron_6hours'); ?>
+
 0 */6 * * * php <?php echo __FILE__; ?> --cron
 
-# Backup setiap minggu (Minggu jam 3 pagi)
+# <?php _e('admin_cron_weekly'); ?>
+
 0 3 * * 0 php <?php echo __FILE__; ?> --cron</code></pre>
             <p class="text-muted mb-0">
                 <i class="fas fa-info-circle me-1"></i>
-                Hubungi tim hosting Anda jika butuh bantuan setup cron job.
+                <?php _e('admin_cron_help'); ?>
             </p>
         </div>
     </div>

@@ -31,7 +31,7 @@
         // Confirm actions
         document.querySelectorAll('[data-confirm]').forEach(el => {
             el.addEventListener('click', function(e) {
-                if (!confirm(this.dataset.confirm || 'Are you sure?')) {
+                if (!confirm(this.dataset.confirm || '<?php echo addslashes(__('admin_confirm_action')); ?>')) {
                     e.preventDefault();
                 }
             });
@@ -80,7 +80,7 @@
                 if (btn && !btn.disabled) {
                     btn.disabled = true;
                     const originalHtml = btn.innerHTML;
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span><?php echo addslashes(__('admin_processing')); ?>';
                     btn.dataset.originalHtml = originalHtml;
                 }
             });
