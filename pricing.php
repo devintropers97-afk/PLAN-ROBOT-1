@@ -1,15 +1,16 @@
 <?php
-$page_title = 'Pricing';
+require_once 'includes/language.php';
+$page_title = __('pricing_title') ?: 'Pricing';
 require_once 'includes/header.php';
 ?>
 
 <section class="section" style="padding-top: calc(var(--navbar-height) + 3rem);">
     <div class="container">
         <div class="section-header fade-in">
-            <span class="section-badge">Pricing</span>
-            <h1 class="section-title">Pilih Paket Terbaik Anda</h1>
+            <span class="section-badge"><?php _e('pricing_badge'); ?></span>
+            <h1 class="section-title"><?php _e('price_title'); ?></h1>
             <p class="section-desc">
-                Mulai GRATIS selamanya dengan 2 strategi dasar. Upgrade kapan saja untuk akses strategi premium dengan win rate lebih tinggi.
+                <?php _e('price_desc'); ?>
             </p>
         </div>
 

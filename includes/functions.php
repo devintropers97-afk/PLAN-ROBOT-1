@@ -7,10 +7,8 @@ require_once 'config.php';
 
 /**
  * Encryption Functions for OlympTrade Credentials
+ * Note: ENCRYPTION_KEY is defined in config.php
  */
-
-// Encryption key (in production, store this in environment variable)
-define('ENCRYPTION_KEY', 'ZYN_TR4D3_S3CR3T_K3Y_2024!@#$');
 
 // Encrypt password for storage
 function encryptPassword($password) {
