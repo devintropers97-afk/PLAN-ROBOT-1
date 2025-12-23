@@ -613,4 +613,108 @@ return [
     'mobile_ios_step4_title' => 'Tap "Add"',
     'mobile_ios_step4_desc' => 'Name the app (optional) then tap "Add" in the top right corner. Done!',
     'mobile_understood' => 'Got it',
+
+    // Dashboard Page
+    'dash_page_title' => 'Robot Control',
+    'dash_page_subtitle' => 'Manage your trading bot settings and monitor performance',
+    'dash_btn_full_stats' => 'Full Stats',
+
+    // Dashboard Status Labels
+    'dash_status_running' => 'RUNNING',
+    'dash_status_running_desc' => 'Robot is actively trading',
+    'dash_status_paused' => 'PAUSED',
+    'dash_status_paused_desc' => 'Trading temporarily paused',
+    'dash_status_standby' => 'STANDBY',
+    'dash_status_standby_desc' => 'Waiting for trading signal',
+    'dash_status_weekend' => 'WEEKEND',
+    'dash_status_weekend_desc' => 'Markets are closed',
+    'dash_status_offline' => 'OFFLINE',
+    'dash_status_offline_desc' => 'Robot not configured',
+
+    // Dashboard Messages
+    'dash_error_setup_required' => 'Setup OlympTrade credentials first before activating the robot!',
+    'dash_robot_activated' => 'Robot activated!',
+    'dash_robot_paused' => 'Robot paused.',
+    'dash_settings_saved' => 'Settings saved successfully!',
+    'dash_targets_updated' => 'Daily targets updated!',
+
+    // Dashboard OT Setup Warning
+    'dash_ot_setup_title' => 'OlympTrade Setup Required!',
+    'dash_ot_setup_desc' => 'You must connect your OlympTrade account before activating the trading robot. Robot needs credentials to login and perform automated trading.',
+    'dash_btn_setup_now' => 'Setup Now',
+
+    // Dashboard Weekend Mode
+    'dash_weekend_title' => 'Weekend Mode',
+    'dash_weekend_desc' => 'Markets are closed. Robot will resume on Monday.',
+
+    // Dashboard Controls
+    'dash_master_switch' => 'Master Switch',
+    'dash_take_profit_target' => 'Take Profit Target',
+    'dash_max_loss_limit' => 'Max Loss Limit',
+    'dash_safe' => 'Safe',
+
+    // Dashboard Stats
+    'dash_stat_today_trades' => 'Today\'s Trades',
+    'dash_stat_wins_today' => 'Wins Today',
+    'dash_stat_today_pnl' => 'Today\'s P/L',
+    'dash_stat_winrate_7d' => 'Win Rate (7d)',
+    'dash_stat_this_month' => 'This Month',
+
+    // Dashboard Strategy Section
+    'dash_strategy_selection' => 'Strategy Selection',
+    'dash_access' => 'Access',
+
+    // Dashboard Form Labels
+    'dash_label_markets' => 'Markets',
+    'dash_label_timeframes' => 'Timeframes',
+    'dash_label_trade_amount' => 'Trade Amount ($)',
+    'dash_label_max_trades' => 'Max Trades/Day',
+    'dash_btn_save_settings' => 'Save Settings',
+
+    // Dashboard Recent Trades
+    'dash_recent_trades' => 'Recent Trades',
+    'dash_btn_view_all' => 'View All',
+    'dash_no_trades_yet' => 'No trades yet. Start the robot to begin trading!',
+    'dash_th_time' => 'Time',
+    'dash_th_asset' => 'Asset',
+    'dash_th_direction' => 'Direction',
+    'dash_th_amount' => 'Amount',
+    'dash_th_result' => 'Result',
+    'dash_th_pnl' => 'P/L',
+
+    // Dashboard Daily Targets
+    'dash_daily_targets' => 'Daily Targets',
+    'dash_label_take_profit' => 'Take Profit ($)',
+    'dash_label_max_loss' => 'Max Loss ($)',
+    'dash_hint_auto_pause_tp' => 'Auto-pause when reached',
+    'dash_hint_stop_trading' => 'Stop trading to protect capital',
+    'dash_auto_pause_tp' => 'Auto-pause on TP',
+    'dash_auto_pause_ml' => 'Auto-pause on ML',
+    'dash_btn_update_targets' => 'Update Targets',
+
+    // Dashboard Live Activity
+    'dash_live_activity' => 'Live Activity',
+    'dash_no_activity' => 'No activity yet',
+
+    // Dashboard Account
+    'dash_account' => 'Account',
+    'dash_label_package' => 'Package',
+    'dash_label_expires' => 'Expires',
+    'dash_label_broker_id' => 'Broker ID',
+    'dash_label_license' => 'License',
+    'dash_btn_upgrade_now' => 'Upgrade Now',
+
+    // Dashboard Modals
+    'dash_modal_tp_title' => 'Target Profit Reached!',
+    'dash_modal_tp_message' => 'Congratulations! Robot has been paused because daily profit target was reached. Consider withdrawing some of your profit.',
+    'dash_modal_tp_note' => 'Robot will auto-resume according to Resume Behavior settings',
+    'dash_modal_ml_title' => 'Loss Limit Reached',
+    'dash_modal_ml_message' => 'Robot has been paused to protect your capital. Evaluate strategy and market conditions before continuing.',
+    'dash_modal_ml_note' => 'Make sure you are ready before continuing trading',
+    'dash_btn_close' => 'Close',
+    'dash_btn_resume_robot' => 'Resume Robot',
+
+    // Dashboard Toasts
+    'dash_toast_robot_resumed' => 'Robot resumed successfully!',
+    'dash_toast_resume_failed' => 'Failed to resume robot',
 ];

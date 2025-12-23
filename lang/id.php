@@ -614,4 +614,108 @@ return [
     'mobile_ios_step4_title' => 'Tap "Add"',
     'mobile_ios_step4_desc' => 'Beri nama aplikasi (opsional) lalu ketuk "Add" di pojok kanan atas. Selesai!',
     'mobile_understood' => 'Mengerti',
+
+    // Dashboard Page
+    'dash_page_title' => 'Robot Control',
+    'dash_page_subtitle' => 'Kelola pengaturan robot trading dan pantau performa',
+    'dash_btn_full_stats' => 'Statistik Lengkap',
+
+    // Dashboard Status Labels
+    'dash_status_running' => 'BERJALAN',
+    'dash_status_running_desc' => 'Robot sedang aktif trading',
+    'dash_status_paused' => 'DIJEDA',
+    'dash_status_paused_desc' => 'Trading dijeda sementara',
+    'dash_status_standby' => 'SIAGA',
+    'dash_status_standby_desc' => 'Menunggu sinyal trading',
+    'dash_status_weekend' => 'WEEKEND',
+    'dash_status_weekend_desc' => 'Pasar tutup',
+    'dash_status_offline' => 'OFFLINE',
+    'dash_status_offline_desc' => 'Robot belum dikonfigurasi',
+
+    // Dashboard Messages
+    'dash_error_setup_required' => 'Setup kredensial OlympTrade terlebih dahulu sebelum mengaktifkan robot!',
+    'dash_robot_activated' => 'Robot diaktifkan!',
+    'dash_robot_paused' => 'Robot dijeda.',
+    'dash_settings_saved' => 'Pengaturan berhasil disimpan!',
+    'dash_targets_updated' => 'Target harian diperbarui!',
+
+    // Dashboard OT Setup Warning
+    'dash_ot_setup_title' => 'Setup OlympTrade Diperlukan!',
+    'dash_ot_setup_desc' => 'Anda harus menghubungkan akun OlympTrade sebelum mengaktifkan robot trading. Robot membutuhkan kredensial untuk login dan melakukan trading otomatis.',
+    'dash_btn_setup_now' => 'Setup Sekarang',
+
+    // Dashboard Weekend Mode
+    'dash_weekend_title' => 'Mode Weekend',
+    'dash_weekend_desc' => 'Pasar tutup. Robot akan lanjut hari Senin.',
+
+    // Dashboard Controls
+    'dash_master_switch' => 'Master Switch',
+    'dash_take_profit_target' => 'Target Take Profit',
+    'dash_max_loss_limit' => 'Batas Maksimal Loss',
+    'dash_safe' => 'Aman',
+
+    // Dashboard Stats
+    'dash_stat_today_trades' => 'Trade Hari Ini',
+    'dash_stat_wins_today' => 'Win Hari Ini',
+    'dash_stat_today_pnl' => 'P/L Hari Ini',
+    'dash_stat_winrate_7d' => 'Win Rate (7h)',
+    'dash_stat_this_month' => 'Bulan Ini',
+
+    // Dashboard Strategy Section
+    'dash_strategy_selection' => 'Pilih Strategi',
+    'dash_access' => 'Akses',
+
+    // Dashboard Form Labels
+    'dash_label_markets' => 'Markets',
+    'dash_label_timeframes' => 'Timeframes',
+    'dash_label_trade_amount' => 'Jumlah Trade ($)',
+    'dash_label_max_trades' => 'Maks Trade/Hari',
+    'dash_btn_save_settings' => 'Simpan Pengaturan',
+
+    // Dashboard Recent Trades
+    'dash_recent_trades' => 'Trade Terbaru',
+    'dash_btn_view_all' => 'Lihat Semua',
+    'dash_no_trades_yet' => 'Belum ada trade. Aktifkan robot untuk mulai trading!',
+    'dash_th_time' => 'Waktu',
+    'dash_th_asset' => 'Aset',
+    'dash_th_direction' => 'Arah',
+    'dash_th_amount' => 'Jumlah',
+    'dash_th_result' => 'Hasil',
+    'dash_th_pnl' => 'P/L',
+
+    // Dashboard Daily Targets
+    'dash_daily_targets' => 'Target Harian',
+    'dash_label_take_profit' => 'Take Profit ($)',
+    'dash_label_max_loss' => 'Maks Loss ($)',
+    'dash_hint_auto_pause_tp' => 'Auto-pause saat tercapai',
+    'dash_hint_stop_trading' => 'Berhenti trading untuk lindungi modal',
+    'dash_auto_pause_tp' => 'Auto-pause saat TP',
+    'dash_auto_pause_ml' => 'Auto-pause saat ML',
+    'dash_btn_update_targets' => 'Update Target',
+
+    // Dashboard Live Activity
+    'dash_live_activity' => 'Aktivitas Live',
+    'dash_no_activity' => 'Belum ada aktivitas',
+
+    // Dashboard Account
+    'dash_account' => 'Akun',
+    'dash_label_package' => 'Paket',
+    'dash_label_expires' => 'Berakhir',
+    'dash_label_broker_id' => 'Broker ID',
+    'dash_label_license' => 'Lisensi',
+    'dash_btn_upgrade_now' => 'Upgrade Sekarang',
+
+    // Dashboard Modals
+    'dash_modal_tp_title' => 'Target Profit Tercapai!',
+    'dash_modal_tp_message' => 'Selamat! Robot telah di-pause karena target profit harian tercapai. Pertimbangkan untuk withdraw sebagian profit Anda.',
+    'dash_modal_tp_note' => 'Robot akan auto-resume sesuai pengaturan Resume Behavior',
+    'dash_modal_ml_title' => 'Batas Loss Tercapai',
+    'dash_modal_ml_message' => 'Robot telah di-pause untuk melindungi modal Anda. Evaluasi strategi dan kondisi market sebelum melanjutkan.',
+    'dash_modal_ml_note' => 'Pastikan Anda siap sebelum melanjutkan trading',
+    'dash_btn_close' => 'Tutup',
+    'dash_btn_resume_robot' => 'Resume Robot',
+
+    // Dashboard Toasts
+    'dash_toast_robot_resumed' => 'Robot berhasil di-resume!',
+    'dash_toast_resume_failed' => 'Gagal resume robot',
 ];

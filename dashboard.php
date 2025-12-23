@@ -1,5 +1,6 @@
 <?php
-$page_title = 'Robot Control';
+require_once 'includes/language.php';
+$page_title = __('dash_page_title') ?: 'Robot Control';
 require_once 'dashboard/includes/dashboard-header.php';
 
 $db = getDBConnection();
@@ -47,14 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
             // Block robot activation if OlympTrade credentials not setup
             if ($newStatus === 'active' && !$otSetupCompleted) {
-                $message = 'Setup OlympTrade credentials terlebih dahulu sebelum mengaktifkan robot!';
+                $message = __('dash_error_setup_required');
                 $messageType = 'danger';
                 break;
             }
 
             updateRobotStatus($_SESSION['user_id'], $newStatus);
             $robotSettings['robot_enabled'] = $newStatus === 'active';
-            $message = $newStatus === 'active' ? 'Robot activated!' : 'Robot paused.';
+            $message = $newStatus === 'active' ? __('dash_robot_activated') : __('dash_robot_paused');
             $messageType = $newStatus === 'active' ? 'success' : 'warning';
             break;
 
@@ -68,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             ];
             updateRobotSettings($_SESSION['user_id'], $settings);
             $robotSettings = getRobotSettings($_SESSION['user_id']);
-            $message = 'Settings saved successfully!';
+            $message = __('dash_settings_saved');
             $messageType = 'success';
             break;
 
@@ -81,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             ];
             updateRobotSettings($_SESSION['user_id'], $targets);
             $robotSettings = getRobotSettings($_SESSION['user_id']);
-            $message = 'Daily targets updated!';
+            $message = __('dash_targets_updated');
             $messageType = 'success';
             break;
     }
@@ -104,11 +105,11 @@ if ($isWeekendNow) {
 }
 
 $statusLabels = [
-    'active' => ['label' => 'RUNNING', 'desc' => 'Robot is actively trading', 'icon' => 'fa-play-circle'],
-    'paused' => ['label' => 'PAUSED', 'desc' => 'Trading temporarily paused', 'icon' => 'fa-pause-circle'],
-    'standby' => ['label' => 'STANDBY', 'desc' => 'Waiting for signal', 'icon' => 'fa-clock'],
-    'weekend' => ['label' => 'WEEKEND', 'desc' => 'Markets are closed', 'icon' => 'fa-moon'],
-    'inactive' => ['label' => 'OFFLINE', 'desc' => 'Robot not configured', 'icon' => 'fa-power-off']
+    'active' => ['label' => __('dash_status_running'), 'desc' => __('dash_status_running_desc'), 'icon' => 'fa-play-circle'],
+    'paused' => ['label' => __('dash_status_paused'), 'desc' => __('dash_status_paused_desc'), 'icon' => 'fa-pause-circle'],
+    'standby' => ['label' => __('dash_status_standby'), 'desc' => __('dash_status_standby_desc'), 'icon' => 'fa-clock'],
+    'weekend' => ['label' => __('dash_status_weekend'), 'desc' => __('dash_status_weekend_desc'), 'icon' => 'fa-moon'],
+    'inactive' => ['label' => __('dash_status_offline'), 'desc' => __('dash_status_offline_desc'), 'icon' => 'fa-power-off']
 ];
 
 $currentStatusInfo = $statusLabels[$robotStatus] ?? $statusLabels['inactive'];
@@ -124,12 +125,12 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
 <!-- Page Header -->
 <div class="db-page-header">
     <div>
-        <h1 class="db-page-title"><i class="fas fa-robot"></i> Robot Control</h1>
-        <p class="db-page-subtitle">Manage your trading bot settings and monitor performance</p>
+        <h1 class="db-page-title"><i class="fas fa-robot"></i> <?php _e('dash_page_title'); ?></h1>
+        <p class="db-page-subtitle"><?php _e('dash_page_subtitle'); ?></p>
     </div>
     <div class="d-flex gap-2">
         <a href="statistics.php" class="db-btn db-btn-outline">
-            <i class="fas fa-chart-bar"></i> Full Stats
+            <i class="fas fa-chart-bar"></i> <?php _e('dash_btn_full_stats'); ?>
         </a>
     </div>
 </div>
@@ -146,14 +147,13 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
 <div class="db-alert warning db-fade-in">
     <i class="fas fa-exclamation-triangle"></i>
     <div class="flex-grow-1">
-        <strong>OlympTrade Setup Required!</strong>
+        <strong><?php _e('dash_ot_setup_title'); ?></strong>
         <p class="mb-0 small" style="opacity: 0.9;">
-            Anda harus menghubungkan akun OlympTrade sebelum mengaktifkan robot trading.
-            Robot membutuhkan credentials untuk login dan melakukan trading otomatis.
+            <?php _e('dash_ot_setup_desc'); ?>
         </p>
     </div>
     <a href="olymptrade-setup.php" class="db-btn db-btn-warning db-btn-sm ms-3">
-        <i class="fas fa-link"></i> Setup Sekarang
+        <i class="fas fa-link"></i> <?php _e('dash_btn_setup_now'); ?>
     </a>
 </div>
 <?php endif; ?>
@@ -162,8 +162,8 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
 <div class="db-alert warning db-fade-in">
     <i class="fas fa-calendar-times"></i>
     <div>
-        <strong>Weekend Mode</strong>
-        <p class="mb-0 small" style="opacity: 0.9;">Markets are closed. Robot will resume on Monday.</p>
+        <strong><?php _e('dash_weekend_title'); ?></strong>
+        <p class="mb-0 small" style="opacity: 0.9;"><?php _e('dash_weekend_desc'); ?></p>
     </div>
 </div>
 <?php endif; ?>
@@ -185,7 +185,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <form method="POST" class="master-toggle">
             <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
             <input type="hidden" name="action" value="toggle_robot">
-            <label>Master Switch</label>
+            <label><?php _e('dash_master_switch'); ?></label>
             <?php if (!$otSetupCompleted): ?>
             <a href="olymptrade-setup.php" class="db-btn db-btn-warning db-btn-sm" title="Setup OlympTrade dulu">
                 <i class="fas fa-link"></i> Setup
@@ -207,7 +207,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <div class="col-md-6">
             <div class="db-progress-card success">
                 <div class="db-progress-header">
-                    <span><i class="fas fa-bullseye me-1"></i> Take Profit Target</span>
+                    <span><i class="fas fa-bullseye me-1"></i> <?php _e('dash_take_profit_target'); ?></span>
                     <span class="<?php echo $todayPnl >= $tpTarget && $todayPnl > 0 ? 'text-success fw-bold' : ''; ?>">
                         $<?php echo number_format(max(0, $todayPnl), 2); ?> / $<?php echo number_format($tpTarget, 0); ?>
                         <?php if ($todayPnl >= $tpTarget && $todayPnl > 0): ?> <i class="fas fa-check-circle"></i><?php endif; ?>
@@ -221,12 +221,12 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <div class="col-md-6">
             <div class="db-progress-card danger">
                 <div class="db-progress-header">
-                    <span><i class="fas fa-shield-alt me-1"></i> Max Loss Limit</span>
+                    <span><i class="fas fa-shield-alt me-1"></i> <?php _e('dash_max_loss_limit'); ?></span>
                     <span class="<?php echo $todayPnl < 0 && abs($todayPnl) >= $mlLimit ? 'text-danger fw-bold' : ''; ?>">
                         <?php if ($todayPnl < 0): ?>
                             $<?php echo number_format(abs($todayPnl), 2); ?> / $<?php echo number_format($mlLimit, 0); ?>
                         <?php else: ?>
-                            <i class="fas fa-check text-success me-1"></i> Safe
+                            <i class="fas fa-check text-success me-1"></i> <?php _e('dash_safe'); ?>
                         <?php endif; ?>
                     </span>
                 </div>
@@ -243,27 +243,27 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
     <div class="db-stat-card">
         <div class="db-stat-icon"><i class="fas fa-chart-bar"></i></div>
         <div class="db-stat-value" data-count="<?php echo $todayStats['total_trades'] ?? 0; ?>">0</div>
-        <div class="db-stat-label">Today's Trades</div>
+        <div class="db-stat-label"><?php _e('dash_stat_today_trades'); ?></div>
     </div>
     <div class="db-stat-card success">
         <div class="db-stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="db-stat-value" data-count="<?php echo $todayStats['wins'] ?? 0; ?>">0</div>
-        <div class="db-stat-label">Wins Today</div>
+        <div class="db-stat-label"><?php _e('dash_stat_wins_today'); ?></div>
     </div>
     <div class="db-stat-card <?php echo ($todayPnl >= 0) ? 'success' : 'danger'; ?>">
         <div class="db-stat-icon"><i class="fas fa-dollar-sign"></i></div>
         <div class="db-stat-value"><?php echo $todayPnl >= 0 ? '+' : ''; ?>$<?php echo number_format($todayPnl, 2); ?></div>
-        <div class="db-stat-label">Today's P/L</div>
+        <div class="db-stat-label"><?php _e('dash_stat_today_pnl'); ?></div>
     </div>
     <div class="db-stat-card">
         <div class="db-stat-icon"><i class="fas fa-percentage"></i></div>
         <div class="db-stat-value"><?php echo number_format($weekStats['win_rate'] ?? 0, 1); ?>%</div>
-        <div class="db-stat-label">Win Rate (7d)</div>
+        <div class="db-stat-label"><?php _e('dash_stat_winrate_7d'); ?></div>
     </div>
     <div class="db-stat-card <?php echo ($monthStats['total_pnl'] ?? 0) >= 0 ? 'success' : 'danger'; ?>">
         <div class="db-stat-icon"><i class="fas fa-calendar-alt"></i></div>
         <div class="db-stat-value"><?php echo ($monthStats['total_pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($monthStats['total_pnl'] ?? 0, 2); ?></div>
-        <div class="db-stat-label">This Month</div>
+        <div class="db-stat-label"><?php _e('dash_stat_this_month'); ?></div>
     </div>
 </div>
 
@@ -273,8 +273,8 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <!-- Strategy Selection -->
         <div class="db-card db-fade-in mb-4">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-chess"></i> Strategy Selection</h5>
-                <span class="db-badge <?php echo strtolower($package); ?>"><?php echo strtoupper($package); ?> Access</span>
+                <h5 class="db-card-title"><i class="fas fa-chess"></i> <?php _e('dash_strategy_selection'); ?></h5>
+                <span class="db-badge <?php echo strtolower($package); ?>"><?php echo strtoupper($package); ?> <?php _e('dash_access'); ?></span>
             </div>
             <div class="db-card-body">
                 <form method="POST" id="settingsForm">
@@ -314,7 +314,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Markets</label>
+                                <label class="db-form-label"><?php _e('dash_label_markets'); ?></label>
                                 <div class="d-flex flex-wrap gap-2">
                                     <?php
                                     $selectedMarkets = explode(',', $robotSettings['markets'] ?? 'EUR/USD');
@@ -332,7 +332,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
                         </div>
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Timeframes</label>
+                                <label class="db-form-label"><?php _e('dash_label_timeframes'); ?></label>
                                 <div class="d-flex flex-wrap gap-2">
                                     <?php
                                     $selectedTimeframes = explode(',', $robotSettings['timeframes'] ?? '5m');
@@ -350,7 +350,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
                         </div>
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Trade Amount ($)</label>
+                                <label class="db-form-label"><?php _e('dash_label_trade_amount'); ?></label>
                                 <input type="number" name="trade_amount" class="db-form-control"
                                        value="<?php echo $robotSettings['trade_amount'] ?? 5; ?>"
                                        min="1" max="100" step="1">
@@ -358,7 +358,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
                         </div>
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Max Trades/Day</label>
+                                <label class="db-form-label"><?php _e('dash_label_max_trades'); ?></label>
                                 <input type="number" name="max_trades" class="db-form-control"
                                        value="<?php echo $robotSettings['max_trades_per_day'] ?? 20; ?>"
                                        min="1" max="100">
@@ -368,7 +368,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
 
                     <div class="mt-3">
                         <button type="submit" class="db-btn db-btn-primary">
-                            <i class="fas fa-save"></i> Save Settings
+                            <i class="fas fa-save"></i> <?php _e('dash_btn_save_settings'); ?>
                         </button>
                     </div>
                 </form>
@@ -378,26 +378,26 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <!-- Recent Trades -->
         <div class="db-card db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-history"></i> Recent Trades</h5>
-                <a href="statistics.php" class="db-btn db-btn-sm db-btn-outline">View All</a>
+                <h5 class="db-card-title"><i class="fas fa-history"></i> <?php _e('dash_recent_trades'); ?></h5>
+                <a href="statistics.php" class="db-btn db-btn-sm db-btn-outline"><?php _e('dash_btn_view_all'); ?></a>
             </div>
             <div class="db-card-body" style="padding: 0;">
                 <?php if (empty($recentTrades)): ?>
                 <div class="text-center py-5">
                     <i class="fas fa-chart-line fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
-                    <p class="text-muted">No trades yet. Start the robot to begin trading!</p>
+                    <p class="text-muted"><?php _e('dash_no_trades_yet'); ?></p>
                 </div>
                 <?php else: ?>
                 <div class="table-responsive">
                     <table class="db-table">
                         <thead>
                             <tr>
-                                <th>Time</th>
-                                <th>Asset</th>
-                                <th>Direction</th>
-                                <th>Amount</th>
-                                <th>Result</th>
-                                <th>P/L</th>
+                                <th><?php _e('dash_th_time'); ?></th>
+                                <th><?php _e('dash_th_asset'); ?></th>
+                                <th><?php _e('dash_th_direction'); ?></th>
+                                <th><?php _e('dash_th_amount'); ?></th>
+                                <th><?php _e('dash_th_result'); ?></th>
+                                <th><?php _e('dash_th_pnl'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -445,7 +445,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <!-- Daily Target Settings -->
         <div class="db-card db-fade-in mb-4">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-bullseye"></i> Daily Targets</h5>
+                <h5 class="db-card-title"><i class="fas fa-bullseye"></i> <?php _e('dash_daily_targets'); ?></h5>
             </div>
             <div class="db-card-body">
                 <form method="POST">
@@ -453,34 +453,34 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
                     <input type="hidden" name="action" value="save_targets">
 
                     <div class="db-form-group">
-                        <label class="db-form-label">Take Profit ($)</label>
+                        <label class="db-form-label"><?php _e('dash_label_take_profit'); ?></label>
                         <input type="number" name="daily_tp" class="db-form-control"
                                value="<?php echo $robotSettings['take_profit_target'] ?? 20; ?>" min="5" step="5">
-                        <small class="text-muted">Auto-pause when reached</small>
+                        <small class="text-muted"><?php _e('dash_hint_auto_pause_tp'); ?></small>
                     </div>
 
                     <div class="db-form-group">
-                        <label class="db-form-label">Max Loss ($)</label>
+                        <label class="db-form-label"><?php _e('dash_label_max_loss'); ?></label>
                         <input type="number" name="daily_ml" class="db-form-control"
                                value="<?php echo $robotSettings['max_loss_limit'] ?? 10; ?>" min="5" step="5">
-                        <small class="text-muted">Stop trading to protect capital</small>
+                        <small class="text-muted"><?php _e('dash_hint_stop_trading'); ?></small>
                     </div>
 
                     <div class="d-flex flex-column gap-2 mb-3">
                         <label class="d-flex align-items-center gap-2">
                             <input type="checkbox" name="auto_pause_tp" class="form-check-input m-0"
                                    <?php echo ($robotSettings['auto_pause_on_tp'] ?? 1) ? 'checked' : ''; ?>>
-                            <span class="small">Auto-pause on TP</span>
+                            <span class="small"><?php _e('dash_auto_pause_tp'); ?></span>
                         </label>
                         <label class="d-flex align-items-center gap-2">
                             <input type="checkbox" name="auto_pause_ml" class="form-check-input m-0"
                                    <?php echo ($robotSettings['auto_pause_on_ml'] ?? 1) ? 'checked' : ''; ?>>
-                            <span class="small">Auto-pause on ML</span>
+                            <span class="small"><?php _e('dash_auto_pause_ml'); ?></span>
                         </label>
                     </div>
 
                     <button type="submit" class="db-btn db-btn-primary w-100">
-                        <i class="fas fa-save"></i> Update Targets
+                        <i class="fas fa-save"></i> <?php _e('dash_btn_update_targets'); ?>
                     </button>
                 </form>
             </div>
@@ -489,7 +489,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <!-- Live Log -->
         <div class="db-card db-fade-in mb-4">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-stream"></i> Live Activity</h5>
+                <h5 class="db-card-title"><i class="fas fa-stream"></i> <?php _e('dash_live_activity'); ?></h5>
                 <span class="db-badge info" id="liveIndicator">
                     <i class="fas fa-circle fa-xs"></i> LIVE
                 </span>
@@ -498,7 +498,7 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
                 <div class="db-live-log" id="liveLog">
                     <?php if (empty($liveLogs)): ?>
                     <div class="text-center py-4">
-                        <p class="text-muted small mb-0">No activity yet</p>
+                        <p class="text-muted small mb-0"><?php _e('dash_no_activity'); ?></p>
                     </div>
                     <?php else: ?>
                     <?php foreach ($liveLogs as $log): ?>
@@ -532,33 +532,33 @@ $mlProgress = $mlLimit > 0 && $todayPnl < 0 ? min(100, (abs($todayPnl) / $mlLimi
         <!-- Account Info -->
         <div class="db-card db-fade-in">
             <div class="db-card-header">
-                <h5 class="db-card-title"><i class="fas fa-user-circle"></i> Account</h5>
+                <h5 class="db-card-title"><i class="fas fa-user-circle"></i> <?php _e('dash_account'); ?></h5>
             </div>
             <div class="db-card-body">
                 <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Package</span>
+                    <span class="text-muted"><?php _e('dash_label_package'); ?></span>
                     <span class="db-badge <?php echo strtolower($package); ?>"><?php echo strtoupper($package); ?></span>
                 </div>
                 <?php if ($user['package_expiry']): ?>
                 <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Expires</span>
+                    <span class="text-muted"><?php _e('dash_label_expires'); ?></span>
                     <span><?php echo date('M d, Y', strtotime($user['package_expiry'])); ?></span>
                 </div>
                 <?php endif; ?>
                 <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Broker ID</span>
+                    <span class="text-muted"><?php _e('dash_label_broker_id'); ?></span>
                     <code><?php echo htmlspecialchars($user['olymptrade_id']); ?></code>
                 </div>
                 <?php if (!empty($user['license_key'])): ?>
                 <div class="d-flex justify-content-between mb-3">
-                    <span class="text-muted">License</span>
+                    <span class="text-muted"><?php _e('dash_label_license'); ?></span>
                     <code class="small"><?php echo htmlspecialchars(substr($user['license_key'], 0, 12)); ?>...</code>
                 </div>
                 <?php endif; ?>
 
                 <?php if ($package === 'free'): ?>
                 <a href="pricing.php" class="db-btn db-btn-warning w-100">
-                    <i class="fas fa-crown"></i> Upgrade Now
+                    <i class="fas fa-crown"></i> <?php _e('dash_btn_upgrade_now'); ?>
                 </a>
                 <?php endif; ?>
             </div>
@@ -672,10 +672,10 @@ function resumeRobot() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showToast('Robot berhasil di-resume!', 'success');
+            showToast('<?php echo addslashes(__('dash_toast_robot_resumed')); ?>', 'success');
             location.reload();
         } else {
-            showToast(data.message || 'Gagal resume robot', 'danger');
+            showToast(data.message || '<?php echo addslashes(__('dash_toast_resume_failed')); ?>', 'danger');
         }
     })
     .catch(err => {
@@ -699,22 +699,21 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="autopause-modal-icon">
             <i class="fas fa-trophy"></i>
         </div>
-        <h3>Target Profit Tercapai!</h3>
+        <h3><?php _e('dash_modal_tp_title'); ?></h3>
         <p class="autopause-modal-amount" id="tpAmount">$0.00</p>
         <p class="autopause-modal-message">
-            Selamat! Robot telah di-pause karena target profit harian tercapai.
-            Pertimbangkan untuk withdraw sebagian profit Anda.
+            <?php _e('dash_modal_tp_message'); ?>
         </p>
         <div class="autopause-modal-actions">
             <button class="db-btn db-btn-outline" onclick="closeModal('tpReachedModal')">
-                <i class="fas fa-times"></i> Tutup
+                <i class="fas fa-times"></i> <?php _e('dash_btn_close'); ?>
             </button>
             <button class="db-btn db-btn-success" onclick="resumeRobot()">
-                <i class="fas fa-play"></i> Resume Robot
+                <i class="fas fa-play"></i> <?php _e('dash_btn_resume_robot'); ?>
             </button>
         </div>
         <p class="autopause-modal-note">
-            <i class="fas fa-info-circle"></i> Robot akan auto-resume sesuai pengaturan Resume Behavior
+            <i class="fas fa-info-circle"></i> <?php _e('dash_modal_tp_note'); ?>
         </p>
     </div>
 </div>
@@ -725,22 +724,21 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="autopause-modal-icon">
             <i class="fas fa-shield-alt"></i>
         </div>
-        <h3>Batas Loss Tercapai</h3>
+        <h3><?php _e('dash_modal_ml_title'); ?></h3>
         <p class="autopause-modal-amount danger" id="mlAmount">-$0.00</p>
         <p class="autopause-modal-message">
-            Robot telah di-pause untuk melindungi modal Anda.
-            Evaluasi strategi dan kondisi market sebelum melanjutkan.
+            <?php _e('dash_modal_ml_message'); ?>
         </p>
         <div class="autopause-modal-actions">
             <button class="db-btn db-btn-outline" onclick="closeModal('mlReachedModal')">
-                <i class="fas fa-times"></i> Tutup
+                <i class="fas fa-times"></i> <?php _e('dash_btn_close'); ?>
             </button>
             <button class="db-btn db-btn-warning" onclick="resumeRobot()">
-                <i class="fas fa-play"></i> Resume Robot
+                <i class="fas fa-play"></i> <?php _e('dash_btn_resume_robot'); ?>
             </button>
         </div>
         <p class="autopause-modal-note">
-            <i class="fas fa-exclamation-triangle"></i> Pastikan Anda siap sebelum melanjutkan trading
+            <i class="fas fa-exclamation-triangle"></i> <?php _e('dash_modal_ml_note'); ?>
         </p>
     </div>
 </div>
