@@ -93,6 +93,25 @@ define('TELEGRAM_SUPPORT', '@aheenkgans');
 define('TELEGRAM_BOT_TOKEN', '');
 
 // =========================================================
+// ROBOT API CONFIGURATION
+// =========================================================
+// Robot API server URL (Node.js server on VPS Indonesia)
+define('ROBOT_API_URL', getenv('ROBOT_API_URL') ?: 'http://localhost:3001');
+define('ROBOT_API_KEY', getenv('ROBOT_API_KEY') ?: 'zyn-robot-secret-key');
+
+// Robot connection timeout (seconds)
+define('ROBOT_TIMEOUT', 30);
+
+// Enable robot features
+define('ROBOT_ENABLED', true);
+
+// =========================================================
+// ENCRYPTION KEY
+// =========================================================
+// Key for encrypting OlympTrade passwords in database
+define('ENCRYPTION_KEY', getenv('ENCRYPTION_KEY') ?: 'change-this-to-random-32-byte-hex');
+
+// =========================================================
 // CURRENCY & PRICING (USD - Global Market)
 // =========================================================
 define('DEFAULT_CURRENCY', 'USD');
