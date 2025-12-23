@@ -8,8 +8,11 @@ $whatsappNumber = '6281234567890';
 $whatsappLink = "https://wa.me/{$whatsappNumber}";
 ?>
 
-<!-- Hero Section -->
-<section class="hero-section">
+<!-- Hero Section - Premium Edition -->
+<section class="hero-section hero-premium">
+    <!-- Three.js 3D Canvas Background -->
+    <div class="hero-3d-canvas"></div>
+
     <!-- Animated Particles Background -->
     <div class="hero-particles">
         <div class="particle"></div>
@@ -23,7 +26,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
         <div class="particle"></div>
     </div>
 
-    <div class="container">
+    <div class="container hero-content-premium">
         <div class="row align-items-center">
             <div class="col-lg-6 hero-content">
                 <span class="hero-badge">
@@ -39,11 +42,11 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                     <?php _e('hero_subtitle'); ?>
                 </p>
                 <div class="hero-buttons">
-                    <a href="register.php" class="btn btn-primary btn-lg">
-                        <i class="fas fa-rocket me-2"></i><?php _e('hero_btn_start'); ?>
+                    <a href="register.php" class="btn btn-primary btn-lg magnetic-btn glow-pulse" data-magnetic>
+                        <span class="magnetic-btn-text"><i class="fas fa-rocket me-2"></i><?php _e('hero_btn_start'); ?></span>
                     </a>
-                    <a href="#how-it-works" class="btn btn-secondary btn-lg">
-                        <i class="fas fa-play-circle me-2"></i><?php _e('hero_btn_how'); ?>
+                    <a href="#how-it-works" class="btn btn-secondary btn-lg magnetic-btn" data-magnetic>
+                        <span class="magnetic-btn-text"><i class="fas fa-play-circle me-2"></i><?php _e('hero_btn_how'); ?></span>
                     </a>
                 </div>
 
@@ -112,6 +115,18 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
         </div>
     </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-indicator-mouse">
+            <div class="scroll-indicator-wheel"></div>
+        </div>
+        <div class="scroll-indicator-arrows">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
 </section>
 
 <!-- Features Section -->
@@ -125,7 +140,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
         <div class="row g-4">
             <div class="col-lg-4 col-md-6 fade-in stagger-1">
-                <div class="card feature-card h-100">
+                <div class="card feature-card h-100 hover-lift tilt-card">
+                    <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
                         <i class="fas fa-brain"></i>
                     </div>
@@ -135,7 +151,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-2">
-                <div class="card feature-card h-100">
+                <div class="card feature-card h-100 hover-lift tilt-card">
+                    <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
@@ -145,7 +162,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-3">
-                <div class="card feature-card h-100">
+                <div class="card feature-card h-100 hover-lift tilt-card">
+                    <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
                         <i class="fas fa-robot"></i>
                     </div>
@@ -155,7 +173,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-4">
-                <div class="card feature-card h-100">
+                <div class="card feature-card h-100 hover-lift tilt-card">
+                    <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
@@ -165,7 +184,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-5">
-                <div class="card feature-card h-100">
+                <div class="card feature-card h-100 hover-lift tilt-card">
+                    <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
                         <i class="fas fa-tachometer-alt"></i>
                     </div>
@@ -175,7 +195,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-6">
-                <div class="card feature-card h-100">
+                <div class="card feature-card h-100 hover-lift tilt-card">
+                    <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
                         <i class="fas fa-headset"></i>
                     </div>
@@ -381,7 +402,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
         <div class="row g-4 justify-content-center">
             <!-- FREE -->
             <div class="col-lg-3 col-md-6 fade-in stagger-1">
-                <div class="card pricing-card h-100">
+                <div class="card pricing-card h-100 hover-lift tilt-card">
                     <div class="card-body d-flex flex-column">
                         <h3 class="pricing-name">FREE</h3>
                         <div class="pricing-price">
@@ -402,7 +423,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
             <!-- PRO -->
             <div class="col-lg-3 col-md-6 fade-in stagger-2">
-                <div class="card pricing-card h-100">
+                <div class="card pricing-card h-100 hover-lift tilt-card">
                     <div class="card-body d-flex flex-column">
                         <h3 class="pricing-name">PRO</h3>
                         <div class="pricing-price">
@@ -422,7 +443,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
             <!-- ELITE -->
             <div class="col-lg-3 col-md-6 fade-in stagger-3">
-                <div class="card pricing-card featured h-100">
+                <div class="card pricing-card featured h-100 hover-lift tilt-card gradient-border">
                     <div class="card-body d-flex flex-column">
                         <h3 class="pricing-name">ELITE</h3>
                         <div class="pricing-price">
@@ -442,7 +463,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
             <!-- VIP -->
             <div class="col-lg-3 col-md-6 fade-in stagger-4">
-                <div class="card pricing-card h-100" style="border-color: var(--primary);">
+                <div class="card pricing-card h-100 hover-lift tilt-card glow-pulse" style="border-color: var(--primary);">
                     <div class="card-body d-flex flex-column">
                         <h3 class="pricing-name text-gradient">VIP</h3>
                         <div class="pricing-price">
@@ -770,11 +791,11 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                 </div>
 
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a href="register.php" class="btn btn-primary btn-lg">
-                        <i class="fas fa-rocket me-2"></i><?php _e('cta_btn_start'); ?>
+                    <a href="register.php" class="btn btn-primary btn-lg magnetic-btn glow-pulse" data-magnetic>
+                        <span class="magnetic-btn-text"><i class="fas fa-rocket me-2"></i><?php _e('cta_btn_start'); ?></span>
                     </a>
-                    <a href="<?php echo $whatsappLink; ?>" target="_blank" class="btn btn-outline-light btn-lg">
-                        <i class="fab fa-whatsapp me-2"></i><?php _e('cta_btn_channel'); ?>
+                    <a href="<?php echo $whatsappLink; ?>" target="_blank" class="btn btn-outline-light btn-lg magnetic-btn" data-magnetic>
+                        <span class="magnetic-btn-text"><i class="fab fa-whatsapp me-2"></i><?php _e('cta_btn_channel'); ?></span>
                     </a>
                 </div>
 

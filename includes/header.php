@@ -139,6 +139,9 @@ $textDir = getTextDirection();
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Premium Edition CSS -->
+    <link rel="stylesheet" href="assets/css/premium.css">
     <?php
     $dashboard_pages = ['dashboard', 'admin', 'statistics', 'leaderboard', 'settings', 'profile', 'calculator', 'subscribe'];
     $needs_dashboard_css = false;
@@ -159,26 +162,20 @@ $textDir = getTextDirection();
     <?php endif; ?>
 </head>
 <body class="<?php echo $current_page; ?>-page">
-    <!-- Preloader -->
-    <div id="preloader" class="preloader">
-        <div class="preloader-inner">
-            <svg class="preloader-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="preloaderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#00d4ff">
-                            <animate attributeName="stop-color" values="#00d4ff;#7c3aed;#00d4ff" dur="2s" repeatCount="indefinite"/>
-                        </stop>
-                        <stop offset="100%" style="stop-color:#7c3aed">
-                            <animate attributeName="stop-color" values="#7c3aed;#00d4ff;#7c3aed" dur="2s" repeatCount="indefinite"/>
-                        </stop>
-                    </linearGradient>
-                </defs>
-                <polygon points="30,3 55,17 55,43 30,57 5,43 5,17" fill="none" stroke="url(#preloaderGradient)" stroke-width="2">
-                    <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1.5s" repeatCount="indefinite"/>
-                </polygon>
-                <text x="30" y="38" font-family="Orbitron, sans-serif" font-size="20" fill="url(#preloaderGradient)" text-anchor="middle" font-weight="900">Z</text>
-            </svg>
-            <div class="preloader-text">Loading...</div>
+    <!-- Premium Preloader -->
+    <div class="premium-preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo-premium">
+                <div class="preloader-ring"></div>
+                <div class="preloader-ring"></div>
+                <div class="preloader-ring"></div>
+                <span class="preloader-logo-text">Z</span>
+            </div>
+            <div class="preloader-progress">
+                <div class="preloader-progress-bar"></div>
+            </div>
+            <div class="preloader-text">INITIALIZING SYSTEM</div>
+            <div class="preloader-counter">0%</div>
         </div>
     </div>
 

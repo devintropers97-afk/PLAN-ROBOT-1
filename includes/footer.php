@@ -164,8 +164,18 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Three.js for 3D Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <!-- Custom JS -->
     <script src="assets/js/main.js"></script>
+
+    <!-- Premium Edition JS -->
+    <script src="assets/js/premium.js"></script>
     <?php if (strpos($current_page, 'dashboard') !== false): ?>
     <script src="assets/js/dashboard.js"></script>
     <?php endif; ?>
@@ -175,35 +185,7 @@
     <?php echo $page_scripts; ?>
     <?php endif; ?>
 
-    <!-- Preloader hide script -->
-    <script>
-        (function() {
-            const hidePreloader = function() {
-                const preloader = document.getElementById('preloader');
-                if (preloader && preloader.style.display !== 'none') {
-                    preloader.classList.add('fade-out');
-                    setTimeout(() => {
-                        preloader.style.display = 'none';
-                    }, 500);
-                }
-            };
-
-            // Hide on window load
-            window.addEventListener('load', hidePreloader);
-
-            // Fallback: hide after 5 seconds regardless
-            setTimeout(hidePreloader, 5000);
-
-            // Also hide on DOMContentLoaded as backup
-            if (document.readyState === 'complete') {
-                hidePreloader();
-            } else {
-                document.addEventListener('DOMContentLoaded', function() {
-                    setTimeout(hidePreloader, 1000);
-                });
-            }
-        })();
-    </script>
+    <!-- Premium Preloader is handled by premium.js -->
 
     <!-- Anti-Inspect/DevTools Protection -->
     <script>
