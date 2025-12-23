@@ -24,6 +24,8 @@
     "standalone:visible": "node src/standalone-robot.js --visible",
     "api": "node src/api/server.js",
     "api:dev": "nodemon src/api/server.js",
+    "api:production": "NODE_ENV=production node src/api/productionServer.js",
+    "api:prod": "NODE_ENV=production node src/api/productionServer.js",
     "test:encryption": "node -e \"const {encryptPassword,decryptPassword}=require('./src/utils/helpers');const enc=encryptPassword('test123');console.log('Encrypted:',enc);console.log('Decrypted:',decryptPassword(enc));\""
   },
   "keywords": [
