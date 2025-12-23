@@ -219,22 +219,25 @@ function getHtmlLang() {
 
 /**
  * Get localized affiliate link based on current language
+ * Note: Only define if not already defined in functions.php
  */
-function getLocalizedAffiliateLink() {
-    $lang = getCurrentLanguage();
+if (!function_exists('getLocalizedAffiliateLink')) {
+    function getLocalizedAffiliateLink() {
+        $lang = getCurrentLanguage();
 
-    // Check if we have a specific link for this language
-    if (defined('AFFILIATE_LINKS') && isset(AFFILIATE_LINKS[$lang])) {
-        return AFFILIATE_LINKS[$lang];
+        // Check if we have a specific link for this language
+        if (defined('AFFILIATE_LINKS') && isset(AFFILIATE_LINKS[$lang])) {
+            return AFFILIATE_LINKS[$lang];
+        }
+
+        // Fallback to English link if language not found
+        if (defined('AFFILIATE_LINKS') && isset(AFFILIATE_LINKS['en'])) {
+            return AFFILIATE_LINKS['en'];
+        }
+
+        // Final fallback to default constant
+        return defined('OLYMPTRADE_AFFILIATE_LINK') ? OLYMPTRADE_AFFILIATE_LINK : '#';
     }
-
-    // Fallback to English link if language not found
-    if (defined('AFFILIATE_LINKS') && isset(AFFILIATE_LINKS['en'])) {
-        return AFFILIATE_LINKS['en'];
-    }
-
-    // Final fallback to default constant
-    return defined('OLYMPTRADE_AFFILIATE_LINK') ? OLYMPTRADE_AFFILIATE_LINK : '#';
 }
 
 // Auto-initialize when included

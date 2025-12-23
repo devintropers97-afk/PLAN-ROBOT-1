@@ -1166,10 +1166,12 @@ function getAffiliateLink($lang_code = 'en') {
 }
 
 // Detect user language and get appropriate affiliate link
-function getLocalizedAffiliateLink() {
-    $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'en', 0, 2);
-    $lang = strtolower($lang);
-    return getAffiliateLink($lang);
+if (!function_exists('getLocalizedAffiliateLink')) {
+    function getLocalizedAffiliateLink() {
+        $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'en', 0, 2);
+        $lang = strtolower($lang);
+        return getAffiliateLink($lang);
+    }
 }
 
 /**
