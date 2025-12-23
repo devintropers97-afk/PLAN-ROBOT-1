@@ -53,6 +53,32 @@ require_once 'includes/header.php';
                                     </div>
                                     <small class="text-muted"><?php _e('calc_trade_hint'); ?></small>
                                 </div>
+
+                                <!-- Market Selection -->
+                                <div class="col-md-6">
+                                    <label class="form-label"><i class="fas fa-chart-line me-1"></i> Market</label>
+                                    <select class="form-select" id="marketSelect">
+                                        <option value="EUR/USD" selected>EUR/USD</option>
+                                        <option value="GBP/USD">GBP/USD</option>
+                                        <option value="USD/JPY">USD/JPY</option>
+                                        <option value="AUD/USD">AUD/USD</option>
+                                        <option value="EUR/GBP">EUR/GBP</option>
+                                    </select>
+                                </div>
+
+                                <!-- Plan Selection with Payout Rate -->
+                                <div class="col-md-6">
+                                    <label class="form-label"><i class="fas fa-crown me-1"></i> Paket Plan</label>
+                                    <select class="form-select" id="planSelect">
+                                        <option value="82" data-plan="starter">Starter (FREE) - Payout 82%</option>
+                                        <option value="85" data-plan="advance" selected>Advance (PRO) - Payout 85%</option>
+                                        <option value="92" data-plan="expert">Expert (ELITE/VIP) - Payout 92%</option>
+                                    </select>
+                                    <div class="mt-2">
+                                        <span class="badge bg-success" id="payoutDisplay">Payout: 85%</span>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_win_rate'); ?></label>
                                     <select class="form-select" id="strategySelect">
@@ -71,8 +97,6 @@ require_once 'includes/header.php';
                                         <span class="badge bg-primary" id="winRateDisplay">Win Rate: 75%</span>
                                     </div>
                                 </div>
-                                <!-- Payout rate is fixed at 82% (standard OlympTrade rate) -->
-                                <input type="hidden" id="payoutRate" value="82">
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_trades_per_day'); ?></label>
                                     <input type="number" class="form-control" id="tradesPerDay" value="10" min="1" max="50">
@@ -372,10 +396,14 @@ document.getElementById('strategySelect').addEventListener('change', function() 
     document.getElementById('winRateDisplay').textContent = 'Win Rate: ' + this.value + '%';
 });
 
-// Payout rate is fixed at 82%
+// Update payout display when plan changes
+document.getElementById('planSelect').addEventListener('change', function() {
+    document.getElementById('payoutDisplay').textContent = 'Payout: ' + this.value + '%';
+});
 
 function calculateProfit() {
     const isManualMode = document.getElementById('modeManual').checked;
+    const compoundMode = document.getElementById('compoundMode').checked;
     let capital, netProfit, tradingDays;
 
     if (isManualMode) {
@@ -400,38 +428,86 @@ function calculateProfit() {
         capital = parseFloat(document.getElementById('initialCapital').value) || 100;
         const tradeAmount = parseFloat(document.getElementById('tradeAmount').value) || 5;
         const winRate = parseFloat(document.getElementById('strategySelect').value) / 100 || 0.75;
-        const payoutRate = parseFloat(document.getElementById('payoutRate').value) / 100 || 0.82;
+        // Get payout rate from plan selection
+        const payoutRate = parseFloat(document.getElementById('planSelect').value) / 100 || 0.82;
         const tradesPerDay = parseInt(document.getElementById('tradesPerDay').value) || 10;
         tradingDays = parseInt(document.getElementById('tradingDays').value) || 22;
 
-        // Calculate per trade
-        const winProfit = tradeAmount * payoutRate;
-        const lossAmount = tradeAmount;
+        if (compoundMode) {
+            // COMPOUND MODE: Reinvest profits, trade amount grows with capital
+            // Trade amount as percentage of current capital
+            const tradePercentage = tradeAmount / capital;
+            let currentCapital = capital;
+            let totalWins = 0;
+            let totalLosses = 0;
+            let grossProfitTotal = 0;
+            let totalLossAmount = 0;
 
-        // Calculate monthly
-        const totalTrades = tradesPerDay * tradingDays;
-        const wins = Math.round(totalTrades * winRate);
-        const losses = totalTrades - wins;
+            // Simulate each trading day
+            for (let day = 0; day < tradingDays; day++) {
+                // Simulate trades for this day
+                for (let trade = 0; trade < tradesPerDay; trade++) {
+                    // Trade amount based on current capital (compound)
+                    const currentTradeAmount = Math.min(currentCapital * tradePercentage, currentCapital);
 
-        const grossProfit = wins * winProfit;
-        const totalLoss = losses * lossAmount;
-        netProfit = grossProfit - totalLoss;
+                    if (currentTradeAmount <= 0 || currentCapital <= 0) break;
 
-        // Update detail UI
-        document.getElementById('dailyTrades').textContent = tradesPerDay + ' trades';
-        document.getElementById('totalTrades').textContent = totalTrades;
-        document.getElementById('totalWins').textContent = wins;
-        document.getElementById('totalLosses').textContent = losses;
-        document.getElementById('grossProfit').textContent = formatCurrency(grossProfit);
-        document.getElementById('totalLoss').textContent = '-' + formatCurrency(totalLoss);
+                    // Determine if win or loss based on win rate probability
+                    const isWin = Math.random() < winRate;
 
-        // Update strategy recommendations
-        updateStrategyProfits(tradeAmount, tradesPerDay, tradingDays, payoutRate);
+                    if (isWin) {
+                        const profit = currentTradeAmount * payoutRate;
+                        currentCapital += profit;
+                        grossProfitTotal += profit;
+                        totalWins++;
+                    } else {
+                        currentCapital -= currentTradeAmount;
+                        totalLossAmount += currentTradeAmount;
+                        totalLosses++;
+                    }
+                }
+            }
+
+            netProfit = currentCapital - capital;
+
+            // Update detail UI for compound mode
+            document.getElementById('dailyTrades').textContent = tradesPerDay + ' trades (compound)';
+            document.getElementById('totalTrades').textContent = totalWins + totalLosses;
+            document.getElementById('totalWins').textContent = totalWins;
+            document.getElementById('totalLosses').textContent = totalLosses;
+            document.getElementById('grossProfit').textContent = formatCurrency(grossProfitTotal);
+            document.getElementById('totalLoss').textContent = '-' + formatCurrency(totalLossAmount);
+
+            // Update strategy recommendations with compound
+            updateStrategyProfitsCompound(capital, tradePercentage, tradesPerDay, tradingDays, payoutRate);
+
+        } else {
+            // NORMAL MODE: Fixed trade amount, no reinvestment
+            const winProfit = tradeAmount * payoutRate;
+            const lossAmount = tradeAmount;
+
+            const totalTrades = tradesPerDay * tradingDays;
+            const wins = Math.round(totalTrades * winRate);
+            const losses = totalTrades - wins;
+
+            const grossProfit = wins * winProfit;
+            const totalLoss = losses * lossAmount;
+            netProfit = grossProfit - totalLoss;
+
+            // Update detail UI
+            document.getElementById('dailyTrades').textContent = tradesPerDay + ' trades';
+            document.getElementById('totalTrades').textContent = totalTrades;
+            document.getElementById('totalWins').textContent = wins;
+            document.getElementById('totalLosses').textContent = losses;
+            document.getElementById('grossProfit').textContent = formatCurrency(grossProfit);
+            document.getElementById('totalLoss').textContent = '-' + formatCurrency(totalLoss);
+
+            // Update strategy recommendations
+            updateStrategyProfits(tradeAmount, tradesPerDay, tradingDays, payoutRate);
+        }
     }
 
-    const compoundMode = document.getElementById('compoundMode').checked;
-
-    // Daily/Weekly
+    // Daily/Weekly (average)
     const dailyProfit = netProfit / tradingDays;
     const weeklyProfit = dailyProfit * 5;
 
@@ -439,18 +515,18 @@ function calculateProfit() {
     const monthlyROI = (netProfit / capital) * 100;
     const weeklyROI = monthlyROI / 4;
 
-    // Compound projection
+    // Projections for 1m, 3m, 6m, 1y
     let balance1m, balance3m, balance6m, balance1y;
 
     if (compoundMode && netProfit > 0) {
-        // Compound calculation (simplified monthly compounding)
-        const monthlyReturn = 1 + (netProfit / capital);
-        balance1m = capital * monthlyReturn;
-        balance3m = capital * Math.pow(monthlyReturn, 3);
-        balance6m = capital * Math.pow(monthlyReturn, 6);
-        balance1y = capital * Math.pow(monthlyReturn, 12);
+        // Compound projection: each month grows at the same rate
+        const monthlyGrowthRate = (capital + netProfit) / capital;
+        balance1m = capital * monthlyGrowthRate;
+        balance3m = capital * Math.pow(monthlyGrowthRate, 3);
+        balance6m = capital * Math.pow(monthlyGrowthRate, 6);
+        balance1y = capital * Math.pow(monthlyGrowthRate, 12);
     } else {
-        // Flat calculation
+        // Flat/linear projection
         balance1m = capital + netProfit;
         balance3m = capital + (netProfit * 3);
         balance6m = capital + (netProfit * 6);
@@ -505,6 +581,7 @@ function calculateProfit() {
     document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth' });
 }
 
+// Update strategy profits for NORMAL mode (fixed trade amount)
 function updateStrategyProfits(tradeAmount, tradesPerDay, tradingDays, payoutRate) {
     const strategyProfits = document.querySelectorAll('.strategy-profit');
 
@@ -514,6 +591,25 @@ function updateStrategyProfits(tradeAmount, tradesPerDay, tradingDays, payoutRat
         const wins = Math.round(totalTrades * winRate);
         const losses = totalTrades - wins;
         const profit = (wins * tradeAmount * payoutRate) - (losses * tradeAmount);
+        cell.textContent = formatCurrency(profit);
+        cell.className = profit >= 0 ? 'strategy-profit positive' : 'strategy-profit negative';
+    });
+}
+
+// Update strategy profits for COMPOUND mode (simulated)
+function updateStrategyProfitsCompound(capital, tradePercentage, tradesPerDay, tradingDays, payoutRate) {
+    const strategyProfits = document.querySelectorAll('.strategy-profit');
+
+    strategyProfits.forEach(function(cell) {
+        const winRate = parseFloat(cell.dataset.winrate) / 100;
+
+        // Simplified compound calculation using expected value per trade
+        // E(return) = winRate * payoutRate - (1 - winRate) = winRate * (1 + payoutRate) - 1
+        const expectedReturnPerTrade = winRate * (1 + payoutRate) - 1;
+        const expectedDailyReturn = 1 + (expectedReturnPerTrade * tradePercentage * tradesPerDay);
+        const finalCapital = capital * Math.pow(expectedDailyReturn, tradingDays);
+        const profit = finalCapital - capital;
+
         cell.textContent = formatCurrency(profit);
         cell.className = profit >= 0 ? 'strategy-profit positive' : 'strategy-profit negative';
     });
