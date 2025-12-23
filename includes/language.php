@@ -217,6 +217,26 @@ function getHtmlLang() {
     return getCurrentLanguage();
 }
 
+/**
+ * Get localized affiliate link based on current language
+ */
+function getLocalizedAffiliateLink() {
+    $lang = getCurrentLanguage();
+
+    // Check if we have a specific link for this language
+    if (defined('AFFILIATE_LINKS') && isset(AFFILIATE_LINKS[$lang])) {
+        return AFFILIATE_LINKS[$lang];
+    }
+
+    // Fallback to English link if language not found
+    if (defined('AFFILIATE_LINKS') && isset(AFFILIATE_LINKS['en'])) {
+        return AFFILIATE_LINKS['en'];
+    }
+
+    // Final fallback to default constant
+    return defined('OLYMPTRADE_AFFILIATE_LINK') ? OLYMPTRADE_AFFILIATE_LINK : '#';
+}
+
 // Auto-initialize when included
 if (session_status() === PHP_SESSION_ACTIVE || session_status() === PHP_SESSION_NONE) {
     initLanguage();

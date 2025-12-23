@@ -113,7 +113,7 @@
                         </li>
                     </ul>
                     <div class="footer-cta mt-3">
-                        <a href="<?php echo OLYMPTRADE_AFFILIATE_LINK; ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <a href="<?php echo getLocalizedAffiliateLink(); ?>" target="_blank" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-external-link-alt me-1"></i> Open OlympTrade
                         </a>
                     </div>

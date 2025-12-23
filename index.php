@@ -225,7 +225,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
         </div>
 
         <div class="text-center mt-5 fade-in">
-            <a href="<?php echo OLYMPTRADE_AFFILIATE_LINK; ?>" target="_blank" class="btn btn-primary btn-lg">
+            <a href="<?php echo getLocalizedAffiliateLink(); ?>" target="_blank" class="btn btn-primary btn-lg">
                 <i class="fas fa-external-link-alt me-2"></i><?php _e('how_btn_register'); ?>
             </a>
             <p class="text-muted mt-3">
@@ -595,7 +595,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                             <i class="fas fa-star text-warning"></i>
                         </div>
                         <p class="testimonial-text">
-                            "Sebagai ibu rumah tangga, robot ini sangat membantu. Tidak perlu fokus terus ke layar, robot yang kerja. Profit konsisten setiap hari!"
+                            "<?php _e('testimonial_4_text'); ?>"
                         </p>
                         <div class="testimonial-stats">
                             <span class="badge bg-success">Win Rate: 80%</span>
@@ -628,7 +628,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                             <i class="fas fa-star-half-alt text-warning"></i>
                         </div>
                         <p class="testimonial-text">
-                            "Awalnya coba FREE dulu, setelah lihat hasilnya langsung upgrade ke VIP. Win rate beneran tinggi! Support juga super fast response."
+                            "<?php _e('testimonial_5_text'); ?>"
                         </p>
                         <div class="testimonial-stats">
                             <span class="badge bg-success">Win Rate: 85%</span>
@@ -661,7 +661,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                             <i class="fas fa-star text-warning"></i>
                         </div>
                         <p class="testimonial-text">
-                            "Fitur auto-pause sangat berguna! Ketika loss mencapai limit, robot otomatis berhenti. Modal aman, profit tetap jalan. Recommended!"
+                            "<?php _e('testimonial_6_text'); ?>"
                         </p>
                         <div class="testimonial-stats">
                             <span class="badge bg-success">Win Rate: 78%</span>
@@ -739,7 +739,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                             <strong><?php _e('support_footer'); ?></strong>
                         </p>
                         <div class="mt-4">
-                            <a href="<?php echo OLYMPTRADE_AFFILIATE_LINK; ?>" target="_blank" class="btn btn-primary btn-lg">
+                            <a href="<?php echo getLocalizedAffiliateLink(); ?>" target="_blank" class="btn btn-primary btn-lg">
                                 <i class="fas fa-gift me-2"></i><?php _e('support_btn'); ?>
                             </a>
                         </div>

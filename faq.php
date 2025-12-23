@@ -1,5 +1,6 @@
 <?php
-$page_title = 'FAQ';
+require_once 'includes/language.php';
+$page_title = __('nav_faq') ?: 'FAQ';
 require_once 'includes/header.php';
 ?>
 
@@ -53,7 +54,7 @@ require_once 'includes/header.php';
                                     <div class="faq-answer-content">
                                         <p>Follow these simple steps to get started:</p>
                                         <ol>
-                                            <li>Register on OlympTrade via our <a href="<?php echo OLYMPTRADE_AFFILIATE_LINK; ?>" target="_blank" style="color: #00d4ff;">official affiliate link</a></li>
+                                            <li>Register on OlympTrade via our <a href="<?php echo getLocalizedAffiliateLink(); ?>" target="_blank" style="color: #00d4ff;">official affiliate link</a></li>
                                             <li>Make a minimum deposit of $10 USD</li>
                                             <li>Create your ZYN account using your OlympTrade ID</li>
                                             <li>Wait for admin verification (typically 1-24 hours)</li>
