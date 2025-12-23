@@ -220,7 +220,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 </section>
 
 <!-- Features Section -->
-<section class="section" id="features">
+<section class="section section-decorated" id="features">
     <div class="container">
         <div class="section-header fade-in">
             <span class="section-badge"><?php _e('features_badge'); ?></span>
@@ -298,8 +298,8 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
     </div>
 </section>
 
-<!-- How It Works Section -->
-<section class="section bg-darker" id="how-it-works">
+<!-- How It Works Section - Animated Timeline -->
+<section class="section bg-darker section-decorated" id="how-it-works">
     <div class="container">
         <div class="section-header fade-in">
             <span class="section-badge"><?php _e('how_badge'); ?></span>
@@ -307,37 +307,53 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             <p class="section-desc"><?php _e('how_desc'); ?></p>
         </div>
 
-        <div class="process-steps fade-in">
-            <div class="process-step">
-                <div class="step-number">1</div>
-                <h4 class="step-title"><?php _e('how_step_1_title'); ?></h4>
-                <p class="step-desc"><?php _e('how_step_1_desc'); ?></p>
+        <!-- Animated Timeline -->
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-step">1</div>
+                    <h4 class="timeline-title"><?php _e('how_step_1_title'); ?></h4>
+                    <p class="timeline-desc"><?php _e('how_step_1_desc'); ?></p>
+                </div>
             </div>
-            <div class="process-step">
-                <div class="step-number">2</div>
-                <h4 class="step-title"><?php _e('how_step_2_title'); ?></h4>
-                <p class="step-desc"><?php _e('how_step_2_desc'); ?></p>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-step">2</div>
+                    <h4 class="timeline-title"><?php _e('how_step_2_title'); ?></h4>
+                    <p class="timeline-desc"><?php _e('how_step_2_desc'); ?></p>
+                </div>
             </div>
-            <div class="process-step">
-                <div class="step-number">3</div>
-                <h4 class="step-title"><?php _e('how_step_3_title'); ?></h4>
-                <p class="step-desc"><?php _e('how_step_3_desc'); ?></p>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-step">3</div>
+                    <h4 class="timeline-title"><?php _e('how_step_3_title'); ?></h4>
+                    <p class="timeline-desc"><?php _e('how_step_3_desc'); ?></p>
+                </div>
             </div>
-            <div class="process-step">
-                <div class="step-number">4</div>
-                <h4 class="step-title"><?php _e('how_step_4_title'); ?></h4>
-                <p class="step-desc"><?php _e('how_step_4_desc'); ?></p>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-step">4</div>
+                    <h4 class="timeline-title"><?php _e('how_step_4_title'); ?></h4>
+                    <p class="timeline-desc"><?php _e('how_step_4_desc'); ?></p>
+                </div>
             </div>
-            <div class="process-step">
-                <div class="step-number">5</div>
-                <h4 class="step-title"><?php _e('how_step_5_title'); ?></h4>
-                <p class="step-desc"><?php _e('how_step_5_desc'); ?></p>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-step">5</div>
+                    <h4 class="timeline-title"><?php _e('how_step_5_title'); ?></h4>
+                    <p class="timeline-desc"><?php _e('how_step_5_desc'); ?></p>
+                </div>
             </div>
         </div>
 
         <div class="text-center mt-5 fade-in">
-            <a href="<?php echo getLocalizedAffiliateLink(); ?>" target="_blank" class="btn btn-primary btn-lg">
-                <i class="fas fa-external-link-alt me-2"></i><?php _e('how_btn_register'); ?>
+            <a href="<?php echo getLocalizedAffiliateLink(); ?>" target="_blank" class="btn btn-primary btn-lg magnetic-btn glow-pulse" data-magnetic>
+                <span class="magnetic-btn-text"><i class="fas fa-external-link-alt me-2"></i><?php _e('how_btn_register'); ?></span>
             </a>
             <p class="text-muted mt-3">
                 <small><i class="fas fa-info-circle me-1"></i><?php _e('how_minimum_deposit'); ?></small>
@@ -481,7 +497,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 </section>
 
 <!-- Pricing Preview Section -->
-<section class="section" id="pricing">
+<section class="section section-decorated" id="pricing">
     <div class="container">
         <div class="section-header fade-in">
             <span class="section-badge"><?php _e('pricing_badge'); ?></span>
@@ -857,6 +873,98 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section with Accordion -->
+<section class="section bg-darker" id="faq">
+    <div class="container">
+        <div class="section-header fade-in">
+            <span class="section-badge"><i class="fas fa-question-circle me-2"></i>FAQ</span>
+            <h2 class="section-title">Pertanyaan Umum</h2>
+            <p class="section-desc">Jawaban untuk pertanyaan yang sering ditanyakan tentang ZYN Trade System</p>
+        </div>
+
+        <div class="faq-accordion fade-in">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h4>Apa itu ZYN Trade System?</h4>
+                    <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>ZYN Trade System adalah robot trading otomatis yang dirancang khusus untuk platform OlympTrade. Sistem ini menggunakan berbagai strategi trading yang telah teruji untuk membantu Anda trading secara lebih efisien dan konsisten.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h4>Berapa modal minimum untuk memulai?</h4>
+                    <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Modal minimum untuk memulai adalah $10 sesuai dengan minimum deposit OlympTrade. Namun, kami merekomendasikan minimal $50 untuk hasil yang lebih optimal dengan manajemen risiko yang baik.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h4>Apakah profit dijamin?</h4>
+                    <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Tidak ada sistem trading yang bisa menjamin profit 100%. Trading selalu memiliki risiko. ZYN Trade System dirancang untuk memaksimalkan peluang profit dengan strategi yang telah teruji, namun hasil tetap bergantung pada kondisi market dan disiplin penggunaan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h4>Bagaimana cara menggunakan robot ini?</h4>
+                    <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Setelah mendaftar, Anda cukup login ke dashboard, pilih strategi yang diinginkan, atur parameter trading (seperti amount dan target), lalu klik Start Robot. Sistem akan otomatis melakukan analisis dan eksekusi trading berdasarkan strategi yang dipilih.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h4>Apakah bisa digunakan 24 jam?</h4>
+                    <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Ya, robot dapat berjalan 24/7 selama browser atau tab tetap terbuka. Untuk hasil terbaik, kami rekomendasikan trading pada jam-jam market aktif (sesi Eropa dan Amerika) dimana volatilitas dan akurasi signal lebih optimal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h4>Bagaimana sistem support-nya?</h4>
+                    <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Kami menyediakan support melalui Telegram untuk semua pengguna. Paket PRO ke atas mendapatkan priority support dengan response time lebih cepat. Paket VIP mendapatkan akses langsung ke developer untuk konsultasi strategi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 fade-in">
+            <p class="text-muted mb-3">Masih ada pertanyaan lain?</p>
+            <a href="https://t.me/<?php echo ltrim(TELEGRAM_SUPPORT, '@'); ?>" target="_blank" class="btn btn-outline-primary">
+                <i class="fab fa-telegram me-2"></i>Hubungi Support
+            </a>
         </div>
     </div>
 </section>

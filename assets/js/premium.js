@@ -1571,3 +1571,401 @@ document.addEventListener('DOMContentLoaded', () => {
             'background: linear-gradient(135deg, #00ff88, #00d4ff); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
     }, 1000);
 });
+
+// ============================================================
+// BATCH 4: ADVANCED INTERACTIVE COMPONENTS
+// ============================================================
+
+// ===== TESTIMONIAL CAROUSEL =====
+class TestimonialCarousel {
+    constructor(selector = '.testimonial-carousel') {
+        this.carousel = document.querySelector(selector);
+        if (!this.carousel) return;
+
+        this.track = this.carousel.querySelector('.testimonial-track');
+        this.slides = this.carousel.querySelectorAll('.testimonial-slide');
+        this.currentIndex = 0;
+        this.autoplayInterval = null;
+        this.autoplayDelay = 5000;
+
+        if (this.slides.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        // Create navigation
+        this.createNavigation();
+
+        // Set initial state
+        this.updateSlides();
+
+        // Start autoplay
+        this.startAutoplay();
+
+        // Pause on hover
+        this.carousel.addEventListener('mouseenter', () => this.stopAutoplay());
+        this.carousel.addEventListener('mouseleave', () => this.startAutoplay());
+
+        // Touch support
+        this.addTouchSupport();
+    }
+
+    createNavigation() {
+        // Navigation buttons
+        const nav = document.createElement('div');
+        nav.className = 'carousel-nav';
+        nav.innerHTML = `
+            <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+        `;
+        this.carousel.appendChild(nav);
+
+        nav.querySelector('.prev').addEventListener('click', () => this.prev());
+        nav.querySelector('.next').addEventListener('click', () => this.next());
+
+        // Dots
+        const dots = document.createElement('div');
+        dots.className = 'carousel-dots';
+        this.slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+            dot.addEventListener('click', () => this.goTo(index));
+            dots.appendChild(dot);
+        });
+        this.carousel.appendChild(dots);
+        this.dots = dots.querySelectorAll('.carousel-dot');
+    }
+
+    updateSlides() {
+        // Update slide classes
+        this.slides.forEach((slide, index) => {
+            slide.classList.remove('active', 'prev', 'next');
+            if (index === this.currentIndex) {
+                slide.classList.add('active');
+            } else if (index === this.currentIndex - 1 ||
+                      (this.currentIndex === 0 && index === this.slides.length - 1)) {
+                slide.classList.add('prev');
+            } else if (index === this.currentIndex + 1 ||
+                      (this.currentIndex === this.slides.length - 1 && index === 0)) {
+                slide.classList.add('next');
+            }
+        });
+
+        // Update dots
+        if (this.dots) {
+            this.dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === this.currentIndex);
+            });
+        }
+
+        // Move track
+        const slideWidth = this.slides[0].offsetWidth + 30; // gap
+        const offset = -this.currentIndex * slideWidth + (this.carousel.offsetWidth / 2) - (slideWidth / 2);
+        if (this.track) {
+            this.track.style.transform = `translateX(${offset}px)`;
+        }
+    }
+
+    next() {
+        this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+        this.updateSlides();
+    }
+
+    prev() {
+        this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+        this.updateSlides();
+    }
+
+    goTo(index) {
+        this.currentIndex = index;
+        this.updateSlides();
+    }
+
+    startAutoplay() {
+        this.stopAutoplay();
+        this.autoplayInterval = setInterval(() => this.next(), this.autoplayDelay);
+    }
+
+    stopAutoplay() {
+        if (this.autoplayInterval) {
+            clearInterval(this.autoplayInterval);
+            this.autoplayInterval = null;
+        }
+    }
+
+    addTouchSupport() {
+        let startX = 0;
+        let endX = 0;
+
+        this.carousel.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            this.stopAutoplay();
+        }, { passive: true });
+
+        this.carousel.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    this.next();
+                } else {
+                    this.prev();
+                }
+            }
+            this.startAutoplay();
+        }, { passive: true });
+    }
+}
+
+// ===== FAQ ACCORDION =====
+class FAQAccordion {
+    constructor(selector = '.faq-accordion') {
+        this.container = document.querySelector(selector);
+        if (!this.container) return;
+
+        this.items = this.container.querySelectorAll('.faq-item');
+        if (this.items.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.items.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            if (question) {
+                question.addEventListener('click', () => this.toggle(item));
+            }
+        });
+
+        // Open first item by default
+        if (this.items.length > 0) {
+            this.items[0].classList.add('active');
+        }
+    }
+
+    toggle(item) {
+        const isActive = item.classList.contains('active');
+
+        // Close all items
+        this.items.forEach(i => i.classList.remove('active'));
+
+        // Open clicked item if it was closed
+        if (!isActive) {
+            item.classList.add('active');
+        }
+    }
+}
+
+// ===== ANIMATED TIMELINE =====
+class AnimatedTimeline {
+    constructor(selector = '.timeline') {
+        this.timeline = document.querySelector(selector);
+        if (!this.timeline) return;
+
+        this.items = this.timeline.querySelectorAll('.timeline-item');
+        if (this.items.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.2,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        this.items.forEach(item => {
+            observer.observe(item);
+        });
+    }
+}
+
+// ===== FLOATING DECORATIONS =====
+class FloatingDecorations {
+    constructor() {
+        this.decoratedSections = document.querySelectorAll('.section-decorated');
+
+        if (this.decoratedSections.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.decoratedSections.forEach(section => {
+            this.addDecorations(section);
+        });
+    }
+
+    addDecorations(section) {
+        const decorations = [
+            { type: 'floating-circle', top: '10%', left: '-5%' },
+            { type: 'floating-circle-2', top: '60%', right: '-8%' },
+            { type: 'floating-square', top: '30%', right: '5%' },
+            { type: 'floating-ring', bottom: '20%', left: '10%' },
+            { type: 'floating-triangle', top: '70%', left: '5%' }
+        ];
+
+        decorations.forEach(deco => {
+            const element = document.createElement('div');
+            element.className = `floating-decoration ${deco.type}`;
+
+            if (deco.top) element.style.top = deco.top;
+            if (deco.bottom) element.style.bottom = deco.bottom;
+            if (deco.left) element.style.left = deco.left;
+            if (deco.right) element.style.right = deco.right;
+
+            section.appendChild(element);
+        });
+    }
+}
+
+// ===== SKELETON LOADER =====
+class SkeletonLoader {
+    constructor() {
+        this.skeletons = document.querySelectorAll('[data-skeleton]');
+    }
+
+    show(element) {
+        element.classList.add('skeleton');
+    }
+
+    hide(element) {
+        element.classList.remove('skeleton');
+    }
+
+    createSkeleton(type = 'card') {
+        const skeleton = document.createElement('div');
+        skeleton.className = `skeleton skeleton-${type}`;
+        return skeleton;
+    }
+
+    // Replace content with skeleton while loading
+    startLoading(container, type = 'card', count = 3) {
+        container.dataset.originalContent = container.innerHTML;
+        container.innerHTML = '';
+
+        for (let i = 0; i < count; i++) {
+            const skeleton = this.createSkeleton(type);
+            container.appendChild(skeleton);
+        }
+    }
+
+    // Restore original content
+    finishLoading(container) {
+        if (container.dataset.originalContent) {
+            container.innerHTML = container.dataset.originalContent;
+            delete container.dataset.originalContent;
+        }
+    }
+}
+
+// ===== PRICING TOGGLE =====
+class PricingToggle {
+    constructor(selector = '.pricing-toggle') {
+        this.toggle = document.querySelector(selector);
+        if (!this.toggle) return;
+
+        this.switchBtn = this.toggle.querySelector('.pricing-toggle-switch');
+        this.labels = this.toggle.querySelectorAll('.pricing-label');
+        this.pricingCards = document.querySelectorAll('.pricing-card');
+        this.isYearly = false;
+
+        if (this.switchBtn) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.switchBtn.addEventListener('click', () => this.togglePricing());
+    }
+
+    togglePricing() {
+        this.isYearly = !this.isYearly;
+        this.switchBtn.classList.toggle('yearly', this.isYearly);
+
+        // Update labels
+        this.labels.forEach(label => {
+            const isMonthly = label.dataset.period === 'monthly';
+            label.classList.toggle('active', this.isYearly ? !isMonthly : isMonthly);
+        });
+
+        // Update prices
+        this.pricingCards.forEach(card => {
+            const priceElement = card.querySelector('.pricing-price');
+            if (priceElement) {
+                const monthly = priceElement.dataset.monthly;
+                const yearly = priceElement.dataset.yearly;
+
+                if (monthly && yearly) {
+                    priceElement.classList.add('price-changing');
+                    setTimeout(() => {
+                        priceElement.textContent = this.isYearly ? yearly : monthly;
+                        priceElement.classList.remove('price-changing');
+                    }, 200);
+                }
+            }
+        });
+    }
+}
+
+// ===== COMPARISON TABLE HOVER =====
+class ComparisonTable {
+    constructor(selector = '.comparison-table') {
+        this.table = document.querySelector(selector);
+        if (!this.table) return;
+
+        this.init();
+    }
+
+    init() {
+        const rows = this.table.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.querySelectorAll('td').forEach(cell => {
+                    cell.style.transform = 'scale(1.02)';
+                });
+            });
+
+            row.addEventListener('mouseleave', () => {
+                row.querySelectorAll('td').forEach(cell => {
+                    cell.style.transform = 'scale(1)';
+                });
+            });
+        });
+    }
+}
+
+// ===== INITIALIZE BATCH 4 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Testimonial Carousel
+        new TestimonialCarousel();
+
+        // FAQ Accordion
+        new FAQAccordion();
+
+        // Animated Timeline
+        new AnimatedTimeline();
+
+        // Floating Decorations
+        new FloatingDecorations();
+
+        // Pricing Toggle
+        new PricingToggle();
+
+        // Comparison Table
+        new ComparisonTable();
+
+        console.log('%c Batch 4 Premium Features Loaded ',
+            'background: linear-gradient(135deg, #7c3aed, #00d4ff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+    }, 1200);
+});
