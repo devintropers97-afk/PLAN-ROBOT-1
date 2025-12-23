@@ -7548,8 +7548,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // new CursorParticles();
         // new PageVisibility();
 
-        // Navigation - Keep only essential
-        new SmartNavbar();
+        // Navigation - SmartNavbar DISABLED - creates duplicate nav!
+        // new SmartNavbar();
         // ScrollDirection conflicts with other scroll handlers
 
         // Images - Keep lazy loading
