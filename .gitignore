@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Environment files (contains credentials)
+.env
+.env.local
+.env.production
+
+# Sessions and logs
+sessions/
+logs/
+
+# Build artifacts
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files (optional, can be committed)
+package-lock.json
