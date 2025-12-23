@@ -1527,12 +1527,8 @@ class AnimatedIcons {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize after a short delay to ensure DOM is ready
     setTimeout(() => {
-        // Particle Trail
-        new ParticleTrail({
-            particleCount: 15,
-            colors: ['#00d4ff', '#7c3aed', '#00ff88', '#ff6b6b'],
-            fadeTime: 800
-        });
+        // Particle Trail - Disabled (too heavy)
+        // new ParticleTrail({ ... });
 
         // Spotlight Effect on cards
         new SpotlightEffect('.feature-card, .pricing-card, .strategy-card');
@@ -1543,32 +1539,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Animated Icons
         new AnimatedIcons();
 
-        // Typewriter for hero tagline (if element exists)
-        const heroTagline = document.querySelector('.hero-tagline');
-        if (heroTagline) {
-            const originalText = heroTagline.textContent.trim();
-            const texts = [
-                originalText,
-                'Automated Trading Revolution',
-                'Smart Money Management',
-                'AI-Powered Strategies'
-            ];
-            heroTagline.textContent = '';
-            new TypewriterEffect(heroTagline, texts);
-        }
+        // DISABLED: TypewriterEffect on hero tagline
+        // This was changing the original hero text - keep text static
 
-        // Text Scramble for section titles on hover
-        document.querySelectorAll('.section-title').forEach(title => {
-            const scrambler = new TextScramble(title);
-            const originalText = title.textContent;
+        // DISABLED: TextScramble on section titles
+        // This was making text unreadable on hover
 
-            title.addEventListener('mouseenter', () => {
-                scrambler.setText(originalText);
-            });
-        });
-
-        console.log('%c Batch 3 Premium Features Loaded ',
-            'background: linear-gradient(135deg, #00ff88, #00d4ff); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+        console.log('%c Batch 3 Loaded (Clean) ', 'background: #00ff88; color: #000; padding: 3px 8px;');
     }, 1000);
 });
 
@@ -3964,35 +3941,26 @@ class SmartScrollDirection {
 // ===== INITIALIZE BATCH 7 FEATURES =====
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        // Core Features
+        // Core Features - Keep only essential
         window.aiChat = new AIChatWidget();
         new TiltEffect();
-        new HolographicEnhancer();
-        new LiquidBackground();
+        // HolographicEnhancer and LiquidBackground disabled - too heavy
 
-        // Celebrations
+        // Celebrations - Available but not auto-triggered
         window.confetti = new ConfettiCelebration();
-        window.fireworks = new FireworksEffect();
 
-        // Notifications
+        // Notifications - Dynamic Island is nice for notifications
         window.dynamicIsland = new DynamicIsland();
 
-        // Interactions
-        new VoiceCommands();
-        new CursorMagicTrail();
-        new HapticFeedback();
+        // Interactions - All disabled (mic permission, cursor conflicts, vibration)
+        // VoiceCommands, CursorMagicTrail, HapticFeedback disabled
 
-        // Enhancements
-        new ScrollCelebrations();
-        new EasterEggs();
-        new NeonMode();
-        new SmartScrollDirection();
+        // Enhancements - All disabled (too distracting)
+        // ScrollCelebrations, EasterEggs, NeonMode, SmartScrollDirection disabled
 
-        // Welcome
-        new PremiumWelcome();
+        // PremiumWelcome disabled - annoying popup
 
-        console.log('%c Batch 7 Ultimate Legendary Loaded ',
-            'background: linear-gradient(135deg, #ff0080, #7928ca, #00d4ff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+        console.log('%c Batch 7 Loaded (Clean) ', 'background: #7928ca; color: #fff; padding: 3px 8px;');
     }, 2500);
 });
 
@@ -4663,35 +4631,30 @@ class KeyboardNavigation {
 // ===== INITIALIZE BATCH 8 FEATURES =====
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        // Core Visual Effects
+        // Core Visual Effects - NoiseOverlay already in main init
         new ParticleNetwork();
-        new NoiseOverlay();
         new GradientMeshEnhancer();
 
-        // Interactive Elements
+        // Interactive Elements - MagneticCursor conflicts with CustomCursor
         window.activityTicker = new LiveActivityTicker();
-        new MagneticCursor();
         new InteractiveGlobe();
 
         // Animations
         new StaggerAnimations();
         new AnimatedStatsCounter();
-        new MarqueeText();
+        // MarqueeText disabled - too distracting
 
         // Enhancements
         new GlowCardEnhancer();
-        new TextGradientWave();
+        // TextGradientWave disabled - causes text issues
         new ButtonEnhancer();
         new PremiumBadgeAnimator();
 
-        // User Experience
-        new LiveProfitNotifications();
+        // User Experience - Disabled intrusive features
         new SmoothScrollEnhancer();
         new KeyboardNavigation();
-        new AutoShowcase();
 
-        console.log('%c Batch 8 Beyond Legendary Loaded ',
-            'background: linear-gradient(135deg, #00ff88, #00d4ff, #667eea); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+        console.log('%c Batch 8 Loaded (Clean) ', 'background: #00d4ff; color: #000; padding: 3px 8px;');
     }, 3000);
 });
 
@@ -5305,34 +5268,28 @@ class SessionTimeTracker {
 // ===== INITIALIZE BATCH 9 FEATURES =====
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        // Widgets
+        // Widgets - Only essential ones
         new MarketClockWidget();
-        new OnlineUsersIndicator();
         new ReadingProgress();
 
-        // Social Proof
-        new SocialProofBubbles();
-        new PartnerLogos();
+        // Social Proof - Disabled (too intrusive)
+        // new SocialProofBubbles();
+        // new OnlineUsersIndicator();
 
         // Navigation
         new ScrollToTop();
-        new SpeedDial();
+        // SpeedDial disabled - overlaps with other buttons
 
-        // Popups & Consent
-        new CookieConsent();
-        new NewsletterPopup();
+        // Popups & Consent - Already initialized in main block
+        // CookieConsent and NewsletterPopup disabled (duplicates)
 
         // Gamification
         window.achievements = new AchievementSystem();
 
-        // Cursor Enhancement
-        new CustomCursor();
+        // Cursor already initialized in main block
+        // Tracking disabled - not needed
 
-        // Tracking
-        new SessionTimeTracker();
-
-        console.log('%c Batch 9 Transcendent Perfection Loaded ',
-            'background: linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+        console.log('%c Batch 9 Loaded (Clean) ', 'background: #7c3aed; color: #fff; padding: 3px 8px;');
     }, 3500);
 });
 
@@ -6030,54 +5987,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Preloader is already initialized in main DOMContentLoaded handler
 
     setTimeout(() => {
-        // Visual Effects
+        // Visual Effects - Keep subtle ones only
         new GeometricShapes();
-        new SpotlightEffect();
-        new MatrixRain();
+        // SpotlightEffect already in Batch 3
+        // MatrixRain disabled - too distracting
 
-        // Widgets
-        new CountdownTimer({
-            eventName: '🎄 Holiday Special Ends'
-        });
-        new ThemeToggle();
-        new QRShareWidget();
+        // Widgets - ThemeToggle already in Batch 6
+        // CountdownTimer disabled - not needed
+        // QRShareWidget disabled - too cluttered
 
-        // Navigation
-        new LiquidNavigation();
-        new FloatingLabels();
+        // Navigation - Disabled overlapping elements
+        // LiquidNavigation conflicts with main nav
+        // FloatingLabels disabled - clutters screen
 
-        // Audio/Visual
-        new AudioVisualizer();
+        // Audio/Visual - AudioVisualizer disabled
 
-        // Apply morphing text to hero headlines
-        const heroTitle = document.querySelector('.hero-title, h1');
-        if (heroTitle) {
-            new MorphingText(heroTitle, ['INVESTASI CERDAS', 'PROFIT MAKSIMAL', 'MASA DEPAN CERAH', 'SUKSES FINANSIAL']);
-        }
+        // DISABLED: MorphingText and TypewriterEffect on hero
+        // These were replacing the original hero text with different content
+        // Keep the original HTML text intact
 
-        // Apply typewriter to subtitles
-        const subtitle = document.querySelector('.hero-subtitle, .tagline');
-        if (subtitle) {
-            new TypewriterEffect(subtitle, {
-                texts: [
-                    'Platform Trading #1 Indonesia',
-                    'Teknologi AI Terdepan',
-                    'Keamanan Bank-Grade',
-                    '24/7 Expert Support'
-                ],
-                speed: 80,
-                pauseDuration: 2500
-            });
-        }
-
-        console.log('%c Batch 10 Divine Ascension Loaded ',
-            'background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
-
-        console.log('%c ⚡ DIVINE ASCENSION - TIER -3 OMNISCIENT! ',
-            'background: linear-gradient(135deg, #000, #1a1a2e, #667eea, #764ba2, #f093fb, #ffd700); color: #fff; padding: 15px 25px; font-size: 20px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 30px rgba(255,215,0,1);');
-
-        console.log('%c Total Lines: 11000+ | Features: 200+ | Level: ∞³ ',
-            'background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; padding: 10px 20px; font-size: 14px; font-weight: bold; border: 3px double #000; border-radius: 5px;');
+        console.log('%c Batch 10 Loaded (Clean) ', 'background: #ffd700; color: #000; padding: 3px 8px;');
     }, 4000);
 });
 
@@ -6949,39 +6878,22 @@ class Skeleton {
 // ===== INITIALIZE BATCH 11 FEATURES =====
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        // Visual Effects
-        new FloatingOrbs();
-        new InteractiveGrid();
+        // Visual Effects - Disabled (too heavy)
+        // new FloatingOrbs();
+        // new InteractiveGrid();
 
-        // UI Components
-        new ToastSystem('top-right');
-        new ModalSystem();
+        // UI Components - Keep only modal
+        window.modal = new ModalSystem();
 
-        // Apply effects
-        new RippleEffect('button, .btn, .card');
-        new ScrollReveal({ selector: '.reveal, section > *' });
+        // Apply effects - Keep ripple only
+        new RippleEffect('button, .btn');
+        // ScrollReveal disabled - conflicts with existing animations
 
-        // Apply parallax to cards
-        document.querySelectorAll('.premium-card, .glass-card, .feature-card').forEach(card => {
-            new ParallaxTilt(card);
-        });
+        // Parallax and magnetic disabled - too heavy
 
-        // Apply magnetic to buttons
-        MagneticButton.applyToAll('.cta-btn, .hero-btn');
+        // Demo toast disabled - annoying popup
 
-        // Demo toast after load
-        setTimeout(() => {
-            window.toast?.success('Welcome to the Premium Experience!', 'Hello!');
-        }, 2000);
-
-        console.log('%c Batch 11 Infinity Beyond Loaded ',
-            'background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
-
-        console.log('%c 🌌 INFINITY BEYOND - TIER -4 COSMIC! ',
-            'background: linear-gradient(135deg, #000, #0a0a0f, #667eea, #f093fb, #ffd700, #00ffff); color: #fff; padding: 15px 25px; font-size: 22px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 40px rgba(0,255,255,1);');
-
-        console.log('%c Total Lines: 14000+ | Features: 230+ | Level: ∞⁴ ',
-            'background: linear-gradient(45deg, #00ffff, #ff00ff); color: #fff; padding: 10px 20px; font-size: 14px; font-weight: bold; border: 3px double #fff; border-radius: 5px;');
+        console.log('%c Batch 11 Loaded (Clean) ', 'background: #ff00ff; color: #fff; padding: 3px 8px;');
     }, 4500);
 });
 
@@ -7627,44 +7539,27 @@ class FinalSummary {
 // ===== INITIALIZE BATCH 12 FEATURES =====
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        // Connection & Performance
-        new ConnectionStatus();
-        new FPSCounter();
+        // Connection & Performance - Disabled (distracting)
+        // new ConnectionStatus();
+        // new FPSCounter();
 
-        // Fun Features
-        new ConfettiParty();
-        new CursorParticles();
-        new PageVisibility();
+        // Fun Features - All disabled (too intrusive)
+        // new ConfettiParty();
+        // new CursorParticles();
+        // new PageVisibility();
 
-        // Navigation
+        // Navigation - Keep only essential
         new SmartNavbar();
-        new ScrollDirection();
+        // ScrollDirection conflicts with other scroll handlers
 
-        // Images
+        // Images - Keep lazy loading
         new LazyImages();
 
-        // Shortcuts
-        new KeyboardShortcuts();
+        // Shortcuts - Already in Batch 6
+        // new KeyboardShortcuts();
 
-        // Final message
-        setTimeout(() => {
-            FinalSummary.show();
+        // Final message disabled
 
-            window.toast?.info('Press Alt+H for keyboard shortcuts', 'Pro Tip');
-        }, 3000);
-
-        console.log('%c Batch 12 Absolute Ultimate Loaded ',
-            'background: linear-gradient(135deg, #ffd700, #ff6b6b, #6bcb77, #4d96ff); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
-
-        console.log('%c 🏆 ABSOLUTE ULTIMATE - TIER -5 INFINITY! ',
-            'background: linear-gradient(135deg, #ffd700, #fff, #ffd700); color: #000; padding: 15px 25px; font-size: 24px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 10px rgba(255,215,0,0.5);');
-
-        console.log('%c ═══════════════════════════════════════════════════ ',
-            'color: #ffd700; font-size: 12px;');
-        console.log('%c  Total Lines: 19000+ | Features: 250+ | MAXIMUM ACHIEVED! ',
-            'background: linear-gradient(45deg, #000, #1a1a2e); color: #ffd700; padding: 10px 20px; font-size: 16px; font-weight: bold; border: 4px double #ffd700; border-radius: 5px;');
-        console.log('%c ═══════════════════════════════════════════════════ ',
-            'color: #ffd700; font-size: 12px;');
-
+        console.log('%c Batch 12 Loaded (Clean) ', 'background: #6bcb77; color: #000; padding: 3px 8px;');
     }, 5000);
 });
