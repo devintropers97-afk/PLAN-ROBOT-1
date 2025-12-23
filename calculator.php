@@ -25,11 +25,11 @@ require_once 'includes/header.php';
                             <div class="btn-group w-100" role="group">
                                 <input type="radio" class="btn-check" name="calcMode" id="modeStrategy" value="strategy" checked>
                                 <label class="btn btn-outline-primary" for="modeStrategy">
-                                    <i class="fas fa-chess me-2"></i>Berdasarkan Strategi
+                                    <i class="fas fa-chess me-2"></i><?php _e('calc_mode_strategy'); ?>
                                 </label>
                                 <input type="radio" class="btn-check" name="calcMode" id="modeManual" value="manual">
                                 <label class="btn btn-outline-primary" for="modeManual">
-                                    <i class="fas fa-edit me-2"></i>Target Manual
+                                    <i class="fas fa-edit me-2"></i><?php _e('calc_mode_manual'); ?>
                                 </label>
                             </div>
                         </div>
@@ -43,7 +43,7 @@ require_once 'includes/header.php';
                                         <span class="input-group-text">$</span>
                                         <input type="number" class="form-control" id="initialCapital" value="100" min="10" step="10">
                                     </div>
-                                    <small class="text-muted">Minimum $10</small>
+                                    <small class="text-muted"><?php _e('calc_min_capital'); ?></small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_trade_amount'); ?></label>
@@ -51,7 +51,7 @@ require_once 'includes/header.php';
                                         <span class="input-group-text">$</span>
                                         <input type="number" class="form-control" id="tradeAmount" value="5" min="1" step="1">
                                     </div>
-                                    <small class="text-muted">Jumlah per trade (disarankan 5% dari modal)</small>
+                                    <small class="text-muted"><?php _e('calc_trade_hint'); ?></small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_win_rate'); ?></label>
@@ -76,12 +76,12 @@ require_once 'includes/header.php';
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_trades_per_day'); ?></label>
                                     <input type="number" class="form-control" id="tradesPerDay" value="10" min="1" max="50">
-                                    <small class="text-muted">Rata-rata jumlah trade harian</small>
+                                    <small class="text-muted"><?php _e('calc_trades_hint'); ?></small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label"><?php _e('calc_trading_days'); ?></label>
                                     <input type="number" class="form-control" id="tradingDays" value="22" min="1" max="30">
-                                    <small class="text-muted">Senin-Jumat = 22 hari</small>
+                                    <small class="text-muted"><?php _e('calc_days_hint'); ?></small>
                                 </div>
                             </div>
                         </div>
@@ -97,15 +97,15 @@ require_once 'includes/header.php';
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Target Profit Harian (%)</label>
+                                    <label class="form-label"><?php _e('calc_daily_target'); ?></label>
                                     <div class="input-group">
                                         <input type="number" class="form-control" id="dailyTarget" value="5" min="0.5" max="20" step="0.5">
                                         <span class="input-group-text">%</span>
                                     </div>
-                                    <small class="text-muted">Realistis: 3-10% per hari</small>
+                                    <small class="text-muted"><?php _e('calc_daily_target_hint'); ?></small>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Hari Trading per Bulan</label>
+                                    <label class="form-label"><?php _e('calc_trading_days'); ?></label>
                                     <input type="number" class="form-control" id="manualTradingDays" value="22" min="1" max="30">
                                 </div>
                             </div>
@@ -234,10 +234,10 @@ require_once 'includes/header.php';
                             <table class="table table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Strategi</th>
-                                        <th>Win Rate</th>
-                                        <th>Tier</th>
-                                        <th>Estimasi Profit/Bulan*</th>
+                                        <th><?php _e('strat_col_strategy'); ?></th>
+                                        <th><?php _e('strat_col_winrate'); ?></th>
+                                        <th><?php _e('strat_col_package'); ?></th>
+                                        <th><?php _e('calc_est_profit_month'); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -280,7 +280,7 @@ require_once 'includes/header.php';
                                 </tbody>
                             </table>
                         </div>
-                        <small class="text-muted">*Estimasi berdasarkan parameter yang Anda masukkan</small>
+                        <small class="text-muted"><?php _e('calc_est_note'); ?></small>
                     </div>
                 </div>
 

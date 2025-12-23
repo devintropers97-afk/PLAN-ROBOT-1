@@ -269,6 +269,16 @@ return [
         'Trading mengandung risiko. Hanya gunakan dana yang Anda siap untuk kehilangan.',
         'Mode compound mengasumsikan reinvestasi penuh, yang mungkin tidak realistis.'
     ],
+    'calc_mode_strategy' => 'Berdasarkan Strategi',
+    'calc_mode_manual' => 'Target Manual',
+    'calc_min_capital' => 'Minimum $10',
+    'calc_trade_hint' => 'Jumlah per trade (disarankan 5% dari modal)',
+    'calc_trades_hint' => 'Rata-rata jumlah trade harian',
+    'calc_days_hint' => 'Senin-Jumat = 22 hari',
+    'calc_daily_target' => 'Target Profit Harian (%)',
+    'calc_daily_target_hint' => 'Realistis: 3-10% per hari',
+    'calc_est_profit_month' => 'Estimasi Profit/Bulan*',
+    'calc_est_note' => '*Estimasi berdasarkan parameter yang Anda masukkan',
 
     // Strategies Page
     'strat_title' => '10 Strategi Trading Powerful',

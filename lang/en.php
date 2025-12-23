@@ -268,6 +268,16 @@ return [
         'Trading involves risk. Only use funds you can afford to lose.',
         'Compound mode assumes full reinvestment, which may not be realistic.'
     ],
+    'calc_mode_strategy' => 'Strategy-Based',
+    'calc_mode_manual' => 'Manual Target',
+    'calc_min_capital' => 'Minimum $10',
+    'calc_trade_hint' => 'Amount per trade (recommended 5% of capital)',
+    'calc_trades_hint' => 'Average number of daily trades',
+    'calc_days_hint' => 'Monday-Friday = 22 days',
+    'calc_daily_target' => 'Daily Profit Target (%)',
+    'calc_daily_target_hint' => 'Realistic: 3-10% per day',
+    'calc_est_profit_month' => 'Est. Profit/Month*',
+    'calc_est_note' => '*Estimation based on your input parameters',
 
     // Strategies Page
     'strat_title' => '10 Powerful Trading Strategies',
