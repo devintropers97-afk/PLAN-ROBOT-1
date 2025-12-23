@@ -6288,60 +6288,8 @@ class MatrixRain {
     }
 }
 
-// ===== 13. PREMIUM PRELOADER =====
-class PremiumPreloader {
-    constructor() {
-        this.preloader = null;
-        this.progress = 0;
-
-        this.init();
-    }
-
-    init() {
-        this.preloader = document.createElement('div');
-        this.preloader.className = 'premium-preloader';
-        this.preloader.innerHTML = `
-            <div class="preloader-logo">🚀</div>
-            <div class="preloader-spinner"></div>
-            <div class="preloader-text">Loading Excellence...</div>
-            <div class="preloader-progress">
-                <div class="preloader-progress-bar"></div>
-            </div>
-        `;
-
-        document.body.appendChild(this.preloader);
-
-        // Simulate loading
-        this.simulateLoading();
-    }
-
-    simulateLoading() {
-        const progressBar = this.preloader.querySelector('.preloader-progress-bar');
-        const texts = ['Loading Excellence...', 'Preparing Features...', 'Almost Ready...', 'Launching...'];
-        const textEl = this.preloader.querySelector('.preloader-text');
-
-        const interval = setInterval(() => {
-            this.progress += Math.random() * 15 + 5;
-
-            if (this.progress >= 100) {
-                this.progress = 100;
-                progressBar.style.width = '100%';
-                textEl.textContent = 'Ready!';
-                clearInterval(interval);
-
-                setTimeout(() => this.hide(), 500);
-            } else {
-                progressBar.style.width = this.progress + '%';
-                textEl.textContent = texts[Math.floor(this.progress / 25)];
-            }
-        }, 200);
-    }
-
-    hide() {
-        this.preloader.classList.add('hidden');
-        setTimeout(() => this.preloader.remove(), 500);
-    }
-}
+// ===== 13. PREMIUM PRELOADER (REMOVED - Using original at top of file) =====
+// Duplicate class removed to prevent infinite loading issue
 
 // ===== 14. FLOATING ACTION LABELS =====
 class FloatingLabels {
@@ -6375,8 +6323,7 @@ class FloatingLabels {
 
 // ===== INITIALIZE BATCH 10 FEATURES =====
 document.addEventListener('DOMContentLoaded', () => {
-    // Show preloader first
-    new PremiumPreloader();
+    // Preloader is already initialized in main DOMContentLoaded handler
 
     setTimeout(() => {
         // Visual Effects
