@@ -2,7 +2,7 @@
 /**
  * User Robot Settings Page
  */
-$page_title = 'Robot Settings';
+$page_title = __('settings_title') ?: 'Robot Settings';
 require_once 'dashboard/includes/dashboard-header.php';
 
 $user = getUserById($_SESSION['user_id']);
@@ -18,7 +18,7 @@ $messageType = '';
 // Handle settings update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $message = 'Invalid request. Please try again.';
+        $message = __('settings_invalid_request');
         $messageType = 'danger';
     } else {
         $action = $_POST['action'] ?? 'save_settings';
@@ -42,19 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $validStrategies = array_intersect($selectedStrategies, $allowedIds);
 
             if (count($validStrategies) !== count($selectedStrategies)) {
-                $message = 'Some selected strategies are not available in your package.';
+                $message = __('settings_strategy_warning');
                 $messageType = 'warning';
             }
 
             $data['active_strategies'] = json_encode($validStrategies);
 
             if (updateRobotSettings($_SESSION['user_id'], $data)) {
-                $message = 'Settings saved successfully!';
+                $message = __('settings_saved');
                 $messageType = 'success';
                 $settings = getRobotSettings($_SESSION['user_id']);
                 logActivity($_SESSION['user_id'], 'settings_updated', 'Robot settings updated');
             } else {
-                $message = 'Failed to save settings.';
+                $message = __('settings_save_failed');
                 $messageType = 'danger';
             }
         }
@@ -68,33 +68,38 @@ $activeStrategies = json_decode($settings['active_strategies'] ?? '[]', true) ?:
 $markets = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'EUR/GBP', 'USD/CAD', 'EUR/JPY', 'NZD/USD'];
 
 // Available timeframes
-$timeframes = ['5M' => '5 Menit', '15M' => '15 Menit', '30M' => '30 Menit', '1H' => '1 Jam'];
+$timeframes = [
+    '5M' => __('settings_5min') ?: '5 Minutes',
+    '15M' => __('settings_15min') ?: '15 Minutes',
+    '30M' => __('settings_30min') ?: '30 Minutes',
+    '1H' => __('settings_1hour') ?: '1 Hour'
+];
 
 // Risk levels
 $riskLevels = [
-    'low' => ['name' => 'Low Risk', 'desc' => 'Conservative, lower returns', 'color' => 'success'],
-    'medium' => ['name' => 'Medium Risk', 'desc' => 'Balanced approach', 'color' => 'warning'],
-    'high' => ['name' => 'High Risk', 'desc' => 'Aggressive, higher returns', 'color' => 'danger']
+    'low' => ['name' => __('settings_risk_low') ?: 'Low Risk', 'desc' => __('settings_risk_low_desc') ?: 'Conservative, lower returns', 'color' => 'success'],
+    'medium' => ['name' => __('settings_risk_medium') ?: 'Medium Risk', 'desc' => __('settings_risk_medium_desc') ?: 'Balanced approach', 'color' => 'warning'],
+    'high' => ['name' => __('settings_risk_high') ?: 'High Risk', 'desc' => __('settings_risk_high_desc') ?: 'Aggressive, higher returns', 'color' => 'danger']
 ];
 
 // Schedule modes
 $scheduleModes = [
-    'auto_24h' => ['name' => '24 Jam Otomatis', 'desc' => 'Robot aktif sepanjang hari', 'icon' => 'fa-clock'],
-    'best_hours' => ['name' => 'Jam Terbaik', 'desc' => '14:00 - 22:00 WIB (London & NY session)', 'icon' => 'fa-star'],
-    'custom_single' => ['name' => 'Custom Single Session', 'desc' => 'Atur jam mulai dan selesai sendiri', 'icon' => 'fa-edit'],
-    'multi_session' => ['name' => 'Multi-Session', 'desc' => 'Atur beberapa sesi trading dalam sehari', 'icon' => 'fa-layer-group'],
-    'per_day' => ['name' => 'Per Hari Berbeda', 'desc' => 'Jadwal berbeda untuk setiap hari', 'icon' => 'fa-calendar-week']
+    'auto_24h' => ['name' => __('settings_schedule_24h') ?: '24 Hours Automatic', 'desc' => __('settings_schedule_24h_desc') ?: 'Robot active all day', 'icon' => 'fa-clock'],
+    'best_hours' => ['name' => __('settings_schedule_best') ?: 'Best Hours', 'desc' => __('settings_schedule_best_desc') ?: '14:00 - 22:00 WIB (London & NY session)', 'icon' => 'fa-star'],
+    'custom_single' => ['name' => __('settings_schedule_custom') ?: 'Custom Single Session', 'desc' => __('settings_schedule_custom_desc') ?: 'Set your own start and end time', 'icon' => 'fa-edit'],
+    'multi_session' => ['name' => __('settings_schedule_multi') ?: 'Multi-Session', 'desc' => __('settings_schedule_multi_desc') ?: 'Set multiple trading sessions per day', 'icon' => 'fa-layer-group'],
+    'per_day' => ['name' => __('settings_schedule_daily') ?: 'Different Per Day', 'desc' => __('settings_schedule_daily_desc') ?: 'Different schedule for each day', 'icon' => 'fa-calendar-week']
 ];
 ?>
 
 <!-- Page Header -->
 <div class="db-page-header">
     <div>
-        <h1 class="db-page-title"><i class="fas fa-cog"></i> Robot Settings</h1>
-        <p class="db-page-subtitle">Konfigurasi pengaturan robot trading Anda</p>
+        <h1 class="db-page-title"><i class="fas fa-cog"></i> <?php _e('settings_title'); ?></h1>
+        <p class="db-page-subtitle"><?php _e('settings_subtitle'); ?></p>
     </div>
     <a href="dashboard.php" class="db-btn db-btn-outline">
-        <i class="fas fa-arrow-left"></i> Dashboard
+        <i class="fas fa-arrow-left"></i> <?php _e('nav_dashboard'); ?>
     </a>
 </div>
 
@@ -116,12 +121,12 @@ $scheduleModes = [
             <!-- Strategy Selection -->
             <div class="db-card mb-4 db-fade-in">
                 <div class="db-card-header">
-                    <h5 class="db-card-title"><i class="fas fa-chess"></i> Pilih Strategi</h5>
+                    <h5 class="db-card-title"><i class="fas fa-chess"></i> <?php _e('settings_select_strategy'); ?></h5>
                     <span class="db-badge <?php echo strtolower($package); ?>"><?php echo strtoupper($package); ?></span>
                 </div>
                 <div class="db-card-body">
                     <p class="text-muted mb-3">
-                        Package <?php echo $packageInfo['name']; ?>: <?php echo $packageInfo['strategies']; ?> strategi tersedia
+                        <?php echo str_replace([':package', ':count'], [$packageInfo['name'], $packageInfo['strategies']], __('settings_strategies_available')); ?>
                     </p>
 
                     <div class="row g-3">
@@ -163,7 +168,7 @@ $scheduleModes = [
                     <?php if (count($availableStrategies) < count($allStrategies)): ?>
                     <div class="mt-3 text-center">
                         <a href="pricing.php" class="db-btn db-btn-sm db-btn-outline">
-                            <i class="fas fa-crown"></i> Upgrade untuk lebih banyak strategi
+                            <i class="fas fa-crown"></i> <?php _e('settings_upgrade_strategies'); ?>
                         </a>
                     </div>
                     <?php endif; ?>
@@ -173,13 +178,13 @@ $scheduleModes = [
             <!-- Trading Parameters -->
             <div class="db-card mb-4 db-fade-in">
                 <div class="db-card-header">
-                    <h5 class="db-card-title"><i class="fas fa-sliders-h"></i> Parameter Trading</h5>
+                    <h5 class="db-card-title"><i class="fas fa-sliders-h"></i> <?php _e('settings_trading_parameters'); ?></h5>
                 </div>
                 <div class="db-card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Market</label>
+                                <label class="db-form-label"><?php _e('settings_market'); ?></label>
                                 <select name="market" class="db-form-control db-form-select">
                                     <?php foreach ($markets as $market): ?>
                                     <option value="<?php echo $market; ?>" <?php echo ($settings['market'] ?? '') === $market ? 'selected' : ''; ?>>
@@ -191,7 +196,7 @@ $scheduleModes = [
                         </div>
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Timeframe</label>
+                                <label class="db-form-label"><?php _e('settings_timeframe'); ?></label>
                                 <select name="timeframe" class="db-form-control db-form-select">
                                     <?php foreach ($timeframes as $tf => $name): ?>
                                     <option value="<?php echo $tf; ?>" <?php echo ($settings['timeframe'] ?? '') === $tf ? 'selected' : ''; ?>>
@@ -203,20 +208,20 @@ $scheduleModes = [
                         </div>
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Jumlah per Trade (Rp)</label>
+                                <label class="db-form-label"><?php _e('settings_trade_amount'); ?></label>
                                 <input type="number" name="trade_amount" class="db-form-control"
                                        value="<?php echo $settings['trade_amount'] ?? 10000; ?>"
                                        min="10000" max="5000000" step="5000">
-                                <small class="text-muted">Min: Rp10.000 | Max: Rp5.000.000</small>
+                                <small class="text-muted"><?php _e('settings_trade_amount_hint'); ?></small>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="db-form-group">
-                                <label class="db-form-label">Batas Trade Harian</label>
+                                <label class="db-form-label"><?php _e('settings_daily_limit'); ?></label>
                                 <input type="number" name="daily_limit" class="db-form-control"
                                        value="<?php echo $settings['daily_limit'] ?? 10; ?>"
                                        min="1" max="100">
-                                <small class="text-muted">Maksimum trade per hari</small>
+                                <small class="text-muted"><?php _e('settings_daily_limit_hint'); ?></small>
                             </div>
                         </div>
                     </div>
@@ -226,13 +231,13 @@ $scheduleModes = [
             <!-- Risk Management -->
             <div class="db-card mb-4 db-fade-in">
                 <div class="db-card-header">
-                    <h5 class="db-card-title"><i class="fas fa-shield-alt"></i> Risk Management</h5>
+                    <h5 class="db-card-title"><i class="fas fa-shield-alt"></i> <?php _e('settings_risk_management'); ?></h5>
                 </div>
                 <div class="db-card-body">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <div class="db-form-group">
-                                <label class="db-form-label">Risk Level</label>
+                                <label class="db-form-label"><?php _e('settings_risk_level'); ?></label>
                                 <select name="risk_level" class="db-form-control db-form-select">
                                     <?php foreach ($riskLevels as $level => $info): ?>
                                     <option value="<?php echo $level; ?>" <?php echo ($settings['risk_level'] ?? 'medium') === $level ? 'selected' : ''; ?>>
@@ -244,27 +249,27 @@ $scheduleModes = [
                         </div>
                         <div class="col-md-4">
                             <div class="db-form-group">
-                                <label class="db-form-label">Take Profit ($)</label>
+                                <label class="db-form-label"><?php _e('settings_take_profit'); ?></label>
                                 <input type="number" name="take_profit" class="db-form-control"
                                        value="<?php echo $settings['take_profit_target'] ?? 50; ?>"
                                        min="0" step="5">
-                                <small class="text-muted">Auto-pause jika profit tercapai</small>
+                                <small class="text-muted"><?php _e('settings_take_profit_hint'); ?></small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="db-form-group">
-                                <label class="db-form-label">Max Loss ($)</label>
+                                <label class="db-form-label"><?php _e('settings_max_loss'); ?></label>
                                 <input type="number" name="max_loss" class="db-form-control"
                                        value="<?php echo $settings['max_loss_limit'] ?? 25; ?>"
                                        min="0" step="5">
-                                <small class="text-muted">Auto-pause jika loss tercapai</small>
+                                <small class="text-muted"><?php _e('settings_max_loss_hint'); ?></small>
                             </div>
                         </div>
                     </div>
 
                     <div class="alert alert-info mt-3 mb-0">
                         <i class="fas fa-info-circle"></i>
-                        <strong>Auto-Pause System:</strong> Robot akan otomatis berhenti jika target profit atau batas loss harian tercapai untuk melindungi modal Anda.
+                        <?php _e('settings_auto_pause_info'); ?>
                     </div>
                 </div>
             </div>
@@ -275,7 +280,7 @@ $scheduleModes = [
             <!-- Schedule Settings -->
             <div class="db-card mb-4 db-fade-in">
                 <div class="db-card-header">
-                    <h5 class="db-card-title"><i class="fas fa-clock"></i> Jadwal Trading</h5>
+                    <h5 class="db-card-title"><i class="fas fa-clock"></i> <?php _e('settings_schedule'); ?></h5>
                 </div>
                 <div class="db-card-body">
                     <?php foreach ($scheduleModes as $mode => $info): ?>
@@ -294,7 +299,7 @@ $scheduleModes = [
 
                     <div class="alert alert-warning mt-3 mb-0">
                         <i class="fas fa-moon"></i>
-                        <strong>Weekend Auto-Off:</strong> Robot otomatis nonaktif di hari Sabtu & Minggu karena market tutup.
+                        <?php _e('settings_weekend_auto_off'); ?>
                     </div>
                 </div>
             </div>
@@ -302,32 +307,32 @@ $scheduleModes = [
             <!-- Current Settings Summary -->
             <div class="db-card mb-4 db-fade-in">
                 <div class="db-card-header">
-                    <h5 class="db-card-title"><i class="fas fa-list-check"></i> Ringkasan</h5>
+                    <h5 class="db-card-title"><i class="fas fa-list-check"></i> <?php _e('settings_summary'); ?></h5>
                 </div>
                 <div class="db-card-body">
                     <ul class="settings-summary">
                         <li>
-                            <span class="text-muted">Package</span>
+                            <span class="text-muted"><?php _e('settings_package'); ?></span>
                             <span class="db-badge <?php echo strtolower($package); ?>"><?php echo strtoupper($package); ?></span>
                         </li>
                         <li>
-                            <span class="text-muted">Strategi Aktif</span>
+                            <span class="text-muted"><?php _e('settings_active_strategies'); ?></span>
                             <strong><?php echo count($activeStrategies); ?></strong>
                         </li>
                         <li>
-                            <span class="text-muted">Market</span>
+                            <span class="text-muted"><?php _e('settings_market'); ?></span>
                             <strong><?php echo $settings['market'] ?? 'EUR/USD'; ?></strong>
                         </li>
                         <li>
-                            <span class="text-muted">Timeframe</span>
+                            <span class="text-muted"><?php _e('settings_timeframe'); ?></span>
                             <strong><?php echo $settings['timeframe'] ?? '15M'; ?></strong>
                         </li>
                         <li>
-                            <span class="text-muted">Trade Amount</span>
+                            <span class="text-muted"><?php _e('settings_trade_amount'); ?></span>
                             <strong>Rp<?php echo number_format($settings['trade_amount'] ?? 10000, 0, ',', '.'); ?></strong>
                         </li>
                         <li>
-                            <span class="text-muted">Daily Limit</span>
+                            <span class="text-muted"><?php _e('settings_daily_limit'); ?></span>
                             <strong><?php echo $settings['daily_limit'] ?? 10; ?> trades</strong>
                         </li>
                     </ul>
@@ -336,7 +341,7 @@ $scheduleModes = [
 
             <!-- Save Button -->
             <button type="submit" class="db-btn db-btn-primary w-100 db-fade-in">
-                <i class="fas fa-save"></i> Simpan Pengaturan
+                <i class="fas fa-save"></i> <?php _e('settings_save_settings'); ?>
             </button>
         </div>
     </div>
