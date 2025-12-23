@@ -54,16 +54,14 @@ require_once 'includes/header.php';
                                     <small class="text-muted"><?php _e('calc_trade_hint'); ?></small>
                                 </div>
 
-                                <!-- Market Selection -->
+                                <!-- Market Selection (Robot hanya support 2 market) -->
                                 <div class="col-md-6">
                                     <label class="form-label"><i class="fas fa-chart-line me-1"></i> Market</label>
                                     <select class="form-select" id="marketSelect">
                                         <option value="EUR/USD" selected>EUR/USD</option>
                                         <option value="GBP/USD">GBP/USD</option>
-                                        <option value="USD/JPY">USD/JPY</option>
-                                        <option value="AUD/USD">AUD/USD</option>
-                                        <option value="EUR/GBP">EUR/GBP</option>
                                     </select>
+                                    <small class="text-muted">Market yang didukung robot</small>
                                 </div>
 
                                 <!-- OlympTrade Account Level with Payout Rate -->
