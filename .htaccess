@@ -1,0 +1,38 @@
+# ZYN Trade System - Root .htaccess
+DirectoryIndex index.php
+
+# Disable directory listing
+Options -Indexes
+
+# Enable rewrite engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # If directory, serve index.php
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^(.*)$ $1/index.php [L]
+
+    # Handle front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Protect sensitive files
+<FilesMatch "^(\.htaccess|\.env|config\.php)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Protect includes directory
+<IfModule mod_rewrite.c>
+    RewriteRule ^includes/ - [F,L]
+</IfModule>

@@ -1,0 +1,14 @@
+# Admin Panel .htaccess
+DirectoryIndex index.php
+
+# Disable directory listing
+Options -Indexes
+
+# Allow access to admin folder
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If directory, serve index.php
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^(.*)$ $1/index.php [L]
+</IfModule>

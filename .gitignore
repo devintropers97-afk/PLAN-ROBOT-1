@@ -1,0 +1,44 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Cache
+cache/
+tmp/
+
+# Node modules
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploads (keep directory but ignore content)
+uploads/*
+!uploads/.htaccess
+!uploads/.gitkeep
+!uploads/payments/.gitkeep
+
+# Downloads
+downloads/*
+!downloads/README.txt
+
+# Robot engine data
+robot-engine/data/*
+!robot-engine/data/.gitkeep
+
+# Backup files
+*.bak
+*.backup
+*.sql.gz

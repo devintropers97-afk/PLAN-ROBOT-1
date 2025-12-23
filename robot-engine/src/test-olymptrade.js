@@ -1,0 +1,952 @@
+/**
+ * =============================================
+ * ZYN TRADE ROBOT - OLYMPTRADE DIRECT TEST
+ * =============================================
+ *
+ * Script untuk test koneksi langsung ke OlympTrade
+ * Tanpa perlu database - langsung test login & trading
+ *
+ * Usage:
+ *   node src/test-olymptrade.js --email=your@email.com --password=yourpass
+ *   node src/test-olymptrade.js --email=your@email.com --password=yourpass --demo
+ *   node src/test-olymptrade.js --email=your@email.com --password=yourpass --real --trade
+ *
+ * Options:
+ *   --email     : OlympTrade email
+ *   --password  : OlympTrade password
+ *   --demo      : Use demo account (default)
+ *   --real      : Use real account
+ *   --trade     : Execute test trade (CALL with minimum amount)
+ *   --visible   : Show browser window (not headless)
+ *   --screenshot: Take screenshots at each step
+ */
+
+require('dotenv').config();
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+const path = require('path');
+
+// Parse command line arguments
+function parseArgs() {
+    const args = {
+        email: process.env.OLYMPTRADE_EMAIL || '',
+        password: process.env.OLYMPTRADE_PASSWORD || '',
+        isDemo: true,
+        executeTrade: false,
+        visible: false,
+        screenshot: true
+    };
+
+    process.argv.forEach(arg => {
+        if (arg.startsWith('--email=')) {
+            args.email = arg.split('=')[1];
+        } else if (arg.startsWith('--password=')) {
+            args.password = arg.split('=')[1];
+        } else if (arg === '--real') {
+            args.isDemo = false;
+        } else if (arg === '--demo') {
+            args.isDemo = true;
+        } else if (arg === '--trade') {
+            args.executeTrade = true;
+        } else if (arg === '--visible') {
+            args.visible = true;
+        } else if (arg === '--no-screenshot') {
+            args.screenshot = false;
+        }
+    });
+
+    return args;
+}
+
+// Create screenshots directory
+function ensureScreenshotDir() {
+    const dir = path.join(__dirname, '../logs/screenshots');
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    return dir;
+}
+
+// Sleep utility
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Random delay for human-like typing
+const randomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+class OlympTradeTest {
+    constructor(args) {
+        this.args = args;
+        this.browser = null;
+        this.page = null;
+        this.screenshotDir = ensureScreenshotDir();
+        this.stepCount = 0;
+        this.hasActiveSession = false;
+    }
+
+    log(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const prefix = {
+            'info': '   ',
+            'success': ' ✅',
+            'error': ' ❌',
+            'warn': ' ⚠️',
+            'step': ' ▶️'
+        }[type] || '   ';
+        console.log(`${prefix} [${timestamp}] ${message}`);
+    }
+
+    async screenshot(name) {
+        if (!this.args.screenshot || !this.page) return null;
+        try {
+            this.stepCount++;
+            const filename = path.join(this.screenshotDir, `${this.stepCount.toString().padStart(2, '0')}_${name}_${Date.now()}.png`);
+            await this.page.screenshot({ path: filename, fullPage: false });
+            this.log(`Screenshot: ${path.basename(filename)}`, 'info');
+            return filename;
+        } catch (e) {
+            this.log(`Screenshot failed: ${e.message}`, 'warn');
+            return null;
+        }
+    }
+
+    async initialize() {
+        this.log('Launching browser...', 'step');
+
+        // Session directory for persistent login
+        const sessionDir = path.join(__dirname, '../sessions/olymptrade');
+        if (!fs.existsSync(sessionDir)) {
+            fs.mkdirSync(sessionDir, { recursive: true });
+        }
+        this.log(`Session directory: ${sessionDir}`, 'info');
+
+        const browserOptions = {
+            headless: this.args.visible ? false : 'new',
+            userDataDir: sessionDir, // Persist cookies & session
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu',
+                '--window-size=1920,1080',
+                '--disable-web-security',
+                '--disable-features=IsolateOrigins,site-per-process'
+            ],
+            defaultViewport: { width: 1920, height: 1080 }
+        };
+
+        // Check for custom executable path
+        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+            browserOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+        }
+
+        this.browser = await puppeteer.launch(browserOptions);
+        this.page = await this.browser.newPage();
+
+        // Set realistic user agent
+        await this.page.setUserAgent(
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        );
+
+        // Enable console log from page
+        this.page.on('console', msg => {
+            if (msg.type() === 'error') {
+                this.log(`Browser console error: ${msg.text()}`, 'warn');
+            }
+        });
+
+        this.log('Browser launched successfully', 'success');
+        return true;
+    }
+
+    async navigateToOlympTrade() {
+        this.log('Navigating to OlympTrade platform...', 'step');
+
+        try {
+            // First try going to platform directly (in case we have active session)
+            this.log('Checking for existing session...', 'info');
+
+            await this.page.goto('https://olymptrade.com/platform', {
+                waitUntil: 'domcontentloaded',
+                timeout: 60000
+            });
+
+            await sleep(3000);
+
+            // Check if we're on the platform (logged in)
+            const currentUrl = this.page.url();
+            if (currentUrl.includes('platform') || currentUrl.includes('trading')) {
+                this.log('Active session found! Already logged in.', 'success');
+                this.hasActiveSession = true;
+                await this.screenshot('01_active_session');
+                return true;
+            }
+
+            // No active session, go to login page
+            this.log('No active session, loading login page...', 'info');
+            this.hasActiveSession = false;
+
+            await this.page.goto('https://olymptrade.com/login', {
+                waitUntil: 'domcontentloaded',
+                timeout: 90000
+            });
+
+            this.log('DOM loaded, waiting for page to settle...', 'info');
+
+            // Wait additional time for JavaScript to execute
+            await sleep(5000);
+            await this.screenshot('01_login_page');
+
+            // Check if geo-blocked
+            const pageContent = await this.page.evaluate(() => document.body.innerText.toLowerCase());
+            if (pageContent.includes('registration unavailable') ||
+                pageContent.includes('not available for clients from your region') ||
+                pageContent.includes('unavailable in your region')) {
+                throw new Error('OlympTrade is geo-blocked from this IP. Try using a VPN.');
+            }
+
+            const title = await this.page.title();
+            this.log(`Page loaded: ${title}`, 'success');
+
+            return true;
+        } catch (error) {
+            this.log(`Navigation failed: ${error.message}`, 'error');
+            await this.screenshot('error_navigation');
+            return false;
+        }
+    }
+
+    async checkIfLoggedIn() {
+        this.log('Checking if already logged in...', 'step');
+
+        try {
+            // Look for trading buttons which indicate logged in state
+            const selectors = [
+                '.btn-call',
+                '.call-button',
+                '[data-qa="call-btn"]',
+                'button.call',
+                '.trading-panel',
+                '.deal-button--call',
+                '.deal-button--put'
+            ];
+
+            for (const selector of selectors) {
+                const element = await this.page.$(selector);
+                if (element) {
+                    this.log('Already logged in - trading panel found', 'success');
+                    return true;
+                }
+            }
+
+            return false;
+        } catch {
+            return false;
+        }
+    }
+
+    async login() {
+        this.log(`Attempting login with: ${this.args.email}`, 'step');
+
+        try {
+            await sleep(2000);
+
+            const currentUrl = this.page.url();
+            this.log(`Current URL: ${currentUrl}`, 'info');
+
+            // Take screenshot to see current state
+            await this.screenshot('before_login_click');
+
+            // Debug: Log all buttons on page
+            const allButtons = await this.page.evaluate(() => {
+                const btns = document.querySelectorAll('button, a, [role="tab"], [class*="tab"]');
+                return Array.from(btns).slice(0, 20).map(b => ({
+                    tag: b.tagName,
+                    text: b.textContent.trim().substring(0, 50),
+                    class: b.className.substring(0, 50)
+                }));
+            });
+            this.log(`Found elements: ${JSON.stringify(allButtons.slice(0, 5))}`, 'info');
+
+            // Click "Masuk" tab (Login tab on left) - try multiple methods
+            this.log('Clicking Masuk (Login) tab...', 'info');
+
+            // Method 1: Click by text content
+            let clicked = await this.page.evaluate(() => {
+                // Try buttons first
+                const buttons = document.querySelectorAll('button, a, [role="tab"], span, div');
+                for (const btn of buttons) {
+                    const text = btn.textContent.trim().toLowerCase();
+                    if (text === 'masuk' || text === 'login' || text === 'sign in' || text === 'log in') {
+                        btn.click();
+                        return 'clicked: ' + text;
+                    }
+                }
+                return null;
+            });
+
+            if (clicked) {
+                this.log(`Tab clicked: ${clicked}`, 'success');
+            } else {
+                this.log('Could not find login tab by text', 'warn');
+            }
+
+            // Wait for login form to appear
+            this.log('Waiting for login form...', 'info');
+            await sleep(3000);
+
+            await this.screenshot('after_tab_click');
+
+            // Debug: Log all inputs on page
+            const allInputs = await this.page.evaluate(() => {
+                const inputs = document.querySelectorAll('input');
+                return Array.from(inputs).map(i => ({
+                    type: i.type,
+                    name: i.name,
+                    placeholder: i.placeholder,
+                    visible: i.offsetParent !== null,
+                    class: i.className.substring(0, 30)
+                }));
+            });
+            this.log(`Found inputs: ${JSON.stringify(allInputs)}`, 'info');
+
+            // Find email input - try multiple selectors
+            let emailInput = null;
+            const emailSelectors = [
+                'input[type="email"]',
+                'input[name="email"]',
+                'input[placeholder*="email" i]',
+                'input[placeholder*="E-mail" i]',
+                'input[placeholder*="почт" i]',
+                'input[autocomplete="email"]',
+                'input[autocomplete="username"]',
+                'input[type="text"]',
+                'input:not([type="password"]):not([type="hidden"]):not([type="checkbox"])'
+            ];
+
+            for (const selector of emailSelectors) {
+                try {
+                    const inputs = await this.page.$$(selector);
+                    for (const input of inputs) {
+                        const isVisible = await this.page.evaluate(el => {
+                            const rect = el.getBoundingClientRect();
+                            return rect.width > 0 && rect.height > 0 && el.offsetParent !== null;
+                        }, input);
+                        if (isVisible) {
+                            emailInput = input;
+                            this.log(`Found email input: ${selector}`, 'info');
+                            break;
+                        }
+                    }
+                    if (emailInput) break;
+                } catch {}
+            }
+
+            if (!emailInput) {
+                await this.screenshot('error_no_email');
+                throw new Error('Email input not found');
+            }
+
+            // Type email
+            await emailInput.click({ clickCount: 3 });
+            await emailInput.type(this.args.email, { delay: 50 });
+            this.log('Email entered', 'success');
+
+            await sleep(500);
+
+            // Find password input
+            const passwordInput = await this.page.$('input[type="password"]');
+            if (!passwordInput) {
+                throw new Error('Password input not found');
+            }
+
+            await passwordInput.type(this.args.password, { delay: 50 });
+            this.log('Password entered', 'success');
+
+            await this.screenshot('03_credentials_entered');
+
+            // Submit - try button first, then Enter
+            let submitted = false;
+
+            // Try clicking submit button by text (Indonesian: "Masuk")
+            const submitClicked = await this.page.evaluate(() => {
+                const buttons = document.querySelectorAll('button');
+                for (const btn of buttons) {
+                    const text = btn.textContent.trim().toLowerCase();
+                    // Indonesian "masuk" or English "login/log in/sign in"
+                    if (text === 'masuk' || text.includes('log in') || text.includes('login') || text.includes('sign in')) {
+                        btn.click();
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            if (submitClicked) {
+                submitted = true;
+                this.log('Clicked submit button', 'success');
+            } else {
+                await this.page.keyboard.press('Enter');
+                this.log('Pressed Enter to submit', 'info');
+                submitted = true;
+            }
+
+            // Wait for login and platform to fully load
+            this.log('Waiting for login and platform to load...', 'info');
+            await sleep(15000);
+
+            await this.screenshot('04_after_login');
+
+            // Check if logged in
+            const isLoggedIn = await this.checkIfLoggedIn();
+
+            if (isLoggedIn) {
+                this.log('Login successful!', 'success');
+                return true;
+            }
+
+            // Check URL for success indicators
+            const newUrl = this.page.url();
+            if (newUrl.includes('platform') || newUrl.includes('trading') || newUrl.includes('trade')) {
+                this.log('Login successful - redirected to platform!', 'success');
+                return true;
+            }
+
+            // Check for error messages
+            const errorText = await this.page.evaluate(() => {
+                const errorEl = document.querySelector('.error, .error-message, [class*="error"]');
+                return errorEl ? errorEl.textContent : null;
+            });
+
+            if (errorText) {
+                this.log(`Login error: ${errorText}`, 'error');
+            }
+
+            return false;
+        } catch (error) {
+            this.log(`Login error: ${error.message}`, 'error');
+            await this.screenshot('error_login');
+            return false;
+        }
+    }
+
+    async switchAccount() {
+        const accountType = this.args.isDemo ? 'DEMO' : 'REAL';
+        this.log(`Switching to ${accountType} account...`, 'step');
+
+        try {
+            // Wait for account selection popup or platform to load
+            await sleep(3000);
+            await this.screenshot('05_before_account_switch');
+
+            // Debug: Log what's on page
+            const pageText = await this.page.evaluate(() => document.body.innerText.substring(0, 500));
+            this.log(`Page content preview: ${pageText.substring(0, 100)}...`, 'info');
+
+            // Indonesian labels for account selection
+            const demoTexts = ['Akun demo', 'Demo', 'demo', 'Practice', 'Latihan'];
+            const realTexts = ['Akun real', 'Real', 'real', 'Live'];
+            const targetTexts = this.args.isDemo ? demoTexts : realTexts;
+
+            // Method 1: Try clicking by text content (for popup/modal)
+            for (const text of targetTexts) {
+                const clicked = await this.page.evaluate((searchText) => {
+                    // Look for clickable elements with this text
+                    const elements = document.querySelectorAll('button, a, div, span, [role="button"]');
+                    for (const el of elements) {
+                        if (el.textContent.toLowerCase().includes(searchText.toLowerCase())) {
+                            // Check if it's visible
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width > 0 && rect.height > 0) {
+                                el.click();
+                                return searchText;
+                            }
+                        }
+                    }
+                    return null;
+                }, text);
+
+                if (clicked) {
+                    this.log(`Clicked account option: "${clicked}"`, 'success');
+                    await sleep(3000);
+                    await this.screenshot('06_account_selected');
+                    return true;
+                }
+            }
+
+            // Method 2: Try account switcher in header/navbar
+            const switcherSelectors = [
+                '.account-switcher',
+                '.balance-selector',
+                '[data-qa="account-type"]',
+                '.account-type-switch',
+                '.account-balance',
+                '.balance-block',
+                '.account-info',
+                '[class*="account"]',
+                '[class*="balance"]'
+            ];
+
+            for (const selector of switcherSelectors) {
+                try {
+                    const switcher = await this.page.$(selector);
+                    if (switcher) {
+                        await switcher.click();
+                        await sleep(1500);
+                        this.log(`Clicked account switcher: ${selector}`, 'info');
+
+                        await this.screenshot('06_account_switcher');
+
+                        // Now try to select demo or real from dropdown
+                        for (const text of targetTexts) {
+                            const clicked = await this.page.evaluate((searchText) => {
+                                const elements = document.querySelectorAll('button, a, div, span, li, [role="option"]');
+                                for (const el of elements) {
+                                    if (el.textContent.toLowerCase().includes(searchText.toLowerCase())) {
+                                        const rect = el.getBoundingClientRect();
+                                        if (rect.width > 0 && rect.height > 0) {
+                                            el.click();
+                                            return searchText;
+                                        }
+                                    }
+                                }
+                                return null;
+                            }, text);
+
+                            if (clicked) {
+                                this.log(`Selected ${accountType} account`, 'success');
+                                await sleep(2000);
+                                await this.screenshot('07_account_switched');
+                                return true;
+                            }
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            this.log('Account switcher not found, may already be on correct account', 'warn');
+            return true;
+        } catch (error) {
+            this.log(`Account switch error: ${error.message}`, 'warn');
+            return false;
+        }
+    }
+
+    async getBalance() {
+        this.log('Getting current balance...', 'step');
+
+        try {
+            const balanceSelectors = [
+                '.balance-value',
+                '.account-balance',
+                '[data-qa="balance"]',
+                '.balance-amount',
+                '.balance',
+                '.account-value'
+            ];
+
+            for (const selector of balanceSelectors) {
+                const element = await this.page.$(selector);
+                if (element) {
+                    const text = await this.page.evaluate(el => el.textContent, element);
+                    const balance = parseFloat(text.replace(/[^0-9.-]+/g, ''));
+                    if (!isNaN(balance)) {
+                        this.log(`Current balance: $${balance.toFixed(2)}`, 'success');
+                        return balance;
+                    }
+                }
+            }
+
+            this.log('Could not get balance', 'warn');
+            return null;
+        } catch (error) {
+            this.log(`Balance error: ${error.message}`, 'warn');
+            return null;
+        }
+    }
+
+    async selectAsset(asset = 'EUR/USD') {
+        this.log(`Selecting asset: ${asset}...`, 'step');
+
+        try {
+            const assetSelectors = [
+                '.asset-selector',
+                '.instrument-selector',
+                '[data-qa="asset-select"]',
+                '.asset-name',
+                '.instrument-name'
+            ];
+
+            for (const selector of assetSelectors) {
+                const btn = await this.page.$(selector);
+                if (btn) {
+                    await btn.click();
+                    await sleep(1500);
+
+                    await this.screenshot('08_asset_selector');
+
+                    // Search for asset
+                    const searchSelectors = [
+                        '.asset-search input',
+                        '.search-instrument input',
+                        'input[placeholder*="search" i]',
+                        'input[type="search"]'
+                    ];
+
+                    for (const searchSel of searchSelectors) {
+                        const searchInput = await this.page.$(searchSel);
+                        if (searchInput) {
+                            await searchInput.click({ clickCount: 3 });
+                            await searchInput.type(asset.replace('/', ''), { delay: 50 });
+                            await sleep(1500);
+                            break;
+                        }
+                    }
+
+                    // Click first result
+                    const resultSelectors = [
+                        '.asset-item',
+                        '.instrument-item',
+                        '[data-asset]',
+                        '.search-result'
+                    ];
+
+                    for (const resultSel of resultSelectors) {
+                        const result = await this.page.$(resultSel);
+                        if (result) {
+                            await result.click();
+                            await sleep(1500);
+                            this.log(`Asset selected: ${asset}`, 'success');
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            this.log('Asset selector not found, using default', 'warn');
+            return true;
+        } catch (error) {
+            this.log(`Asset select error: ${error.message}`, 'warn');
+            return false;
+        }
+    }
+
+    async setAmount(amount = 1) {
+        this.log(`Setting trade amount: $${amount}...`, 'step');
+
+        try {
+            const amountSelectors = [
+                '.amount-input input',
+                'input[data-qa="amount"]',
+                '.trade-amount input',
+                'input[name="amount"]',
+                '.amount input',
+                '.deal-amount input'
+            ];
+
+            for (const selector of amountSelectors) {
+                const input = await this.page.$(selector);
+                if (input) {
+                    await input.click({ clickCount: 3 });
+                    await sleep(200);
+                    await input.type(amount.toString(), { delay: 30 });
+                    this.log(`Amount set: $${amount}`, 'success');
+                    return true;
+                }
+            }
+
+            this.log('Amount input not found', 'warn');
+            return false;
+        } catch (error) {
+            this.log(`Amount error: ${error.message}`, 'warn');
+            return false;
+        }
+    }
+
+    async setDuration(minutes = 1) {
+        this.log(`Setting duration: ${minutes} minute(s)...`, 'step');
+
+        try {
+            const durationSelectors = [
+                '.duration-selector',
+                '.expiry-time',
+                '[data-qa="time-select"]',
+                '.time-selector',
+                '.expiration'
+            ];
+
+            for (const selector of durationSelectors) {
+                const btn = await this.page.$(selector);
+                if (btn) {
+                    await btn.click();
+                    await sleep(1000);
+
+                    // Select duration option
+                    const option = await this.page.$(`[data-duration="${minutes}"], .time-option`);
+                    if (option) {
+                        await option.click();
+                        await sleep(500);
+                        this.log(`Duration set: ${minutes} minute(s)`, 'success');
+                        return true;
+                    }
+                }
+            }
+
+            this.log('Duration selector not found, using default', 'warn');
+            return true;
+        } catch (error) {
+            this.log(`Duration error: ${error.message}`, 'warn');
+            return false;
+        }
+    }
+
+    async executeTrade(direction = 'CALL') {
+        this.log(`Executing ${direction} trade...`, 'step');
+
+        try {
+            // Wait for platform to fully load
+            this.log('Waiting for trading platform to load...', 'info');
+            await sleep(5000);
+
+            await this.screenshot('09_before_trade');
+
+            // Debug: Log all buttons on page
+            const allButtons = await this.page.evaluate(() => {
+                const btns = document.querySelectorAll('button');
+                return Array.from(btns).slice(0, 30).map(b => ({
+                    text: b.textContent.trim().substring(0, 30),
+                    class: b.className.substring(0, 50),
+                    disabled: b.disabled
+                }));
+            });
+            this.log(`Found ${allButtons.length} buttons on page`, 'info');
+            this.log(`Sample buttons: ${JSON.stringify(allButtons.slice(0, 5))}`, 'info');
+
+            // OlympTrade button selectors - expanded list
+            const callSelectors = [
+                'button.deal-button_up',
+                '.deal-button_up',
+                'button[class*="deal-button_up"]',
+                'button[class*="deal-button"][class*="up"]',
+                'button[class*="call"]',
+                'button[class*="Call"]',
+                'button[class*="green"]',
+                '[class*="deal-button"][class*="up"]',
+                '[data-testid*="call"]',
+                '[data-testid*="up"]'
+            ];
+
+            const putSelectors = [
+                'button.deal-button_down',
+                '.deal-button_down',
+                'button[class*="deal-button_down"]',
+                'button[class*="deal-button"][class*="down"]',
+                'button[class*="put"]',
+                'button[class*="Put"]',
+                'button[class*="red"]',
+                '[class*="deal-button"][class*="down"]',
+                '[data-testid*="put"]',
+                '[data-testid*="down"]'
+            ];
+
+            const selectors = direction.toUpperCase() === 'CALL' ? callSelectors : putSelectors;
+            const buttonName = direction.toUpperCase() === 'CALL' ? 'Naik' : 'Turun';
+            const altButtonNames = direction.toUpperCase() === 'CALL'
+                ? ['Naik', 'Up', 'Call', 'Higher', 'Green']
+                : ['Turun', 'Down', 'Put', 'Lower', 'Red'];
+
+            for (const selector of selectors) {
+                try {
+                    const btn = await this.page.$(selector);
+                    if (btn) {
+                        // Check if button is enabled
+                        const isDisabled = await this.page.evaluate(el => el.disabled, btn);
+                        if (isDisabled) {
+                            this.log(`Trade button (${buttonName}) is disabled`, 'warn');
+                            continue;
+                        }
+
+                        await btn.click();
+                        this.log(`Clicked ${buttonName} (${direction}) button: ${selector}`, 'success');
+
+                        await sleep(3000);
+                        await this.screenshot('10_after_trade');
+
+                        this.log(`Trade executed: ${direction}`, 'success');
+                        return {
+                            success: true,
+                            direction: direction,
+                            timestamp: new Date().toISOString()
+                        };
+                    }
+                } catch (e) {}
+            }
+
+            // Try by text content as fallback - try multiple names
+            this.log('Trying to find button by text...', 'info');
+            for (const btnText of altButtonNames) {
+                const clicked = await this.page.evaluate((text) => {
+                    const buttons = document.querySelectorAll('button');
+                    for (const btn of buttons) {
+                        if (btn.textContent.toLowerCase().includes(text.toLowerCase())) {
+                            btn.click();
+                            return text;
+                        }
+                    }
+                    return null;
+                }, btnText);
+
+                if (clicked) {
+                    this.log(`Clicked button with text: ${clicked}`, 'success');
+                    await sleep(3000);
+                    await this.screenshot('10_after_trade');
+                    return {
+                        success: true,
+                        direction: direction,
+                        timestamp: new Date().toISOString()
+                    };
+                }
+            }
+
+            this.log('Trade button not found', 'error');
+            return { success: false, error: 'Trade button not found' };
+        } catch (error) {
+            this.log(`Trade error: ${error.message}`, 'error');
+            await this.screenshot('error_trade');
+            return { success: false, error: error.message };
+        }
+    }
+
+    async close() {
+        if (this.browser) {
+            await this.browser.close();
+            this.log('Browser closed', 'info');
+        }
+    }
+
+    async runTest() {
+        console.log('\n');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('   ZYN TRADE ROBOT - OLYMPTRADE DIRECT TEST');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log(`   Email: ${this.args.email}`);
+        console.log(`   Account: ${this.args.isDemo ? 'DEMO' : 'REAL'}`);
+        console.log(`   Execute Trade: ${this.args.executeTrade ? 'YES' : 'NO'}`);
+        console.log(`   Browser: ${this.args.visible ? 'VISIBLE' : 'HEADLESS'}`);
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('');
+
+        if (!this.args.email || !this.args.password) {
+            console.log(' ❌ Email and password required!');
+            console.log('');
+            console.log('   Usage:');
+            console.log('   node src/test-olymptrade.js --email=your@email.com --password=yourpass');
+            console.log('   node src/test-olymptrade.js --email=your@email.com --password=yourpass --trade');
+            console.log('   node src/test-olymptrade.js --email=your@email.com --password=yourpass --visible');
+            console.log('');
+            console.log('   Or set in .env file:');
+            console.log('   OLYMPTRADE_EMAIL=your@email.com');
+            console.log('   OLYMPTRADE_PASSWORD=yourpassword');
+            console.log('');
+            process.exit(1);
+        }
+
+        const results = {
+            browser: false,
+            navigation: false,
+            login: false,
+            accountSwitch: false,
+            balance: null,
+            trade: null
+        };
+
+        try {
+            // Step 1: Initialize browser
+            results.browser = await this.initialize();
+            if (!results.browser) throw new Error('Browser init failed');
+
+            // Step 2: Navigate to OlympTrade
+            results.navigation = await this.navigateToOlympTrade();
+            if (!results.navigation) throw new Error('Navigation failed');
+
+            // Step 3: Check if already logged in (from session or platform check)
+            let alreadyLoggedIn = this.hasActiveSession || await this.checkIfLoggedIn();
+
+            // Step 4: Login if needed
+            if (!alreadyLoggedIn) {
+                this.log('No active session, need to login...', 'info');
+                results.login = await this.login();
+                if (!results.login) throw new Error('Login failed');
+            } else {
+                this.log('Using existing session - skipping login!', 'success');
+                results.login = true;
+            }
+
+            // Step 5: Switch account
+            results.accountSwitch = await this.switchAccount();
+
+            // Step 6: Get balance
+            results.balance = await this.getBalance();
+
+            // Step 7: Execute trade if requested
+            if (this.args.executeTrade) {
+                // Set up trade
+                await this.selectAsset('EUR/USD');
+                await this.setAmount(1); // Minimum amount
+                await this.setDuration(1); // 1 minute
+
+                // Execute CALL trade
+                results.trade = await this.executeTrade('CALL');
+            }
+
+            // Final screenshot
+            await this.screenshot('11_final_state');
+
+        } catch (error) {
+            this.log(`Test failed: ${error.message}`, 'error');
+        } finally {
+            // Keep browser open if visible mode and test passed
+            if (!this.args.visible || !results.login) {
+                await this.close();
+            } else {
+                console.log('\n   Browser left open for inspection.');
+                console.log('   Press Ctrl+C to close.\n');
+            }
+        }
+
+        // Print results
+        console.log('');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log('   TEST RESULTS');
+        console.log('═══════════════════════════════════════════════════════════');
+        console.log(`   Browser:        ${results.browser ? '✅ PASS' : '❌ FAIL'}`);
+        console.log(`   Navigation:     ${results.navigation ? '✅ PASS' : '❌ FAIL'}`);
+        console.log(`   Login:          ${results.login ? '✅ PASS' : '❌ FAIL'}`);
+        console.log(`   Account Switch: ${results.accountSwitch ? '✅ PASS' : '⚠️ SKIPPED'}`);
+        console.log(`   Balance:        ${results.balance !== null ? `✅ $${results.balance}` : '⚠️ N/A'}`);
+        if (this.args.executeTrade) {
+            console.log(`   Trade:          ${results.trade?.success ? '✅ PASS' : '❌ FAIL'}`);
+        }
+        console.log('═══════════════════════════════════════════════════════════');
+
+        if (this.args.screenshot) {
+            console.log(`\n   Screenshots saved to: ${this.screenshotDir}`);
+        }
+
+        if (results.login && results.balance !== null) {
+            console.log('\n   🎉 Robot is ready to trade on OlympTrade!');
+            console.log('   Run: npm start (to start full robot)');
+        } else {
+            console.log('\n   ⚠️ Some tests failed. Check the issues above.');
+        }
+
+        console.log('');
+
+        process.exit(results.login ? 0 : 1);
+    }
+}
+
+// Run test
+const args = parseArgs();
+const test = new OlympTradeTest(args);
+test.runTest();
