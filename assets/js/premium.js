@@ -3139,8 +3139,885 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('%c Batch 6 Final Polish Loaded ',
             'background: linear-gradient(135deg, #ff6b6b, #ffd700); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
-
-        console.log('%c 🎉 Premium Edition Complete! Tier 1 Legendary Achieved ',
-            'background: linear-gradient(135deg, #00d4ff, #7c3aed, #00ff88); color: #fff; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px;');
     }, 2000);
+});
+
+// ========================================
+// BATCH 7: ULTIMATE LEGENDARY PREMIUM
+// The Most Expensive & Perfect Features
+// ========================================
+
+// ===== AI CHAT WIDGET =====
+class AIChatWidget {
+    constructor() {
+        this.isOpen = false;
+        this.messages = [];
+        this.isTyping = false;
+        this.responses = [
+            "Saya siap membantu Anda! Ada yang bisa saya bantu dengan trading?",
+            "Trading Plan Robot adalah solusi terbaik untuk trading otomatis Anda.",
+            "Dengan AI kami, Anda bisa trading 24/7 tanpa perlu monitoring manual.",
+            "Profit konsisten dengan manajemen risiko yang terukur!",
+            "Sistem kami sudah digunakan oleh ribuan trader profesional.",
+            "Mari saya jelaskan fitur unggulan robot trading kami.",
+            "Anda bisa mulai dengan modal minimal dan scale up seiring profit.",
+            "Tim support kami siap membantu 24 jam sehari, 7 hari seminggu."
+        ];
+        this.init();
+    }
+
+    init() {
+        this.createWidget();
+        this.bindEvents();
+        this.addWelcomeMessage();
+    }
+
+    createWidget() {
+        const widget = document.createElement('div');
+        widget.className = 'ai-chat-widget';
+        widget.innerHTML = `
+            <button class="ai-chat-trigger" aria-label="Open AI Chat">
+                <div class="ai-avatar">🤖</div>
+            </button>
+            <div class="ai-chat-window">
+                <div class="ai-chat-header">
+                    <div class="ai-chat-header-avatar">🤖</div>
+                    <div class="ai-chat-header-info">
+                        <h4>AI Trading Assistant</h4>
+                        <span>● Online - Siap membantu</span>
+                    </div>
+                    <button class="ai-chat-close">✕</button>
+                </div>
+                <div class="ai-chat-messages"></div>
+                <div class="ai-chat-input-container">
+                    <div class="ai-chat-input-wrapper">
+                        <input type="text" class="ai-chat-input" placeholder="Ketik pesan Anda..." />
+                        <button class="ai-chat-send">➤</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(widget);
+
+        this.widget = widget;
+        this.trigger = widget.querySelector('.ai-chat-trigger');
+        this.window = widget.querySelector('.ai-chat-window');
+        this.messagesContainer = widget.querySelector('.ai-chat-messages');
+        this.input = widget.querySelector('.ai-chat-input');
+        this.sendBtn = widget.querySelector('.ai-chat-send');
+        this.closeBtn = widget.querySelector('.ai-chat-close');
+    }
+
+    bindEvents() {
+        this.trigger.addEventListener('click', () => this.toggle());
+        this.closeBtn.addEventListener('click', () => this.close());
+        this.sendBtn.addEventListener('click', () => this.sendMessage());
+        this.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.sendMessage();
+        });
+    }
+
+    toggle() {
+        this.isOpen = !this.isOpen;
+        this.window.classList.toggle('open', this.isOpen);
+        if (this.isOpen) {
+            this.input.focus();
+            window.soundSystem?.play('pop');
+        }
+    }
+
+    close() {
+        this.isOpen = false;
+        this.window.classList.remove('open');
+    }
+
+    addWelcomeMessage() {
+        setTimeout(() => {
+            this.addMessage('ai', 'Halo! 👋 Saya AI Trading Assistant. Ada yang bisa saya bantu tentang robot trading kami?');
+        }, 500);
+    }
+
+    addMessage(type, content) {
+        const messageEl = document.createElement('div');
+        messageEl.className = `ai-message ${type}`;
+        messageEl.innerHTML = `
+            <div class="ai-message-avatar">${type === 'ai' ? '🤖' : '👤'}</div>
+            <div class="ai-message-content">${content}</div>
+        `;
+        this.messagesContainer.appendChild(messageEl);
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        this.messages.push({ type, content });
+    }
+
+    showTypingIndicator() {
+        const typing = document.createElement('div');
+        typing.className = 'ai-message ai-typing';
+        typing.innerHTML = `
+            <div class="ai-message-avatar">🤖</div>
+            <div class="ai-typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        this.messagesContainer.appendChild(typing);
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        return typing;
+    }
+
+    sendMessage() {
+        const text = this.input.value.trim();
+        if (!text || this.isTyping) return;
+
+        this.addMessage('user', text);
+        this.input.value = '';
+        this.isTyping = true;
+
+        window.soundSystem?.play('click');
+
+        const typing = this.showTypingIndicator();
+
+        setTimeout(() => {
+            typing.remove();
+            const response = this.responses[Math.floor(Math.random() * this.responses.length)];
+            this.addMessage('ai', response);
+            this.isTyping = false;
+            window.soundSystem?.play('success');
+        }, 1500 + Math.random() * 1000);
+    }
+}
+
+// ===== 3D CARD TILT EFFECT =====
+class TiltEffect {
+    constructor() {
+        this.cards = [];
+        this.init();
+    }
+
+    init() {
+        const elements = document.querySelectorAll('.feature-card, .strategy-card, .pricing-card, .tilt-card');
+        elements.forEach(el => {
+            el.classList.add('tilt-card');
+            this.addTiltEffect(el);
+        });
+    }
+
+    addTiltEffect(element) {
+        const glare = document.createElement('div');
+        glare.className = 'tilt-glare';
+        element.appendChild(glare);
+
+        element.addEventListener('mousemove', (e) => {
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+
+            element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // Update glare position
+            const glareX = (x / rect.width) * 100;
+            const glareY = (y / rect.height) * 100;
+            glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.3) 0%, transparent 60%)`;
+            glare.style.opacity = '1';
+        });
+
+        element.addEventListener('mouseleave', () => {
+            element.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            glare.style.opacity = '0';
+        });
+    }
+}
+
+// ===== CONFETTI CELEBRATION =====
+class ConfettiCelebration {
+    constructor() {
+        this.colors = ['#667eea', '#764ba2', '#f093fb', '#00d4ff', '#00ff88', '#ffd700', '#ff6b6b'];
+        this.shapes = ['square', 'circle', 'ribbon'];
+    }
+
+    burst(x = window.innerWidth / 2, y = window.innerHeight / 2, count = 100) {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => {
+                const piece = document.createElement('div');
+                const shape = this.shapes[Math.floor(Math.random() * this.shapes.length)];
+                piece.className = `confetti-piece ${shape}`;
+                piece.style.left = `${x + (Math.random() - 0.5) * 200}px`;
+                piece.style.backgroundColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+                piece.style.animationDuration = `${2 + Math.random() * 2}s`;
+                piece.style.animationDelay = `${Math.random() * 0.5}s`;
+                container.appendChild(piece);
+            }, i * 10);
+        }
+
+        setTimeout(() => container.remove(), 5000);
+    }
+
+    rain(duration = 3000) {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+
+        const interval = setInterval(() => {
+            for (let i = 0; i < 5; i++) {
+                const piece = document.createElement('div');
+                const shape = this.shapes[Math.floor(Math.random() * this.shapes.length)];
+                piece.className = `confetti-piece ${shape}`;
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.backgroundColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+                piece.style.animationDuration = `${2 + Math.random() * 2}s`;
+                container.appendChild(piece);
+            }
+        }, 100);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            setTimeout(() => container.remove(), 3000);
+        }, duration);
+    }
+}
+
+// ===== FIREWORKS EFFECT =====
+class FireworksEffect {
+    constructor() {
+        this.colors = ['#667eea', '#764ba2', '#00d4ff', '#00ff88', '#ffd700', '#ff6b6b', '#f093fb'];
+    }
+
+    launch(x, y) {
+        const container = document.createElement('div');
+        container.className = 'fireworks-container';
+        document.body.appendChild(container);
+
+        const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'firework-particle';
+            particle.style.backgroundColor = color;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+
+            const angle = (i / particleCount) * Math.PI * 2;
+            const velocity = 100 + Math.random() * 100;
+            const endX = Math.cos(angle) * velocity;
+            const endY = Math.sin(angle) * velocity;
+
+            particle.style.setProperty('--end-x', `${endX}px`);
+            particle.style.setProperty('--end-y', `${endY}px`);
+            particle.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${endX}px, ${endY}px) scale(0)`, opacity: 0 }
+            ], {
+                duration: 1000 + Math.random() * 500,
+                easing: 'cubic-bezier(0, 0.9, 0.57, 1)',
+                fill: 'forwards'
+            });
+
+            container.appendChild(particle);
+        }
+
+        setTimeout(() => container.remove(), 2000);
+    }
+
+    show(count = 5) {
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => {
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * (window.innerHeight * 0.6);
+                this.launch(x, y);
+            }, i * 300);
+        }
+    }
+}
+
+// ===== DYNAMIC ISLAND NOTIFICATIONS =====
+class DynamicIsland {
+    constructor() {
+        this.queue = [];
+        this.isShowing = false;
+        this.init();
+    }
+
+    init() {
+        const island = document.createElement('div');
+        island.className = 'dynamic-island';
+        island.innerHTML = `<div class="dynamic-island-content"></div>`;
+        document.body.appendChild(island);
+        this.island = island;
+        this.content = island.querySelector('.dynamic-island-content');
+    }
+
+    show(options) {
+        const {
+            icon = '🔔',
+            title = 'Notification',
+            message = '',
+            type = 'info',
+            duration = 4000,
+            actions = [],
+            large = false
+        } = options;
+
+        if (this.isShowing) {
+            this.queue.push(options);
+            return;
+        }
+
+        this.isShowing = true;
+        this.island.classList.add('expanded');
+        if (large) this.island.classList.add('large');
+
+        let actionsHTML = '';
+        if (actions.length > 0) {
+            actionsHTML = `<div class="dynamic-island-actions">
+                ${actions.map(a => `<button class="dynamic-island-btn ${a.type || 'secondary'}">${a.label}</button>`).join('')}
+            </div>`;
+        }
+
+        this.content.innerHTML = `
+            <div class="dynamic-island-icon ${type}">${icon}</div>
+            <div class="dynamic-island-text">
+                <h4>${title}</h4>
+                ${message ? `<p>${message}</p>` : ''}
+            </div>
+            ${actionsHTML}
+        `;
+
+        // Bind action buttons
+        actions.forEach((action, index) => {
+            const btn = this.content.querySelectorAll('.dynamic-island-btn')[index];
+            if (btn && action.onClick) {
+                btn.addEventListener('click', () => {
+                    action.onClick();
+                    this.hide();
+                });
+            }
+        });
+
+        window.soundSystem?.play('notification');
+
+        setTimeout(() => this.hide(), duration);
+    }
+
+    hide() {
+        this.island.classList.remove('expanded', 'large');
+        this.isShowing = false;
+
+        setTimeout(() => {
+            if (this.queue.length > 0) {
+                this.show(this.queue.shift());
+            }
+        }, 500);
+    }
+}
+
+// ===== VOICE COMMAND SYSTEM =====
+class VoiceCommands {
+    constructor() {
+        this.isListening = false;
+        this.recognition = null;
+        this.commands = {
+            'scroll down': () => window.scrollBy({ top: 500, behavior: 'smooth' }),
+            'scroll up': () => window.scrollBy({ top: -500, behavior: 'smooth' }),
+            'go to top': () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+            'go to bottom': () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }),
+            'dark mode': () => document.body.classList.add('light-mode'),
+            'light mode': () => document.body.classList.remove('light-mode'),
+            'open chat': () => document.querySelector('.ai-chat-trigger')?.click(),
+            'close chat': () => document.querySelector('.ai-chat-close')?.click(),
+            'celebrate': () => window.confetti?.burst(),
+            'fireworks': () => window.fireworks?.show()
+        };
+        this.init();
+    }
+
+    init() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            console.log('Voice commands not supported');
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        this.recognition = new SpeechRecognition();
+        this.recognition.continuous = false;
+        this.recognition.interimResults = true;
+        this.recognition.lang = 'en-US';
+
+        this.createIndicator();
+        this.bindEvents();
+
+        // Add keyboard shortcut to toggle voice
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'v' && e.altKey) {
+                e.preventDefault();
+                this.toggle();
+            }
+        });
+    }
+
+    createIndicator() {
+        const indicator = document.createElement('div');
+        indicator.className = 'voice-command-indicator';
+        indicator.innerHTML = `
+            <div class="voice-waves">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="voice-text">Listening... <span>say a command</span></div>
+        `;
+        document.body.appendChild(indicator);
+        this.indicator = indicator;
+    }
+
+    bindEvents() {
+        if (!this.recognition) return;
+
+        this.recognition.onresult = (e) => {
+            const transcript = Array.from(e.results)
+                .map(result => result[0].transcript.toLowerCase())
+                .join('');
+
+            this.indicator.querySelector('.voice-text span').textContent = `"${transcript}"`;
+
+            if (e.results[0].isFinal) {
+                this.processCommand(transcript);
+            }
+        };
+
+        this.recognition.onend = () => {
+            if (this.isListening) {
+                this.stop();
+            }
+        };
+
+        this.recognition.onerror = () => {
+            this.stop();
+        };
+    }
+
+    processCommand(transcript) {
+        for (const [command, action] of Object.entries(this.commands)) {
+            if (transcript.includes(command)) {
+                action();
+                window.dynamicIsland?.show({
+                    icon: '🎤',
+                    title: 'Voice Command',
+                    message: `Executed: "${command}"`,
+                    type: 'success',
+                    duration: 2000
+                });
+                break;
+            }
+        }
+    }
+
+    toggle() {
+        if (this.isListening) {
+            this.stop();
+        } else {
+            this.start();
+        }
+    }
+
+    start() {
+        if (!this.recognition) return;
+        this.isListening = true;
+        this.indicator.classList.add('active');
+        this.recognition.start();
+        window.soundSystem?.play('pop');
+    }
+
+    stop() {
+        if (!this.recognition) return;
+        this.isListening = false;
+        this.indicator.classList.remove('active');
+        try {
+            this.recognition.stop();
+        } catch (e) {}
+    }
+}
+
+// ===== CURSOR MAGIC TRAIL =====
+class CursorMagicTrail {
+    constructor() {
+        this.particles = [];
+        this.lastX = 0;
+        this.lastY = 0;
+        this.colors = ['#667eea', '#764ba2', '#f093fb', '#00d4ff', '#00ff88'];
+        this.init();
+    }
+
+    init() {
+        // Only on desktop
+        if (window.innerWidth < 768) return;
+
+        const container = document.createElement('div');
+        container.className = 'cursor-trail';
+        document.body.appendChild(container);
+        this.container = container;
+
+        document.addEventListener('mousemove', (e) => this.onMove(e));
+
+        // Add sparkle on click
+        document.addEventListener('click', (e) => this.sparkle(e.clientX, e.clientY));
+    }
+
+    onMove(e) {
+        const x = e.clientX;
+        const y = e.clientY;
+
+        // Calculate distance
+        const dx = x - this.lastX;
+        const dy = y - this.lastY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 10) {
+            this.createParticle(x, y);
+            this.lastX = x;
+            this.lastY = y;
+        }
+    }
+
+    createParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.className = 'cursor-trail-particle';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.backgroundColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+        this.container.appendChild(particle);
+
+        setTimeout(() => particle.remove(), 1000);
+    }
+
+    sparkle(x, y) {
+        for (let i = 0; i < 4; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'cursor-sparkle';
+            sparkle.style.left = `${x + (Math.random() - 0.5) * 30}px`;
+            sparkle.style.top = `${y + (Math.random() - 0.5) * 30}px`;
+            this.container.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 600);
+        }
+    }
+}
+
+// ===== HAPTIC FEEDBACK =====
+class HapticFeedback {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        if (!('vibrate' in navigator)) return;
+
+        // Add haptic to buttons
+        document.querySelectorAll('button, .btn, a').forEach(el => {
+            el.addEventListener('click', () => this.light());
+        });
+    }
+
+    light() {
+        navigator.vibrate?.(10);
+    }
+
+    medium() {
+        navigator.vibrate?.(25);
+    }
+
+    heavy() {
+        navigator.vibrate?.(50);
+    }
+
+    pattern(pattern) {
+        navigator.vibrate?.(pattern);
+    }
+
+    success() {
+        navigator.vibrate?.([10, 50, 10]);
+    }
+
+    error() {
+        navigator.vibrate?.([50, 30, 50, 30, 50]);
+    }
+}
+
+// ===== HOLOGRAPHIC EFFECT ENHANCER =====
+class HolographicEnhancer {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Add holographic effect to hero title
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            heroTitle.classList.add('holographic');
+        }
+
+        // Add holographic cards to pricing
+        document.querySelectorAll('.pricing-card.featured').forEach(card => {
+            card.classList.add('holographic-card', 'iridescent-border');
+        });
+    }
+}
+
+// ===== LIQUID BACKGROUND =====
+class LiquidBackground {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const hero = document.querySelector('.hero');
+        if (!hero) return;
+
+        // Create liquid blobs
+        for (let i = 0; i < 3; i++) {
+            const blob = document.createElement('div');
+            blob.className = 'liquid-blob';
+            blob.style.width = `${200 + Math.random() * 200}px`;
+            blob.style.height = `${200 + Math.random() * 200}px`;
+            blob.style.left = `${Math.random() * 100}%`;
+            blob.style.top = `${Math.random() * 100}%`;
+            blob.style.animationDelay = `${i * 2}s`;
+            hero.appendChild(blob);
+        }
+    }
+}
+
+// ===== SCROLL CELEBRATIONS =====
+class ScrollCelebrations {
+    constructor() {
+        this.milestones = [25, 50, 75, 100];
+        this.reached = new Set();
+        this.init();
+    }
+
+    init() {
+        window.addEventListener('scroll', () => this.checkMilestone());
+    }
+
+    checkMilestone() {
+        const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+
+        this.milestones.forEach(milestone => {
+            if (scrollPercent >= milestone && !this.reached.has(milestone)) {
+                this.reached.add(milestone);
+                this.celebrate(milestone);
+            }
+        });
+    }
+
+    celebrate(milestone) {
+        if (milestone === 100) {
+            window.fireworks?.show(3);
+            window.dynamicIsland?.show({
+                icon: '🎉',
+                title: 'Congratulations!',
+                message: 'You explored the entire page!',
+                type: 'success',
+                duration: 3000
+            });
+        }
+    }
+}
+
+// ===== EASTER EGGS =====
+class EasterEggs {
+    constructor() {
+        this.konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        this.konamiIndex = 0;
+        this.init();
+    }
+
+    init() {
+        document.addEventListener('keydown', (e) => this.checkKonami(e));
+    }
+
+    checkKonami(e) {
+        if (e.key === this.konamiCode[this.konamiIndex]) {
+            this.konamiIndex++;
+            if (this.konamiIndex === this.konamiCode.length) {
+                this.triggerKonami();
+                this.konamiIndex = 0;
+            }
+        } else {
+            this.konamiIndex = 0;
+        }
+    }
+
+    triggerKonami() {
+        window.confetti?.rain(5000);
+        window.fireworks?.show(10);
+        window.dynamicIsland?.show({
+            icon: '🎮',
+            title: 'KONAMI CODE!',
+            message: 'You found the secret! Enjoy the celebration!',
+            type: 'success',
+            duration: 5000,
+            large: true
+        });
+        window.soundSystem?.play('success');
+    }
+}
+
+// ===== PREMIUM WELCOME ANIMATION =====
+class PremiumWelcome {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Show welcome notification after page load
+        setTimeout(() => {
+            window.dynamicIsland?.show({
+                icon: '👋',
+                title: 'Welcome to Trading Plan Robot!',
+                message: 'Explore our premium features',
+                type: 'info',
+                duration: 4000,
+                actions: [
+                    {
+                        label: 'Start Tour',
+                        type: 'primary',
+                        onClick: () => this.startTour()
+                    }
+                ]
+            });
+        }, 3000);
+    }
+
+    startTour() {
+        const sections = ['Features', 'Strategies', 'Pricing'];
+        sections.forEach((section, index) => {
+            setTimeout(() => {
+                const el = document.querySelector(`#${section.toLowerCase()}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    window.dynamicIsland?.show({
+                        icon: ['✨', '📊', '💰'][index],
+                        title: section,
+                        message: `Discover our ${section.toLowerCase()}`,
+                        type: 'info',
+                        duration: 2500
+                    });
+                }
+            }, index * 3000);
+        });
+    }
+}
+
+// ===== NEON MODE =====
+class NeonMode {
+    constructor() {
+        this.isActive = false;
+        this.init();
+    }
+
+    init() {
+        // Toggle with 'N' key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                const target = e.target;
+                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+                this.toggle();
+            }
+        });
+    }
+
+    toggle() {
+        this.isActive = !this.isActive;
+
+        if (this.isActive) {
+            document.body.classList.add('neon-mode');
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.classList.add('neon-border');
+            });
+            window.dynamicIsland?.show({
+                icon: '💜',
+                title: 'Neon Mode Activated',
+                message: 'Press N again to disable',
+                type: 'info',
+                duration: 2000
+            });
+        } else {
+            document.body.classList.remove('neon-mode');
+            document.querySelectorAll('.neon-border').forEach(el => {
+                el.classList.remove('neon-border');
+            });
+        }
+
+        window.soundSystem?.play('mode');
+    }
+}
+
+// ===== SMART SCROLL DIRECTION =====
+class SmartScrollDirection {
+    constructor() {
+        this.lastScroll = 0;
+        this.header = document.querySelector('.navbar');
+        this.init();
+    }
+
+    init() {
+        if (!this.header) return;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+
+            if (currentScroll > this.lastScroll && currentScroll > 100) {
+                this.header.style.transform = 'translateY(-100%)';
+            } else {
+                this.header.style.transform = 'translateY(0)';
+            }
+
+            this.lastScroll = currentScroll;
+        });
+
+        this.header.style.transition = 'transform 0.3s ease';
+    }
+}
+
+// ===== INITIALIZE BATCH 7 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Core Features
+        window.aiChat = new AIChatWidget();
+        new TiltEffect();
+        new HolographicEnhancer();
+        new LiquidBackground();
+
+        // Celebrations
+        window.confetti = new ConfettiCelebration();
+        window.fireworks = new FireworksEffect();
+
+        // Notifications
+        window.dynamicIsland = new DynamicIsland();
+
+        // Interactions
+        new VoiceCommands();
+        new CursorMagicTrail();
+        new HapticFeedback();
+
+        // Enhancements
+        new ScrollCelebrations();
+        new EasterEggs();
+        new NeonMode();
+        new SmartScrollDirection();
+
+        // Welcome
+        new PremiumWelcome();
+
+        console.log('%c Batch 7 Ultimate Legendary Loaded ',
+            'background: linear-gradient(135deg, #ff0080, #7928ca, #00d4ff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+
+        console.log('%c 🏆 ULTIMATE PREMIUM EDITION - TIER 0 GODLIKE! ',
+            'background: linear-gradient(135deg, #ffd700, #ff6b6b, #667eea, #00ff88); color: #000; padding: 15px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 10px rgba(255,255,255,0.5);');
+    }, 2500);
 });
