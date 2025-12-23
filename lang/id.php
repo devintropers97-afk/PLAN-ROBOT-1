@@ -188,6 +188,21 @@ return [
     'register_olymp_safe' => 'Link aman & resmi sesuai negara:',
     'register_olymp_confirm' => 'Saya sudah daftar OlympTrade dan sudah deposit minimal $10',
 
+    // Register Validation Errors
+    'register_error_csrf' => 'Request tidak valid. Silakan coba lagi.',
+    'register_error_email' => 'Masukkan alamat email yang valid.',
+    'register_error_password_length' => 'Password minimal 8 karakter.',
+    'register_error_password_match' => 'Password tidak cocok.',
+    'register_error_fullname' => 'Masukkan nama lengkap Anda.',
+    'register_error_country' => 'Pilih negara Anda.',
+    'register_error_olympid' => 'Masukkan OlympTrade ID yang valid (minimal 6 digit).',
+    'register_error_whatsapp' => 'Masukkan nomor WhatsApp Anda (wajib diisi).',
+    'register_error_terms' => 'Anda harus menyetujui Syarat & Ketentuan.',
+    'register_error_affiliate' => 'Konfirmasi bahwa Anda sudah daftar via link afiliasi kami.',
+    'register_next_steps_title' => 'Proses Selanjutnya:',
+    'register_btn_contact_support' => 'Hubungi Support',
+    'register_btn_go_login' => 'Ke Halaman Login',
+
     // Form Fields
     'form_olymptrade_id' => 'OlympTrade ID',
     'form_olymptrade_id_hint' => 'Temukan ID di aplikasi OlympTrade > Profile > ID Akun (6-12 digit angka)',
@@ -212,6 +227,7 @@ return [
     'form_btn_register' => 'Daftar Sekarang',
     'form_processing' => 'Memproses...',
     'form_required' => 'Wajib diisi',
+    'form_and' => 'dan',
 
     // After Registration
     'after_register_title' => 'Apa yang Terjadi Setelah Mendaftar?',

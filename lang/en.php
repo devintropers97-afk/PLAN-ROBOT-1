@@ -187,6 +187,21 @@ return [
     'register_olymp_safe' => 'Safe & official link for country:',
     'register_olymp_confirm' => 'I have registered OlympTrade and deposited minimum $10',
 
+    // Register Validation Errors
+    'register_error_csrf' => 'Invalid request. Please try again.',
+    'register_error_email' => 'Please enter a valid email address.',
+    'register_error_password_length' => 'Password must be at least 8 characters.',
+    'register_error_password_match' => 'Passwords do not match.',
+    'register_error_fullname' => 'Please enter your full name.',
+    'register_error_country' => 'Please select your country.',
+    'register_error_olympid' => 'Please enter a valid OlympTrade ID (minimum 6 digits).',
+    'register_error_whatsapp' => 'Please enter your WhatsApp number (required).',
+    'register_error_terms' => 'You must agree to the Terms & Conditions.',
+    'register_error_affiliate' => 'Please confirm that you registered via our affiliate link.',
+    'register_next_steps_title' => 'Next Steps:',
+    'register_btn_contact_support' => 'Contact Support',
+    'register_btn_go_login' => 'Go to Login Page',
+
     // Form Fields
     'form_olymptrade_id' => 'OlympTrade ID',
     'form_olymptrade_id_hint' => 'Find ID in OlympTrade app > Profile > Account ID (6-12 digit number)',
@@ -211,6 +226,7 @@ return [
     'form_btn_register' => 'Register Now',
     'form_processing' => 'Processing...',
     'form_required' => 'Required',
+    'form_and' => 'and',
 
     // After Registration
     'after_register_title' => 'What Happens After Registration?',

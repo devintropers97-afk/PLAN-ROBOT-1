@@ -57,7 +57,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF token
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Request tidak valid. Silakan coba lagi.';
+        $error = __('register_error_csrf');
     } else {
         $email = cleanInput($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -71,40 +71,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = [];
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Masukkan alamat email yang valid.';
+            $errors[] = __('register_error_email');
         }
 
         if (strlen($password) < 8) {
-            $errors[] = 'Password minimal 8 karakter.';
+            $errors[] = __('register_error_password_length');
         }
 
         if ($password !== $confirm_password) {
-            $errors[] = 'Password tidak cocok.';
+            $errors[] = __('register_error_password_match');
         }
 
         if (empty($fullname)) {
-            $errors[] = 'Masukkan nama lengkap Anda.';
+            $errors[] = __('register_error_fullname');
         }
 
         if (empty($country)) {
-            $errors[] = 'Pilih negara Anda.';
+            $errors[] = __('register_error_country');
         }
 
         if (empty($olymptrade_id) || strlen($olymptrade_id) < 6) {
-            $errors[] = 'Masukkan OlympTrade ID yang valid (minimal 6 digit).';
+            $errors[] = __('register_error_olympid');
         }
 
         // WhatsApp mandatory
         if (empty($phone)) {
-            $errors[] = 'Masukkan nomor WhatsApp Anda (WAJIB).';
+            $errors[] = __('register_error_whatsapp');
         }
 
         if (!isset($_POST['terms'])) {
-            $errors[] = 'Anda harus menyetujui Syarat & Ketentuan.';
+            $errors[] = __('register_error_terms');
         }
 
         if (!isset($_POST['affiliate'])) {
-            $errors[] = 'Konfirmasi bahwa Anda sudah daftar via link afiliasi kami.';
+            $errors[] = __('register_error_affiliate');
         }
 
         if (!empty($errors)) {
@@ -140,12 +140,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="alert alert-info text-start" style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 16px;">
-                            <h5 class="alert-heading mb-3" style="color: #ffffff;"><i class="fas fa-clock me-2"></i> Proses Selanjutnya:</h5>
+                            <h5 class="alert-heading mb-3" style="color: #ffffff;"><i class="fas fa-clock me-2"></i> <?php _e('register_next_steps_title'); ?></h5>
                             <ol class="mb-0 ps-3" style="color: #c8c8d8;">
-                                <li class="mb-2"><i class="fas fa-search text-primary me-2"></i> Admin sedang memverifikasi OlympTrade ID Anda</li>
-                                <li class="mb-2"><i class="fas fa-hourglass-half text-warning me-2"></i> Proses verifikasi maksimal <strong>24 jam</strong></li>
-                                <li class="mb-2"><i class="fas fa-key text-success me-2"></i> License Key akan dikirim ke <strong>Email</strong> dan <strong>WhatsApp</strong> Anda</li>
-                                <li><i class="fas fa-bell text-info me-2"></i> Harap tunggu dan periksa Email/WhatsApp secara berkala</li>
+                                <?php
+                                $successSteps = __('register_success_steps');
+                                if (is_array($successSteps)) {
+                                    $icons = ['fa-search text-primary', 'fa-hourglass-half text-warning', 'fa-key text-success', 'fa-bell text-info'];
+                                    foreach ($successSteps as $index => $step): ?>
+                                <li class="<?php echo $index < count($successSteps) - 1 ? 'mb-2' : ''; ?>"><i class="fas <?php echo $icons[$index] ?? 'fa-check'; ?> me-2"></i> <?php echo $step; ?></li>
+                                <?php endforeach;
+                                }
+                                ?>
                             </ol>
                         </div>
 
@@ -158,10 +163,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="mt-4 d-flex gap-3 justify-content-center flex-wrap">
                             <a href="<?php echo $whatsappLink; ?>" target="_blank" class="btn btn-success btn-lg">
-                                <i class="fab fa-whatsapp me-2"></i> Hubungi Support
+                                <i class="fab fa-whatsapp me-2"></i> <?php _e('register_btn_contact_support'); ?>
                             </a>
                             <a href="login.php" class="btn btn-primary btn-lg">
-                                <i class="fas fa-sign-in-alt me-2"></i> Ke Halaman Login
+                                <i class="fas fa-sign-in-alt me-2"></i> <?php _e('register_btn_go_login'); ?>
                             </a>
                         </div>
                     </div>
@@ -363,7 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <!-- WhatsApp - WAJIB -->
                                 <div class="mb-3 p-3" style="background: rgba(37, 211, 102, 0.1); border-radius: 12px; border: 2px solid #25d366;">
                                     <label for="phone" class="form-label fw-bold">
-                                        <i class="fab fa-whatsapp text-success me-2"></i><?php _e('form_whatsapp'); ?> <span class="text-danger">* WAJIB</span>
+                                        <i class="fab fa-whatsapp text-success me-2"></i><?php _e('form_whatsapp'); ?> <span class="text-danger">* <?php _e('form_required'); ?></span>
                                     </label>
                                     <input type="tel" class="form-control form-control-lg" id="phone" name="phone"
                                            placeholder="<?php _e('form_whatsapp_placeholder'); ?>" required
@@ -412,7 +417,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
                                         <label class="form-check-label" for="terms" style="color: #c8c8d8;">
                                             <?php _e('form_terms_confirm'); ?> <a href="terms.php" target="_blank"><?php _e('form_terms'); ?></a>,
-                                            <a href="privacy.php" target="_blank"><?php _e('form_privacy'); ?></a>, dan
+                                            <a href="privacy.php" target="_blank"><?php _e('form_privacy'); ?></a>, <?php _e('form_and'); ?>
                                             <a href="disclaimer.php" target="_blank"><?php _e('form_disclaimer'); ?></a> <span class="text-danger">*</span>
                                         </label>
                                     </div>
@@ -682,7 +687,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirm_password').addEventListener('input', function() {
         const password = document.getElementById('password').value;
         if (this.value !== password) {
-            this.setCustomValidity('Password tidak cocok');
+            this.setCustomValidity('<?php echo addslashes(__('register_error_password_match')); ?>');
         } else {
             this.setCustomValidity('');
         }
