@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
 require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/language.php';
 
 // CRITICAL: Prevent browser caching of admin pages (fixes back button bypass)
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -44,12 +45,12 @@ if ($db) {
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo getCurrentLanguage(); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title><?php echo $page_title ?? 'Admin'; ?> - <?php echo SITE_NAME; ?> Admin</title>
+    <title><?php echo $page_title ?? __('admin_dashboard'); ?> - <?php echo SITE_NAME; ?> <?php _e('admin_panel'); ?></title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300d4ff'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient></defs><rect fill='%230a0a0f' rx='20' width='100' height='100'/><text x='50' y='68' font-family='Arial Black' font-size='48' fill='url(%23g)' text-anchor='middle' font-weight='900'>Z</text></svg>">
@@ -98,7 +99,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                 </div>
                 <div class="brand-text-box">
                     <span class="brand-name">ZYN</span>
-                    <span class="brand-label">Admin Panel</span>
+                    <span class="brand-label"><?php _e('admin_panel'); ?></span>
                 </div>
             </a>
         </div>
@@ -112,12 +113,12 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     <span class="notification-badge"><?php echo $pendingUsers + $pendingSubscriptions; ?></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end notification-dropdown">
-                    <li class="dropdown-header">Notifications</li>
+                    <li class="dropdown-header"><?php _e('admin_notifications'); ?></li>
                     <?php if ($pendingUsers > 0): ?>
                     <li>
                         <a class="dropdown-item" href="verify-users.php">
                             <i class="fas fa-user-clock text-warning me-2"></i>
-                            <span><?php echo $pendingUsers; ?> pending verifications</span>
+                            <span><?php echo $pendingUsers; ?> <?php _e('admin_pending_verifications'); ?></span>
                         </a>
                     </li>
                     <?php endif; ?>
@@ -125,7 +126,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     <li>
                         <a class="dropdown-item" href="subscriptions.php">
                             <i class="fas fa-credit-card text-info me-2"></i>
-                            <span><?php echo $pendingSubscriptions; ?> pending payments</span>
+                            <span><?php echo $pendingSubscriptions; ?> <?php _e('admin_pending_payments'); ?></span>
                         </a>
                     </li>
                     <?php endif; ?>
@@ -134,13 +135,13 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
             <?php endif; ?>
 
             <!-- Quick Links -->
-            <a href="../dashboard.php" class="admin-nav-link" title="User Dashboard">
+            <a href="../dashboard.php" class="admin-nav-link" title="<?php echo __('admin_user_dashboard'); ?>">
                 <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+                <span><?php _e('admin_dashboard'); ?></span>
             </a>
-            <a href="../logout.php" class="admin-nav-link logout" title="Logout">
+            <a href="../logout.php" class="admin-nav-link logout" title="<?php echo __('admin_logout'); ?>">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+                <span><?php _e('admin_logout'); ?></span>
             </a>
         </div>
     </nav>
@@ -151,65 +152,65 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
             <nav class="sidebar-nav">
                 <a href="index.php" class="sidebar-link <?php echo $current_page === 'index' ? 'active' : ''; ?>">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span><?php _e('admin_dashboard'); ?></span>
                 </a>
 
                 <!-- MY TRADING Section -->
-                <div class="sidebar-section-title">MY TRADING</div>
+                <div class="sidebar-section-title"><?php _e('admin_my_trading'); ?></div>
                 <a href="my-robot.php" class="sidebar-link <?php echo $current_page === 'my-robot' ? 'active' : ''; ?>">
                     <i class="fas fa-robot"></i>
-                    <span>My Robot</span>
+                    <span><?php _e('admin_my_robot'); ?></span>
                 </a>
                 <a href="my-trading.php" class="sidebar-link <?php echo $current_page === 'my-trading' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-area"></i>
-                    <span>My Trading</span>
+                    <span><?php _e('admin_my_trading_menu'); ?></span>
                 </a>
 
                 <!-- ROBOT MONITORING Section -->
-                <div class="sidebar-section-title">ROBOT SYSTEM</div>
+                <div class="sidebar-section-title"><?php _e('admin_robot_system'); ?></div>
                 <a href="robot-monitoring.php" class="sidebar-link <?php echo $current_page === 'robot-monitoring' ? 'active' : ''; ?>">
                     <i class="fas fa-satellite-dish"></i>
-                    <span>Robot Monitor</span>
+                    <span><?php _e('admin_robot_monitor'); ?></span>
                 </a>
                 <a href="signals.php" class="sidebar-link <?php echo $current_page === 'signals' ? 'active' : ''; ?>">
                     <i class="fas fa-broadcast-tower"></i>
-                    <span>Signals</span>
+                    <span><?php _e('admin_signals'); ?></span>
                 </a>
 
                 <!-- USER MANAGEMENT Section -->
-                <div class="sidebar-section-title">USER MANAGEMENT</div>
+                <div class="sidebar-section-title"><?php _e('admin_user_management'); ?></div>
                 <a href="verify-users.php" class="sidebar-link <?php echo $current_page === 'verify-users' ? 'active' : ''; ?>">
                     <i class="fas fa-user-check"></i>
-                    <span>Verify Users</span>
+                    <span><?php _e('admin_verify_users'); ?></span>
                     <?php if ($pendingUsers > 0): ?>
                     <span class="sidebar-badge warning"><?php echo $pendingUsers; ?></span>
                     <?php endif; ?>
                 </a>
                 <a href="users.php" class="sidebar-link <?php echo $current_page === 'users' ? 'active' : ''; ?>">
                     <i class="fas fa-users"></i>
-                    <span>All Users</span>
+                    <span><?php _e('admin_all_users'); ?></span>
                 </a>
                 <a href="license-keys.php" class="sidebar-link <?php echo $current_page === 'license-keys' ? 'active' : ''; ?>">
                     <i class="fas fa-key"></i>
-                    <span>License Keys</span>
+                    <span><?php _e('admin_license_keys'); ?></span>
                 </a>
                 <a href="trades.php" class="sidebar-link <?php echo $current_page === 'trades' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-line"></i>
-                    <span>All Trades</span>
+                    <span><?php _e('admin_all_trades'); ?></span>
                 </a>
                 <a href="subscriptions.php" class="sidebar-link <?php echo $current_page === 'subscriptions' ? 'active' : ''; ?>">
                     <i class="fas fa-credit-card"></i>
-                    <span>Subscriptions</span>
+                    <span><?php _e('admin_subscriptions'); ?></span>
                     <?php if ($pendingSubscriptions > 0): ?>
                     <span class="sidebar-badge info"><?php echo $pendingSubscriptions; ?></span>
                     <?php endif; ?>
                 </a>
 
                 <!-- SYSTEM Section -->
-                <div class="sidebar-section-title">SYSTEM</div>
+                <div class="sidebar-section-title"><?php _e('admin_system'); ?></div>
                 <a href="settings.php" class="sidebar-link <?php echo $current_page === 'settings' ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                    <span><?php _e('admin_settings'); ?></span>
                 </a>
             </nav>
 
@@ -220,7 +221,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
                     </div>
                     <div class="admin-info">
                         <span class="admin-name"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                        <span class="admin-role">Administrator</span>
+                        <span class="admin-role"><?php _e('admin_administrator'); ?></span>
                     </div>
                 </div>
             </div>
