@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Subscribe';
+$page_title = __('subscribe_title') ?: 'Subscribe';
 require_once 'includes/header.php';
 
 // Require login
@@ -90,9 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             $payment_proof
         ]);
 
-        $message = 'Subscription request submitted! We will verify your payment within 1-24 hours. You will receive confirmation via email/Telegram.';
+        $message = __('subscribe_success');
     } catch (PDOException $e) {
-        $error = 'Failed to submit subscription request. Please try again.';
+        $error = __('subscribe_failed');
     }
 }
 ?>
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 <!-- Plan Selection -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0">Select Plan</h5>
+                        <h5 class="mb-0"><?php _e('subscribe_select_plan'); ?></h5>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
@@ -116,8 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                                     <div class="card-body text-center">
                                         <span class="badge bg-<?php echo $p['color']; ?> mb-2"><?php echo $p['name']; ?></span>
                                         <h4 class="mb-0">$<?php echo $p['price']; ?></h4>
-                                        <small class="text-muted">/ month</small>
-                                        <p class="small mt-2 mb-0"><?php echo $p['strategies']; ?> Strategies</p>
+                                        <small class="text-muted"><?php _e('subscribe_per_month'); ?></small>
+                                        <p class="small mt-2 mb-0"><?php echo $p['strategies']; ?> <?php _e('subscribe_strategies'); ?></p>
                                         <?php if ($key === $selected_plan): ?>
                                         <i class="fas fa-check-circle text-success mt-2"></i>
                                         <?php endif; ?>
@@ -132,12 +132,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 <!-- Selected Plan Details -->
                 <div class="card mb-4 border-<?php echo $plan['color']; ?>">
                     <div class="card-header bg-<?php echo $plan['color']; ?> text-<?php echo $plan['color'] === 'warning' ? 'dark' : 'white'; ?>">
-                        <h5 class="mb-0"><i class="fas fa-crown me-2"></i><?php echo $plan['name']; ?> Plan</h5>
+                        <h5 class="mb-0"><i class="fas fa-crown me-2"></i><?php echo str_replace(':name', $plan['name'], __('subscribe_plan')); ?></h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h3 class="text-<?php echo $plan['color']; ?>">$<?php echo $plan['price']; ?> <small class="text-muted fs-6">/ month</small></h3>
+                                <h3 class="text-<?php echo $plan['color']; ?>">$<?php echo $plan['price']; ?> <small class="text-muted fs-6"><?php _e('subscribe_per_month'); ?></small></h3>
                                 <ul class="list-unstyled">
                                     <?php foreach ($plan['features'] as $feature): ?>
                                     <li><i class="fas fa-check text-success me-2"></i><?php echo $feature; ?></li>
@@ -146,9 +146,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                             </div>
                             <div class="col-md-6">
                                 <div class="bg-dark p-3 rounded">
-                                    <p class="small mb-2"><strong>Your Account:</strong></p>
-                                    <p class="small mb-1">Email: <?php echo htmlspecialchars($user['email']); ?></p>
-                                    <p class="small mb-0">Current Plan: <span class="badge bg-secondary"><?php echo strtoupper($user['subscription_type'] ?? 'FREE'); ?></span></p>
+                                    <p class="small mb-2"><strong><?php _e('subscribe_your_account'); ?>:</strong></p>
+                                    <p class="small mb-1"><?php _e('subscribe_email'); ?>: <?php echo htmlspecialchars($user['email']); ?></p>
+                                    <p class="small mb-0"><?php _e('subscribe_current_plan'); ?>: <span class="badge bg-secondary"><?php echo strtoupper($user['subscription_type'] ?? 'FREE'); ?></span></p>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 <!-- Payment Form -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Method</h5>
+                        <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i><?php _e('subscribe_payment_method'); ?></h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" enctype="multipart/form-data">
@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
                             <!-- Payment Methods -->
                             <div class="mb-4">
-                                <label class="form-label">Choose Payment Method</label>
+                                <label class="form-label"><?php _e('subscribe_choose_payment'); ?></label>
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-check card p-3">
@@ -186,8 +186,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                                             <label class="form-check-label d-flex align-items-center" for="paypal">
                                                 <i class="fab fa-paypal fa-2x text-primary me-3"></i>
                                                 <div>
-                                                    <strong>PayPal</strong>
-                                                    <small class="d-block text-muted">International payments</small>
+                                                    <strong><?php _e('subscribe_paypal'); ?></strong>
+                                                    <small class="d-block text-muted"><?php _e('subscribe_paypal_desc'); ?></small>
                                                 </div>
                                             </label>
                                         </div>
@@ -198,8 +198,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                                             <label class="form-check-label d-flex align-items-center" for="wise">
                                                 <i class="fas fa-exchange-alt fa-2x text-success me-3"></i>
                                                 <div>
-                                                    <strong>Wise (TransferWise)</strong>
-                                                    <small class="d-block text-muted">Low fee transfers</small>
+                                                    <strong><?php _e('subscribe_wise'); ?></strong>
+                                                    <small class="d-block text-muted"><?php _e('subscribe_wise_desc'); ?></small>
                                                 </div>
                                             </label>
                                         </div>
@@ -210,8 +210,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                                             <label class="form-check-label d-flex align-items-center" for="crypto">
                                                 <i class="fab fa-bitcoin fa-2x text-warning me-3"></i>
                                                 <div>
-                                                    <strong>Crypto (USDT/BTC)</strong>
-                                                    <small class="d-block text-muted">TRC20 / BTC Network</small>
+                                                    <strong><?php _e('subscribe_crypto'); ?></strong>
+                                                    <small class="d-block text-muted"><?php _e('subscribe_crypto_desc'); ?></small>
                                                 </div>
                                             </label>
                                         </div>
@@ -222,8 +222,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                                             <label class="form-check-label d-flex align-items-center" for="bank_transfer">
                                                 <i class="fas fa-university fa-2x text-info me-3"></i>
                                                 <div>
-                                                    <strong>Bank Transfer</strong>
-                                                    <small class="d-block text-muted">Indonesia (BCA/Mandiri/BNI)</small>
+                                                    <strong><?php _e('subscribe_bank'); ?></strong>
+                                                    <small class="d-block text-muted"><?php _e('subscribe_bank_desc'); ?></small>
                                                 </div>
                                             </label>
                                         </div>
@@ -268,9 +268,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
                             <!-- Payment Proof Upload -->
                             <div class="mb-4">
-                                <label class="form-label">Upload Payment Proof <span class="text-danger">*</span></label>
+                                <label class="form-label"><?php _e('subscribe_upload_proof'); ?> <span class="text-danger">*</span></label>
                                 <input type="file" class="form-control" name="payment_proof" accept=".jpg,.jpeg,.png,.pdf" required>
-                                <small class="text-muted">Screenshot or PDF of payment confirmation (max 5MB)</small>
+                                <small class="text-muted"><?php _e('subscribe_upload_hint'); ?></small>
                             </div>
 
                             <!-- Terms -->
@@ -278,17 +278,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="agree_terms" required>
                                     <label class="form-check-label" for="agree_terms">
-                                        I agree to the <a href="terms.php" target="_blank">Terms of Service</a> and <a href="refund.php" target="_blank">Refund Policy</a>
+                                        <?php _e('subscribe_agree_terms'); ?> <a href="terms.php" target="_blank"><?php _e('subscribe_terms_service'); ?></a> & <a href="refund.php" target="_blank"><?php _e('subscribe_refund_policy'); ?></a>
                                     </label>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-<?php echo $plan['color']; ?> btn-lg w-100">
-                                <i class="fas fa-lock me-2"></i>Submit Payment - $<?php echo $plan['price']; ?>/month
+                                <i class="fas fa-lock me-2"></i><?php echo str_replace(':amount', '$' . $plan['price'], __('subscribe_submit_payment')); ?>
                             </button>
 
                             <p class="text-center text-muted small mt-3">
-                                <i class="fas fa-shield-alt me-1"></i>Your payment is secure. Activation within 1-24 hours after verification.
+                                <i class="fas fa-shield-alt me-1"></i><?php _e('subscribe_payment_secure'); ?>
                             </p>
                         </form>
                     </div>
@@ -298,8 +298,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 <!-- Help Section -->
                 <div class="card mt-4">
                     <div class="card-body text-center">
-                        <h6>Need Help?</h6>
-                        <p class="small text-muted mb-2">Contact us via Telegram for instant support</p>
+                        <h6><?php _e('subscribe_need_help'); ?></h6>
+                        <p class="small text-muted mb-2"><?php _e('subscribe_contact_telegram'); ?></p>
                         <a href="https://t.me/<?php echo str_replace('@', '', TELEGRAM_SUPPORT); ?>" class="btn btn-outline-primary" target="_blank">
                             <i class="fab fa-telegram me-2"></i><?php echo TELEGRAM_SUPPORT; ?>
                         </a>
