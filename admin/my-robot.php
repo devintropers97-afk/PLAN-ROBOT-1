@@ -1,5 +1,5 @@
 <?php
-$page_title = 'My Robot';
+$page_title = __('admin_myrobot_title') ?: 'My Robot';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             ");
             $stmt->execute([$adminId, $newStatus ? 'running' : 'stopped']);
 
-            $message = $newStatus ? 'Robot ENABLED! Waiting for connection...' : 'Robot DISABLED';
+            $message = $newStatus ? __('admin_robot_enabled') : __('admin_robot_disabled');
             $messageType = $newStatus ? 'success' : 'warning';
 
             // Refresh data
@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 json_encode($schedulePerDay), $adminId
             ]);
 
-            $message = 'Robot settings updated!';
+            $message = __('admin_settings_updated');
             $messageType = 'success';
 
             // Refresh data
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             $stmt = $db->prepare("UPDATE users SET olymptrade_account_type = ? WHERE id = ?");
             $stmt->execute([$accountType, $adminId]);
 
-            $message = 'Switched to ' . strtoupper($accountType) . ' account mode';
+            $message = str_replace(':type', strtoupper($accountType), __('admin_switched_account'));
             $messageType = 'info';
 
             // Refresh admin data
@@ -174,8 +174,8 @@ $todayStats = $stmt->fetch();
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-robot"></i> My Robot</h1>
-        <p class="page-subtitle">Configure and control your trading robot</p>
+        <h1 class="page-title"><i class="fas fa-robot"></i> <?php _e('admin_myrobot_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_myrobot_subtitle'); ?></p>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <!-- Account Type Switch -->
@@ -185,7 +185,7 @@ $todayStats = $stmt->fetch();
             <input type="hidden" name="account_type" value="<?php echo $adminUser['olymptrade_account_type'] === 'demo' ? 'real' : 'demo'; ?>">
             <button type="submit" class="btn btn-<?php echo $adminUser['olymptrade_account_type'] === 'demo' ? 'warning' : 'success'; ?>">
                 <i class="fas fa-<?php echo $adminUser['olymptrade_account_type'] === 'demo' ? 'flask' : 'dollar-sign'; ?> me-2"></i>
-                <?php echo strtoupper($adminUser['olymptrade_account_type'] ?? 'demo'); ?> MODE
+                <?php echo $adminUser['olymptrade_account_type'] === 'demo' ? __('admin_demo_mode') : __('admin_real_mode'); ?>
             </button>
         </form>
     </div>
@@ -209,11 +209,11 @@ $todayStats = $stmt->fetch();
                         <i class="fas fa-robot"></i>
                     </div>
                     <div>
-                        <h3 class="mb-1">Robot Status</h3>
+                        <h3 class="mb-1"><?php _e('admin_robot_status'); ?></h3>
                         <p class="mb-0">
                             <span class="badge badge-<?php echo $robotSettings['robot_enabled'] ? 'success' : 'secondary'; ?> badge-lg">
                                 <i class="fas fa-<?php echo $robotSettings['robot_enabled'] ? 'play' : 'stop'; ?> me-1"></i>
-                                <?php echo $robotSettings['robot_enabled'] ? 'RUNNING' : 'STOPPED'; ?>
+                                <?php echo $robotSettings['robot_enabled'] ? __('admin_running') : __('admin_stopped'); ?>
                             </span>
                             <?php if ($robotStatus): ?>
                             <span class="badge badge-<?php echo $robotStatus['connection_status'] === 'connected' ? 'success' : 'warning'; ?> ms-2">
@@ -224,7 +224,7 @@ $todayStats = $stmt->fetch();
                         </p>
                         <p class="text-muted small mt-2 mb-0">
                             <i class="fas fa-<?php echo $adminUser['olymptrade_account_type'] === 'demo' ? 'flask' : 'dollar-sign'; ?> me-1"></i>
-                            Trading on <strong><?php echo strtoupper($adminUser['olymptrade_account_type'] ?? 'demo'); ?></strong> account
+                            <?php _e('admin_trading_on'); ?> <strong><?php echo strtoupper($adminUser['olymptrade_account_type'] ?? 'demo'); ?></strong>
                         </p>
                     </div>
                 </div>
@@ -235,7 +235,7 @@ $todayStats = $stmt->fetch();
                     <input type="hidden" name="action" value="toggle_robot">
                     <button type="submit" class="btn btn-lg btn-<?php echo $robotSettings['robot_enabled'] ? 'danger' : 'success'; ?>">
                         <i class="fas fa-power-off me-2"></i>
-                        <?php echo $robotSettings['robot_enabled'] ? 'STOP ROBOT' : 'START ROBOT'; ?>
+                        <?php echo $robotSettings['robot_enabled'] ? __('admin_btn_stop_robot') : __('admin_btn_start_robot'); ?>
                     </button>
                 </form>
             </div>
@@ -248,22 +248,22 @@ $todayStats = $stmt->fetch();
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
         <div class="stat-value"><?php echo $todayStats['total_trades'] ?? 0; ?></div>
-        <div class="stat-label">Today's Trades</div>
+        <div class="stat-label"><?php _e('admin_stat_today_trades'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-check"></i></div>
         <div class="stat-value"><?php echo $todayStats['wins'] ?? 0; ?></div>
-        <div class="stat-label">Wins</div>
+        <div class="stat-label"><?php _e('admin_stat_wins'); ?></div>
     </div>
     <div class="stat-card danger fade-in">
         <div class="stat-icon"><i class="fas fa-times"></i></div>
         <div class="stat-value"><?php echo $todayStats['losses'] ?? 0; ?></div>
-        <div class="stat-label">Losses</div>
+        <div class="stat-label"><?php _e('admin_stat_losses'); ?></div>
     </div>
     <div class="stat-card <?php echo ($todayStats['pnl'] ?? 0) >= 0 ? 'success' : 'danger'; ?> fade-in">
         <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
         <div class="stat-value"><?php echo ($todayStats['pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($todayStats['pnl'] ?? 0, 2); ?></div>
-        <div class="stat-label">Today's P/L</div>
+        <div class="stat-label"><?php _e('admin_stat_today_pnl'); ?></div>
     </div>
 </div>
 
@@ -276,12 +276,12 @@ $todayStats = $stmt->fetch();
         <div class="col-lg-6 mb-4">
             <div class="admin-card h-100 fade-in">
                 <div class="admin-card-header">
-                    <h5 class="admin-card-title"><i class="fas fa-sliders-h text-primary"></i> Trading Settings</h5>
+                    <h5 class="admin-card-title"><i class="fas fa-sliders-h text-primary"></i> <?php _e('admin_trading_settings'); ?></h5>
                 </div>
                 <div class="admin-card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Market</label>
+                            <label class="form-label"><?php _e('admin_label_market'); ?></label>
                             <select name="market" class="form-select">
                                 <option value="EUR/USD" <?php echo $robotSettings['market'] === 'EUR/USD' ? 'selected' : ''; ?>>EUR/USD</option>
                                 <option value="GBP/USD" <?php echo $robotSettings['market'] === 'GBP/USD' ? 'selected' : ''; ?>>GBP/USD</option>
@@ -290,7 +290,7 @@ $todayStats = $stmt->fetch();
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Timeframe</label>
+                            <label class="form-label"><?php _e('admin_label_timeframe'); ?></label>
                             <select name="timeframe" class="form-select">
                                 <option value="5M" <?php echo $robotSettings['timeframe'] === '5M' ? 'selected' : ''; ?>>5 Minutes</option>
                                 <option value="15M" <?php echo $robotSettings['timeframe'] === '15M' ? 'selected' : ''; ?>>15 Minutes</option>
@@ -302,30 +302,30 @@ $todayStats = $stmt->fetch();
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Risk Level</label>
+                            <label class="form-label"><?php _e('admin_label_risk_level'); ?></label>
                             <select name="risk_level" class="form-select">
-                                <option value="low" <?php echo $robotSettings['risk_level'] === 'low' ? 'selected' : ''; ?>>Low (Conservative)</option>
-                                <option value="medium" <?php echo $robotSettings['risk_level'] === 'medium' ? 'selected' : ''; ?>>Medium (Balanced)</option>
-                                <option value="high" <?php echo $robotSettings['risk_level'] === 'high' ? 'selected' : ''; ?>>High (Aggressive)</option>
+                                <option value="low" <?php echo $robotSettings['risk_level'] === 'low' ? 'selected' : ''; ?>><?php _e('admin_risk_low'); ?></option>
+                                <option value="medium" <?php echo $robotSettings['risk_level'] === 'medium' ? 'selected' : ''; ?>><?php _e('admin_risk_medium'); ?></option>
+                                <option value="high" <?php echo $robotSettings['risk_level'] === 'high' ? 'selected' : ''; ?>><?php _e('admin_risk_high'); ?></option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Schedule Mode</label>
+                            <label class="form-label"><?php _e('admin_label_schedule_mode'); ?></label>
                             <select name="schedule_mode" id="scheduleMode" class="form-select" onchange="toggleScheduleUI()">
                                 <option value="auto_24h" <?php echo ($robotSettings['schedule_mode'] ?? 'auto_24h') === 'auto_24h' ? 'selected' : ''; ?>>
-                                    <i class="fas fa-clock"></i> 24 Jam Otomatis
+                                    <?php _e('admin_schedule_24h'); ?>
                                 </option>
                                 <option value="best_hours" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'best_hours' ? 'selected' : ''; ?>>
-                                    <i class="fas fa-star"></i> Jam Terbaik (14:00-22:00)
+                                    <?php _e('admin_schedule_best'); ?>
                                 </option>
                                 <option value="custom_single" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'custom_single' ? 'selected' : ''; ?>>
-                                    <i class="fas fa-edit"></i> Custom Single Session
+                                    <?php _e('admin_schedule_custom'); ?>
                                 </option>
                                 <option value="multi_session" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'multi_session' ? 'selected' : ''; ?>>
-                                    <i class="fas fa-layer-group"></i> Multi-Session
+                                    <?php _e('admin_schedule_multi'); ?>
                                 </option>
                                 <option value="per_day" <?php echo ($robotSettings['schedule_mode'] ?? '') === 'per_day' ? 'selected' : ''; ?>>
-                                    <i class="fas fa-calendar-week"></i> Per Hari Berbeda
+                                    <?php _e('admin_schedule_per_day'); ?>
                                 </option>
                             </select>
                         </div>
@@ -335,12 +335,12 @@ $todayStats = $stmt->fetch();
                     <div id="customSingleUI" class="schedule-ui-panel" style="display: none;">
                         <div class="row mt-3">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label"><i class="fas fa-play text-success"></i> Jam Mulai</label>
+                                <label class="form-label"><i class="fas fa-play text-success"></i> <?php _e('admin_label_start_time'); ?></label>
                                 <input type="time" name="custom_start" id="customStart" class="form-control"
                                        value="<?php echo $robotSettings['custom_start'] ?? '08:00'; ?>">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label"><i class="fas fa-stop text-danger"></i> Jam Selesai</label>
+                                <label class="form-label"><i class="fas fa-stop text-danger"></i> <?php _e('admin_label_end_time'); ?></label>
                                 <input type="time" name="custom_end" id="customEnd" class="form-control"
                                        value="<?php echo $robotSettings['custom_end'] ?? '22:00'; ?>">
                             </div>
@@ -350,12 +350,12 @@ $todayStats = $stmt->fetch();
                     <!-- Multi-Session UI -->
                     <div id="multiSessionUI" class="schedule-ui-panel" style="display: none;">
                         <div class="mt-3">
-                            <label class="form-label"><i class="fas fa-layer-group"></i> Multiple Trading Sessions</label>
+                            <label class="form-label"><i class="fas fa-layer-group"></i> <?php _e('admin_multiple_sessions'); ?></label>
                             <div id="sessionsContainer">
                                 <!-- Sessions will be rendered here -->
                             </div>
                             <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSession()">
-                                <i class="fas fa-plus"></i> Add Session
+                                <i class="fas fa-plus"></i> <?php _e('admin_btn_add_session'); ?>
                             </button>
                             <input type="hidden" name="schedule_sessions" id="scheduleSessionsInput" value="">
                         </div>
@@ -364,9 +364,9 @@ $todayStats = $stmt->fetch();
                     <!-- Per Day UI -->
                     <div id="perDayUI" class="schedule-ui-panel" style="display: none;">
                         <div class="mt-3">
-                            <label class="form-label"><i class="fas fa-calendar-week"></i> Jadwal Per Hari</label>
+                            <label class="form-label"><i class="fas fa-calendar-week"></i> <?php _e('admin_schedule_per_day_label'); ?></label>
                             <?php
-                            $days = ['monday' => 'Senin', 'tuesday' => 'Selasa', 'wednesday' => 'Rabu', 'thursday' => 'Kamis', 'friday' => 'Jumat'];
+                            $days = ['monday' => __('admin_day_monday'), 'tuesday' => __('admin_day_tuesday'), 'wednesday' => __('admin_day_wednesday'), 'thursday' => __('admin_day_thursday'), 'friday' => __('admin_day_friday')];
                             $schedulePerDay = json_decode($robotSettings['schedule_per_day'] ?? '{}', true) ?: [];
                             ?>
                             <?php foreach ($days as $dayKey => $dayName): ?>
@@ -392,14 +392,14 @@ $todayStats = $stmt->fetch();
                             </div>
                             <?php endforeach; ?>
                             <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="copyToAllDays()">
-                                <i class="fas fa-copy"></i> Copy Senin ke Semua Hari
+                                <i class="fas fa-copy"></i> <?php _e('admin_copy_to_all'); ?>
                             </button>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Trade Amount (IDR)</label>
+                            <label class="form-label"><?php _e('admin_label_trade_amount'); ?></label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
                                 <input type="number" name="trade_amount" class="form-control"
@@ -407,11 +407,11 @@ $todayStats = $stmt->fetch();
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Daily Limit</label>
+                            <label class="form-label"><?php _e('admin_label_daily_limit'); ?></label>
                             <div class="input-group">
                                 <input type="number" name="daily_limit" class="form-control"
                                        value="<?php echo $robotSettings['daily_limit']; ?>" min="1" max="100">
-                                <span class="input-group-text">trades</span>
+                                <span class="input-group-text"><?php _e('admin_trades_suffix'); ?></span>
                             </div>
                         </div>
                     </div>
@@ -423,55 +423,55 @@ $todayStats = $stmt->fetch();
         <div class="col-lg-6 mb-4">
             <div class="admin-card h-100 fade-in">
                 <div class="admin-card-header">
-                    <h5 class="admin-card-title"><i class="fas fa-shield-alt text-warning"></i> Risk Management</h5>
+                    <h5 class="admin-card-title"><i class="fas fa-shield-alt text-warning"></i> <?php _e('admin_risk_management'); ?></h5>
                 </div>
                 <div class="admin-card-body">
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-arrow-up text-success me-1"></i> Take Profit Target (Auto-Stop)
+                            <i class="fas fa-arrow-up text-success me-1"></i> <?php _e('admin_label_tp_target'); ?>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="number" name="take_profit_target" class="form-control"
                                    value="<?php echo $robotSettings['take_profit_target']; ?>" min="10" step="5">
                         </div>
-                        <small class="text-muted">Robot will auto-stop when daily profit reaches this target</small>
+                        <small class="text-muted"><?php _e('admin_tp_hint'); ?></small>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-arrow-down text-danger me-1"></i> Max Loss Limit (Auto-Stop)
+                            <i class="fas fa-arrow-down text-danger me-1"></i> <?php _e('admin_label_ml_limit'); ?>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="number" name="max_loss_limit" class="form-control"
                                    value="<?php echo $robotSettings['max_loss_limit']; ?>" min="10" step="5">
                         </div>
-                        <small class="text-muted">Robot will auto-stop when daily loss reaches this limit</small>
+                        <small class="text-muted"><?php _e('admin_ml_hint'); ?></small>
                     </div>
 
                     <!-- Resume Behavior -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-redo text-info me-1"></i> Resume Behavior (After Auto-Pause)
+                            <i class="fas fa-redo text-info me-1"></i> <?php _e('admin_label_resume_behavior'); ?>
                         </label>
                         <select name="resume_behavior" class="form-select">
                             <option value="next_session" <?php echo ($robotSettings['resume_behavior'] ?? 'next_session') === 'next_session' ? 'selected' : ''; ?>>
-                                Resume di sesi berikutnya
+                                <?php _e('admin_resume_next_session'); ?>
                             </option>
                             <option value="next_day" <?php echo ($robotSettings['resume_behavior'] ?? '') === 'next_day' ? 'selected' : ''; ?>>
-                                Resume besok (reset at midnight)
+                                <?php _e('admin_resume_next_day'); ?>
                             </option>
                             <option value="manual_only" <?php echo ($robotSettings['resume_behavior'] ?? '') === 'manual_only' ? 'selected' : ''; ?>>
-                                Manual resume saja
+                                <?php _e('admin_resume_manual'); ?>
                             </option>
                         </select>
-                        <small class="text-muted">Bagaimana robot melanjutkan setelah auto-pause</small>
+                        <small class="text-muted"><?php _e('admin_resume_hint'); ?></small>
                     </div>
 
                     <div class="alert alert-info py-2 mb-0">
                         <i class="fas fa-info-circle me-2"></i>
-                        <strong>Current Daily P/L:</strong>
+                        <strong><?php _e('admin_current_daily_pnl'); ?></strong>
                         <span class="<?php echo ($todayStats['pnl'] ?? 0) >= 0 ? 'text-success' : 'text-danger'; ?>">
                             <?php echo ($todayStats['pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($todayStats['pnl'] ?? 0, 2); ?>
                         </span>
@@ -484,8 +484,8 @@ $todayStats = $stmt->fetch();
     <!-- Strategies -->
     <div class="admin-card mb-4 fade-in">
         <div class="admin-card-header">
-            <h5 class="admin-card-title"><i class="fas fa-brain text-info"></i> Active Strategies</h5>
-            <span class="badge badge-primary"><?php echo count($activeStrategies); ?> / <?php echo count($strategies); ?> Active</span>
+            <h5 class="admin-card-title"><i class="fas fa-brain text-info"></i> <?php _e('admin_active_strategies'); ?></h5>
+            <span class="badge badge-primary"><?php echo str_replace([':active', ':total'], [count($activeStrategies), count($strategies)], __('admin_strategies_count')); ?></span>
         </div>
         <div class="admin-card-body">
             <div class="row">
@@ -502,7 +502,7 @@ $todayStats = $stmt->fetch();
                             <p class="strategy-desc"><?php echo $strategy['desc']; ?></p>
                             <span class="strategy-winrate">
                                 <i class="fas fa-chart-line me-1"></i>
-                                ~<?php echo $strategy['winrate']; ?>% Win Rate
+                                ~<?php echo $strategy['winrate']; ?>% <?php _e('admin_winrate_label'); ?>
                             </span>
                         </div>
                     </div>
@@ -517,11 +517,11 @@ $todayStats = $stmt->fetch();
         <div class="admin-card-body">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="mb-1"><i class="fas fa-save me-2 text-primary"></i>Save Settings</h5>
-                    <p class="text-muted mb-0 small">Settings will be applied immediately</p>
+                    <h5 class="mb-1"><i class="fas fa-save me-2 text-primary"></i><?php _e('admin_save_settings'); ?></h5>
+                    <p class="text-muted mb-0 small"><?php _e('admin_settings_apply_immediately'); ?></p>
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="fas fa-save me-2"></i>Save All Settings
+                    <i class="fas fa-save me-2"></i><?php _e('admin_save_all_settings'); ?>
                 </button>
             </div>
         </div>
@@ -733,7 +733,7 @@ function addSession() {
         sessions.push({ start: '08:00', end: '12:00' });
         renderSessions();
     } else {
-        alert('Maximum 5 sessions allowed!');
+        alert('<?php echo addslashes(__('admin_max_sessions')); ?>');
     }
 }
 
@@ -763,7 +763,7 @@ function copyToAllDays() {
         document.querySelector(`input[name="day_enabled[${day}]"]`).checked = mondayEnabled;
     });
 
-    alert('Jadwal Senin berhasil dicopy ke semua hari!');
+    alert('<?php echo addslashes(__('admin_copy_success')); ?>');
 }
 
 // Initialize on page load
