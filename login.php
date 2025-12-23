@@ -7,6 +7,7 @@
 // Load config and functions FIRST (no HTML output)
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
+require_once 'includes/language.php'; // Load early for error messages
 
 // Check if already logged in - redirect BEFORE any output
 if (isLoggedIn()) {
@@ -25,12 +26,12 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF token
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Request tidak valid. Silakan coba lagi.';
+        $error = __('login_error_csrf');
     } else {
         $license_key = strtoupper(cleanInput($_POST['license_key'] ?? ''));
 
         if (empty($license_key)) {
-            $error = 'Silakan masukkan License Key Anda.';
+            $error = __('login_error_empty');
         } else {
             $result = loginWithLicenseKey($license_key);
 
@@ -51,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Check for success message from registration
 if (isset($_GET['registered'])) {
-    $success = 'Registrasi berhasil! Silakan tunggu verifikasi admin.';
+    $success = __('login_success_registered');
 }
 if (isset($_GET['verified'])) {
-    $success = 'Akun Anda telah diverifikasi! Silakan login.';
+    $success = __('login_success_verified');
 }
 
 // NOW load header (HTML output starts here)
-$page_title = 'Login';
+$page_title = __('login_page_title') ?: 'Login';
 require_once 'includes/header.php';
 
 // WhatsApp number for support
@@ -127,7 +128,7 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
                 if (!licenseKey) {
                     e.preventDefault();
-                    alert('Silakan masukkan License Key Anda.');
+                    alert('<?php echo addslashes(__('login_error_empty')); ?>');
                     return false;
                 }
 

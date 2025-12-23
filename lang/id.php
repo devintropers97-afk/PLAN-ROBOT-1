@@ -128,6 +128,9 @@ return [
     'risk_link' => 'Baca disclaimer lengkap',
 
     // Login Page
+    'login_page_title' => 'Login',
+    'login_error_csrf' => 'Request tidak valid. Silakan coba lagi.',
+    'login_error_empty' => 'Silakan masukkan License Key Anda.',
     'login_title' => 'Selamat Datang',
     'login_subtitle' => 'Profit 5-10% sehari? Cukup ON-kan Robot, sisanya AUTOPILOT!',
     'login_label_key' => 'License Key',

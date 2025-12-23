@@ -127,6 +127,9 @@ return [
     'risk_link' => 'Read full disclaimer',
 
     // Login Page
+    'login_page_title' => 'Login',
+    'login_error_csrf' => 'Invalid request. Please try again.',
+    'login_error_empty' => 'Please enter your License Key.',
     'login_title' => 'Welcome',
     'login_subtitle' => '5-10% daily profit? Just turn ON the Robot, it\'s all AUTOPILOT!',
     'login_label_key' => 'License Key',
