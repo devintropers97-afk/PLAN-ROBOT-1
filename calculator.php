@@ -66,16 +66,17 @@ require_once 'includes/header.php';
                                     </select>
                                 </div>
 
-                                <!-- Plan Selection with Payout Rate -->
+                                <!-- OlympTrade Account Level with Payout Rate -->
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-crown me-1"></i> Paket Plan</label>
+                                    <label class="form-label"><i class="fas fa-user-circle me-1"></i> Level Akun OlympTrade</label>
                                     <select class="form-select" id="planSelect">
-                                        <option value="82" data-plan="starter">Starter (FREE) - Payout 82%</option>
-                                        <option value="85" data-plan="advance" selected>Advance (PRO) - Payout 85%</option>
-                                        <option value="92" data-plan="expert">Expert (ELITE/VIP) - Payout 92%</option>
+                                        <option value="82" data-plan="starter">Starter - Payout 82%</option>
+                                        <option value="85" data-plan="advanced" selected>Advanced - Payout 85%</option>
+                                        <option value="92" data-plan="expert">Expert - Payout 92%</option>
                                     </select>
                                     <div class="mt-2">
                                         <span class="badge bg-success" id="payoutDisplay">Payout: 85%</span>
+                                        <small class="text-muted ms-2">Sesuai level akun OlympTrade Anda</small>
                                     </div>
                                 </div>
 
