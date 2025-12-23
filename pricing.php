@@ -24,14 +24,14 @@ require_once 'includes/header.php';
                         </div>
                         <h3 class="pricing-name">FREE</h3>
                         <div class="pricing-price">
-                            <span class="amount">GRATIS</span>
-                            <span class="period">selamanya</span>
+                            <span class="amount"><?php _e('price_free'); ?></span>
+                            <span class="period"><?php _e('price_forever'); ?></span>
                         </div>
-                        <p class="pricing-desc">Cocok untuk pemula yang ingin mencoba sistem trading otomatis</p>
+                        <p class="pricing-desc"><?php _e('price_free_desc'); ?></p>
                         <ul class="pricing-features flex-grow-1">
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span><strong>2 Strategi</strong> Trading</span>
+                                <span><strong>2 <?php _e('price_strategies'); ?></strong> Trading</span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
@@ -43,19 +43,19 @@ require_once 'includes/header.php';
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Statistik dasar</span>
+                                <span><?php _e('price_basic_stats'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>History 30 hari</span>
+                                <span><?php _e('price_history_30'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Support via Telegram</span>
+                                <span><?php _e('price_telegram_support'); ?></span>
                             </li>
                             <li class="disabled">
                                 <i class="fas fa-times"></i>
-                                <span>Strategi premium</span>
+                                <span><?php _e('price_premium_strat'); ?></span>
                             </li>
                             <li class="disabled">
                                 <i class="fas fa-times"></i>
@@ -63,9 +63,9 @@ require_once 'includes/header.php';
                             </li>
                         </ul>
                         <a href="register.php" class="btn btn-secondary w-100 mt-auto">
-                            <i class="fas fa-rocket me-2"></i>Mulai Gratis
+                            <i class="fas fa-rocket me-2"></i><?php _e('price_start_free'); ?>
                         </a>
-                        <small class="d-block text-muted mt-2 text-center">Daftar via link afiliasi</small>
+                        <small class="d-block text-muted mt-2 text-center"><?php _e('price_register_affiliate'); ?></small>
                     </div>
                 </div>
             </div>
@@ -80,17 +80,17 @@ require_once 'includes/header.php';
                         <h3 class="pricing-name">PRO</h3>
                         <div class="pricing-price">
                             <span class="amount">$29</span>
-                            <span class="period">per bulan</span>
+                            <span class="period"><?php _e('price_per_month'); ?></span>
                         </div>
-                        <p class="pricing-desc">Untuk trader yang serius ingin meningkatkan profit</p>
+                        <p class="pricing-desc"><?php _e('price_pro_desc'); ?></p>
                         <ul class="pricing-features flex-grow-1">
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span><strong>4 Strategi</strong> Trading</span>
+                                <span><strong>4 <?php _e('price_strategies'); ?></strong> Trading</span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Semua strategi FREE</span>
+                                <span><?php _e('price_all_free_strat'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
@@ -102,23 +102,23 @@ require_once 'includes/header.php';
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Statistik lengkap</span>
+                                <span><?php _e('price_full_stats'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>History 90 hari</span>
+                                <span><?php _e('price_history_90'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Priority support</span>
+                                <span><?php _e('price_priority_support'); ?></span>
                             </li>
                             <li class="disabled">
                                 <i class="fas fa-times"></i>
-                                <span>Strategi 81%+</span>
+                                <span><?php _e('price_strat_81'); ?></span>
                             </li>
                         </ul>
                         <a href="<?php echo isLoggedIn() ? 'subscribe.php?plan=pro' : 'register.php'; ?>" class="btn btn-info w-100 mt-auto">
-                            <i class="fas fa-arrow-up me-2"></i><?php echo isLoggedIn() ? 'Upgrade ke PRO' : 'Mulai dengan PRO'; ?>
+                            <i class="fas fa-arrow-up me-2"></i><?php echo isLoggedIn() ? __('price_upgrade_pro') : __('price_start_pro'); ?>
                         </a>
                     </div>
                 </div>
@@ -134,17 +134,17 @@ require_once 'includes/header.php';
                         <h3 class="pricing-name">ELITE</h3>
                         <div class="pricing-price">
                             <span class="amount">$79</span>
-                            <span class="period">per bulan</span>
+                            <span class="period"><?php _e('price_per_month'); ?></span>
                         </div>
-                        <p class="pricing-desc">Win rate tinggi dengan fitur lengkap untuk hasil maksimal</p>
+                        <p class="pricing-desc"><?php _e('price_elite_desc'); ?></p>
                         <ul class="pricing-features flex-grow-1">
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span><strong>7 Strategi</strong> Trading</span>
+                                <span><strong>7 <?php _e('price_strategies'); ?></strong> Trading</span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Semua strategi PRO</span>
+                                <span><?php _e('price_all_pro_strat'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
@@ -160,7 +160,7 @@ require_once 'includes/header.php';
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>History 180 hari</span>
+                                <span><?php _e('price_history_180'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
@@ -172,7 +172,7 @@ require_once 'includes/header.php';
                             </li>
                         </ul>
                         <a href="<?php echo isLoggedIn() ? 'subscribe.php?plan=elite' : 'register.php'; ?>" class="btn btn-primary w-100 mt-auto">
-                            <i class="fas fa-star me-2"></i><?php echo isLoggedIn() ? 'Upgrade ke ELITE' : 'Mulai dengan ELITE'; ?>
+                            <i class="fas fa-star me-2"></i><?php echo isLoggedIn() ? __('price_upgrade_elite') : __('price_start_elite'); ?>
                         </a>
                     </div>
                 </div>
@@ -188,13 +188,13 @@ require_once 'includes/header.php';
                         <h3 class="pricing-name text-gradient">VIP</h3>
                         <div class="pricing-price">
                             <span class="amount">$149</span>
-                            <span class="period">per bulan</span>
+                            <span class="period"><?php _e('price_per_month'); ?></span>
                         </div>
-                        <p class="pricing-desc">Akses penuh ke semua strategi dengan win rate tertinggi</p>
+                        <p class="pricing-desc"><?php _e('price_vip_desc'); ?></p>
                         <ul class="pricing-features flex-grow-1">
                             <li>
                                 <i class="fas fa-crown text-warning"></i>
-                                <span><strong>Semua 10 Strategi</strong></span>
+                                <span><strong><?php _e('price_all_10_strat'); ?></strong></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
@@ -210,23 +210,23 @@ require_once 'includes/header.php';
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>History 1 tahun</span>
+                                <span><?php _e('price_history_1y'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Direct owner support</span>
+                                <span><?php _e('price_direct_support'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Priority signal queue</span>
+                                <span><?php _e('price_priority_queue'); ?></span>
                             </li>
                             <li>
                                 <i class="fas fa-check"></i>
-                                <span>Akses fitur beta</span>
+                                <span><?php _e('price_beta_access'); ?></span>
                             </li>
                         </ul>
                         <a href="<?php echo isLoggedIn() ? 'subscribe.php?plan=vip' : 'register.php'; ?>" class="btn btn-outline-primary w-100 mt-auto">
-                            <i class="fas fa-gem me-2"></i><?php echo isLoggedIn() ? 'Upgrade ke VIP' : 'Mulai dengan VIP'; ?>
+                            <i class="fas fa-gem me-2"></i><?php echo isLoggedIn() ? __('price_upgrade_vip') : __('price_start_vip'); ?>
                         </a>
                     </div>
                 </div>
@@ -237,14 +237,14 @@ require_once 'includes/header.php';
         <div class="mt-5 pt-4 fade-in">
             <h3 class="text-center mb-4">
                 <i class="fas fa-table me-2 text-primary"></i>
-                Perbandingan Strategi per Paket
+                <?php _e('price_compare_title'); ?>
             </h3>
             <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle">
                     <thead>
                         <tr>
-                            <th style="min-width: 150px;">Strategi</th>
-                            <th style="min-width: 100px;">Win Rate</th>
+                            <th style="min-width: 150px;"><?php _e('strat_col_strategy'); ?></th>
+                            <th style="min-width: 100px;"><?php _e('strat_col_winrate'); ?></th>
                             <th class="text-center" style="min-width: 80px;">FREE</th>
                             <th class="text-center" style="min-width: 80px;">PRO</th>
                             <th class="text-center" style="min-width: 80px;">ELITE</th>
@@ -335,7 +335,7 @@ require_once 'includes/header.php';
                     </tbody>
                     <tfoot>
                         <tr class="table-primary">
-                            <td><strong>Total Strategi</strong></td>
+                            <td><strong><?php _e('price_total_strat'); ?></strong></td>
                             <td></td>
                             <td class="text-center"><strong class="fs-5">2</strong></td>
                             <td class="text-center"><strong class="fs-5">4</strong></td>
@@ -425,7 +425,7 @@ require_once 'includes/header.php';
         <div class="mt-5 pt-4 fade-in">
             <h3 class="text-center mb-4">
                 <i class="fas fa-comments me-2 text-primary"></i>
-                Apa Kata Pengguna?
+                <?php _e('price_testimonials_title'); ?>
             </h3>
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
@@ -547,7 +547,7 @@ require_once 'includes/header.php';
         <div class="text-center mt-5 pt-4 fade-in">
             <h4 class="mb-4">
                 <i class="fas fa-credit-card me-2 text-primary"></i>
-                Metode Pembayaran
+                <?php _e('price_payment_methods'); ?>
             </h4>
             <div class="d-flex justify-content-center gap-3 gap-md-4 flex-wrap">
                 <div class="payment-method">
@@ -560,13 +560,13 @@ require_once 'includes/header.php';
                     <div class="payment-icon">
                         <i class="fas fa-university"></i>
                     </div>
-                    <span>Transfer Bank</span>
+                    <span><?php _e('price_bank_transfer'); ?></span>
                 </div>
                 <div class="payment-method">
                     <div class="payment-icon">
                         <i class="fas fa-wallet"></i>
                     </div>
-                    <span>E-Wallet</span>
+                    <span><?php _e('price_ewallet'); ?></span>
                 </div>
                 <div class="payment-method">
                     <div class="payment-icon">
@@ -581,7 +581,7 @@ require_once 'includes/header.php';
         <div class="mt-5 pt-4 fade-in">
             <h3 class="text-center mb-4">
                 <i class="fas fa-question-circle me-2 text-primary"></i>
-                Pertanyaan Umum
+                <?php _e('price_faq_title'); ?>
             </h3>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -663,10 +663,10 @@ require_once 'includes/header.php';
         <!-- CTA Section -->
         <div class="mt-5 pt-4 fade-in">
             <div class="cta-box text-center">
-                <h3 class="mb-3">Siap Mulai Trading Otomatis?</h3>
-                <p class="text-muted mb-4">Bergabung dengan ribuan trader yang sudah merasakan kemudahan trading dengan ZYN</p>
+                <h3 class="mb-3"><?php _e('price_cta_title'); ?></h3>
+                <p class="text-muted mb-4"><?php _e('price_cta_desc'); ?></p>
                 <a href="register.php" class="btn btn-primary btn-lg">
-                    <i class="fas fa-rocket me-2"></i>Mulai Gratis Sekarang
+                    <i class="fas fa-rocket me-2"></i><?php _e('price_cta_btn'); ?>
                 </a>
             </div>
         </div>
