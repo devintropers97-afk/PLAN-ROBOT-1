@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Verify Users';
+$page_title = __('admin_verify_title') ?: 'Verify Users';
 require_once 'includes/admin-header.php';
 
 $message = '';
@@ -8,17 +8,17 @@ $messageType = '';
 // Handle verify action (POST only for CSRF protection)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_user'])) {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $message = 'Request tidak valid. Silakan coba lagi.';
+        $message = __('admin_invalid_request');
         $messageType = 'danger';
     } else {
         $userId = intval($_POST['user_id']);
         $licenseKey = verifyUser($userId, $_SESSION['user_id']);
 
         if ($licenseKey) {
-            $message = "User verified successfully! License Key: <code class='text-success'>$licenseKey</code>";
+            $message = str_replace(':key', "<code class='text-success'>$licenseKey</code>", __('admin_verify_success'));
             $messageType = 'success';
         } else {
-            $message = 'Failed to verify user.';
+            $message = __('admin_verify_failed');
             $messageType = 'danger';
         }
     }
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_user'])) {
 // Handle rejection form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_user'])) {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $message = 'Request tidak valid. Silakan coba lagi.';
+        $message = __('admin_invalid_request');
         $messageType = 'danger';
     } else {
         $userId = intval($_POST['user_id']);
@@ -35,13 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_user'])) {
         $customReason = cleanInput($_POST['custom_reason'] ?? '');
 
         if (empty($reasonCode)) {
-            $message = 'Silakan pilih alasan penolakan.';
+            $message = __('admin_select_rejection_reason');
             $messageType = 'danger';
         } elseif (rejectUser($userId, $reasonCode, $customReason)) {
-            $message = 'User rejected successfully.';
+            $message = __('admin_reject_success');
             $messageType = 'success';
         } else {
-            $message = 'Failed to reject user.';
+            $message = __('admin_reject_failed');
             $messageType = 'danger';
         }
     }
@@ -51,18 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_user'])) {
 $pendingUsers = getPendingUsers();
 $pendingCount = count($pendingUsers);
 
-// Rejection reasons
+// Rejection reasons - using translation keys
 $rejectionReasons = [
-    'R01' => 'ID tidak ditemukan / ID not found',
-    'R02' => 'Tidak terdaftar via link afiliasi resmi',
-    'R03' => 'Deposit di bawah $10',
-    'R04' => 'ID sudah digunakan akun lain',
-    'R05' => 'Data tidak lengkap',
-    'R06' => 'Akun OlympTrade tidak aktif',
-    'R07' => 'Negara tidak sesuai',
-    'R08' => 'Screenshot tidak valid',
-    'R09' => 'Duplikat akun terdeteksi',
-    'R10' => 'Alasan lain (custom)'
+    'R01' => __('admin_reject_r01'),
+    'R02' => __('admin_reject_r02'),
+    'R03' => __('admin_reject_r03'),
+    'R04' => __('admin_reject_r04'),
+    'R05' => __('admin_reject_r05'),
+    'R06' => __('admin_reject_r06'),
+    'R07' => __('admin_reject_r07'),
+    'R08' => __('admin_reject_r08'),
+    'R09' => __('admin_reject_r09'),
+    'R10' => __('admin_reject_r10')
 ];
 
 // Helper function for time ago
@@ -70,10 +70,10 @@ function timeAgo($datetime) {
     $time = strtotime($datetime);
     $diff = time() - $time;
 
-    if ($diff < 60) return 'Just now';
-    if ($diff < 3600) return floor($diff / 60) . ' min ago';
-    if ($diff < 86400) return floor($diff / 3600) . ' hours ago';
-    if ($diff < 604800) return floor($diff / 86400) . ' days ago';
+    if ($diff < 60) return __('admin_just_now') ?: 'Just now';
+    if ($diff < 3600) return str_replace(':n', floor($diff / 60), __('admin_n_min_ago'));
+    if ($diff < 86400) return str_replace(':n', floor($diff / 3600), __('admin_n_hours_ago'));
+    if ($diff < 604800) return str_replace(':n', floor($diff / 86400), __('admin_n_days_ago'));
     return date('M d, Y', $time);
 }
 ?>
@@ -81,11 +81,11 @@ function timeAgo($datetime) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-user-check"></i> Verify Users</h1>
-        <p class="page-subtitle"><?php echo $pendingCount; ?> users pending verification</p>
+        <h1 class="page-title"><i class="fas fa-user-check"></i> <?php _e('admin_verify_title'); ?></h1>
+        <p class="page-subtitle"><?php echo str_replace(':count', $pendingCount, __('admin_pending_verification_count')); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -105,9 +105,9 @@ function timeAgo($datetime) {
             <div class="empty-state-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <h4 class="empty-state-title">All Caught Up!</h4>
-            <p class="empty-state-desc">No pending users to verify at the moment.</p>
-            <a href="users.php" class="btn btn-outline-primary mt-3">View All Users</a>
+            <h4 class="empty-state-title"><?php _e('admin_all_caught_up'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_pending_users'); ?></p>
+            <a href="users.php" class="btn btn-outline-primary mt-3"><?php _e('admin_view_all_users'); ?></a>
         </div>
     </div>
 </div>
@@ -115,8 +115,8 @@ function timeAgo($datetime) {
 <!-- Pending Users Table -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-clock"></i> Pending Verifications</h5>
-        <span class="badge badge-warning"><?php echo $pendingCount; ?> Pending</span>
+        <h5 class="admin-card-title"><i class="fas fa-clock"></i> <?php _e('admin_pending_verifications'); ?></h5>
+        <span class="badge badge-warning"><?php echo $pendingCount; ?> <?php _e('admin_status_pending'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <div class="table-responsive">
@@ -124,11 +124,11 @@ function timeAgo($datetime) {
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>User Details</th>
+                        <th><?php _e('admin_user_details'); ?></th>
                         <th>OlympTrade ID</th>
-                        <th>Country</th>
-                        <th>Registered</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_th_country'); ?></th>
+                        <th><?php _e('admin_th_registered'); ?></th>
+                        <th><?php _e('admin_th_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,19 +161,19 @@ function timeAgo($datetime) {
                         </td>
                         <td>
                             <div class="action-btns">
-                                <form method="POST" class="d-inline" onsubmit="return confirm('Approve this user and generate license key?');">
+                                <form method="POST" class="d-inline" onsubmit="return confirm('<?php echo addslashes(__('admin_confirm_approve')); ?>');">
                                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="verify_user" value="1">
                                     <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                     <button type="submit" class="btn-approve">
-                                        <i class="fas fa-check"></i> Approve
+                                        <i class="fas fa-check"></i> <?php _e('admin_btn_approve'); ?>
                                     </button>
                                 </form>
                                 <button type="button"
                                         class="btn-reject"
                                         data-bs-toggle="modal"
                                         data-bs-target="#rejectModal<?php echo $user['id']; ?>">
-                                    <i class="fas fa-times"></i> Reject
+                                    <i class="fas fa-times"></i> <?php _e('admin_btn_reject'); ?>
                                 </button>
                             </div>
 
@@ -187,19 +187,19 @@ function timeAgo($datetime) {
                                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
 
                                             <div class="modal-header">
-                                                <h5 class="modal-title"><i class="fas fa-user-times me-2 text-danger"></i>Reject User</h5>
+                                                <h5 class="modal-title"><i class="fas fa-user-times me-2 text-danger"></i><?php _e('admin_reject_user'); ?></h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="mb-3 p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 8px;">
-                                                    <p class="mb-1"><strong>User:</strong> <?php echo htmlspecialchars($user['fullname']); ?></p>
+                                                    <p class="mb-1"><strong><?php _e('admin_th_user'); ?>:</strong> <?php echo htmlspecialchars($user['fullname']); ?></p>
                                                     <p class="mb-0"><strong>OlympTrade ID:</strong> <code><?php echo htmlspecialchars($user['olymptrade_id']); ?></code></p>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label class="form-label">Rejection Reason <span class="text-danger">*</span></label>
+                                                    <label class="form-label"><?php _e('admin_rejection_reason'); ?> <span class="text-danger">*</span></label>
                                                     <select class="form-select" name="reason_code" required onchange="toggleCustomReason(this, <?php echo $user['id']; ?>)">
-                                                        <option value="">Select reason...</option>
+                                                        <option value=""><?php _e('admin_select_reason'); ?></option>
                                                         <?php foreach ($rejectionReasons as $code => $reason): ?>
                                                         <option value="<?php echo $code; ?>"><?php echo $code; ?> - <?php echo $reason; ?></option>
                                                         <?php endforeach; ?>
@@ -207,14 +207,14 @@ function timeAgo($datetime) {
                                                 </div>
 
                                                 <div class="mb-3" id="customReasonDiv<?php echo $user['id']; ?>" style="display: none;">
-                                                    <label class="form-label">Custom Reason</label>
-                                                    <textarea class="form-control" name="custom_reason" rows="3" placeholder="Enter custom rejection reason..."></textarea>
+                                                    <label class="form-label"><?php _e('admin_custom_reason'); ?></label>
+                                                    <textarea class="form-control" name="custom_reason" rows="3" placeholder="<?php echo __('admin_enter_custom_reason'); ?>"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?php _e('admin_cancel'); ?></button>
                                                 <button type="submit" class="btn btn-danger">
-                                                    <i class="fas fa-times me-2"></i>Reject User
+                                                    <i class="fas fa-times me-2"></i><?php _e('admin_reject_user'); ?>
                                                 </button>
                                             </div>
                                         </form>
@@ -234,28 +234,28 @@ function timeAgo($datetime) {
 <!-- Verification Guidelines -->
 <div class="admin-card guidelines-card mt-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-info-circle"></i> Verification Guidelines</h5>
+        <h5 class="admin-card-title"><i class="fas fa-info-circle"></i> <?php _e('admin_verification_guidelines'); ?></h5>
     </div>
     <div class="admin-card-body">
         <div class="row">
             <div class="col-md-6">
-                <h6 class="text-success mb-3"><i class="fas fa-check-circle me-2"></i>Approve if:</h6>
+                <h6 class="text-success mb-3"><i class="fas fa-check-circle me-2"></i><?php _e('admin_approve_if'); ?></h6>
                 <ul class="guidelines-list">
-                    <li><i class="fas fa-check text-success"></i> OlympTrade ID exists and is active</li>
-                    <li><i class="fas fa-check text-success"></i> Registered via official affiliate link</li>
-                    <li><i class="fas fa-check text-success"></i> Has minimum $10 deposit</li>
-                    <li><i class="fas fa-check text-success"></i> All registration data is complete</li>
-                    <li><i class="fas fa-check text-success"></i> No duplicate accounts detected</li>
+                    <li><i class="fas fa-check text-success"></i> <?php _e('admin_guideline_approve_1'); ?></li>
+                    <li><i class="fas fa-check text-success"></i> <?php _e('admin_guideline_approve_2'); ?></li>
+                    <li><i class="fas fa-check text-success"></i> <?php _e('admin_guideline_approve_3'); ?></li>
+                    <li><i class="fas fa-check text-success"></i> <?php _e('admin_guideline_approve_4'); ?></li>
+                    <li><i class="fas fa-check text-success"></i> <?php _e('admin_guideline_approve_5'); ?></li>
                 </ul>
             </div>
             <div class="col-md-6">
-                <h6 class="text-danger mb-3"><i class="fas fa-times-circle me-2"></i>Reject if:</h6>
+                <h6 class="text-danger mb-3"><i class="fas fa-times-circle me-2"></i><?php _e('admin_reject_if'); ?></h6>
                 <ul class="guidelines-list">
-                    <li><i class="fas fa-times text-danger"></i> OlympTrade ID not found in system</li>
-                    <li><i class="fas fa-times text-danger"></i> Not registered via affiliate link</li>
-                    <li><i class="fas fa-times text-danger"></i> Deposit below $10 minimum</li>
-                    <li><i class="fas fa-times text-danger"></i> Duplicate account detected</li>
-                    <li><i class="fas fa-times text-danger"></i> Suspicious or fraudulent activity</li>
+                    <li><i class="fas fa-times text-danger"></i> <?php _e('admin_guideline_reject_1'); ?></li>
+                    <li><i class="fas fa-times text-danger"></i> <?php _e('admin_guideline_reject_2'); ?></li>
+                    <li><i class="fas fa-times text-danger"></i> <?php _e('admin_guideline_reject_3'); ?></li>
+                    <li><i class="fas fa-times text-danger"></i> <?php _e('admin_guideline_reject_4'); ?></li>
+                    <li><i class="fas fa-times text-danger"></i> <?php _e('admin_guideline_reject_5'); ?></li>
                 </ul>
             </div>
         </div>

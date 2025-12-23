@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Trade History';
+$page_title = __('admin_trades_title') ?: 'Trade History';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -68,11 +68,11 @@ $strategies = $stmt->fetchAll();
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-chart-line"></i> Trade History</h1>
-        <p class="page-subtitle">Viewing trades from <?php echo date('M d', strtotime($date_from)); ?> to <?php echo date('M d, Y', strtotime($date_to)); ?></p>
+        <h1 class="page-title"><i class="fas fa-chart-line"></i> <?php _e('admin_trades_title'); ?></h1>
+        <p class="page-subtitle"><?php echo str_replace([':from', ':to'], [date('M d', strtotime($date_from)), date('M d, Y', strtotime($date_to))], __('admin_viewing_trades_period')); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -81,49 +81,49 @@ $strategies = $stmt->fetchAll();
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
         <div class="stat-value" data-count="<?php echo $stats['total_trades'] ?? 0; ?>"><?php echo number_format($stats['total_trades'] ?? 0); ?></div>
-        <div class="stat-label">Total Trades</div>
+        <div class="stat-label"><?php _e('admin_total_trades'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-value" data-count="<?php echo $stats['wins'] ?? 0; ?>"><?php echo number_format($stats['wins'] ?? 0); ?></div>
-        <div class="stat-label">Wins</div>
+        <div class="stat-label"><?php _e('admin_wins'); ?></div>
     </div>
     <div class="stat-card danger fade-in">
         <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
         <div class="stat-value" data-count="<?php echo $stats['losses'] ?? 0; ?>"><?php echo number_format($stats['losses'] ?? 0); ?></div>
-        <div class="stat-label">Losses</div>
+        <div class="stat-label"><?php _e('admin_losses'); ?></div>
     </div>
     <div class="stat-card <?php echo ($stats['total_pnl'] ?? 0) >= 0 ? 'success' : 'danger'; ?> fade-in">
         <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
         <div class="stat-value"><?php echo ($stats['total_pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($stats['total_pnl'] ?? 0, 2); ?></div>
-        <div class="stat-label">Total P/L</div>
+        <div class="stat-label"><?php _e('admin_total_pnl'); ?></div>
     </div>
     <div class="stat-card <?php echo ($stats['win_rate'] ?? 0) >= 60 ? 'success' : (($stats['win_rate'] ?? 0) >= 50 ? 'warning' : 'danger'); ?> fade-in">
         <div class="stat-icon"><i class="fas fa-percentage"></i></div>
         <div class="stat-value"><?php echo number_format($stats['win_rate'] ?? 0, 1); ?>%</div>
-        <div class="stat-label">Win Rate</div>
+        <div class="stat-label"><?php _e('admin_winrate_label'); ?></div>
     </div>
 </div>
 
 <!-- Filters -->
 <div class="admin-card mb-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-filter"></i> Filters</h5>
+        <h5 class="admin-card-title"><i class="fas fa-filter"></i> <?php _e('admin_filters'); ?></h5>
     </div>
     <div class="admin-card-body">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-2">
-                <label class="form-label small">From Date</label>
+                <label class="form-label small"><?php _e('admin_from_date'); ?></label>
                 <input type="date" name="date_from" class="form-control" value="<?php echo $date_from; ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">To Date</label>
+                <label class="form-label small"><?php _e('admin_to_date'); ?></label>
                 <input type="date" name="date_to" class="form-control" value="<?php echo $date_to; ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">User</label>
+                <label class="form-label small"><?php _e('admin_th_user'); ?></label>
                 <select name="user" class="form-select">
-                    <option value="">All Users</option>
+                    <option value=""><?php _e('admin_all_users'); ?></option>
                     <?php foreach ($allUsers as $u): ?>
                     <option value="<?php echo $u['id']; ?>" <?php echo $user_filter == $u['id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($u['fullname']); ?>
@@ -132,9 +132,9 @@ $strategies = $stmt->fetchAll();
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Strategy</label>
+                <label class="form-label small"><?php _e('admin_th_strategy'); ?></label>
                 <select name="strategy" class="form-select">
-                    <option value="">All Strategies</option>
+                    <option value=""><?php _e('admin_all_strategies'); ?></option>
                     <?php foreach ($strategies as $s): ?>
                     <option value="<?php echo $s['strategy_id']; ?>" <?php echo $strategy_filter == $s['strategy_id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($s['strategy']); ?>
@@ -143,17 +143,17 @@ $strategies = $stmt->fetchAll();
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Result</label>
+                <label class="form-label small"><?php _e('admin_th_result'); ?></label>
                 <select name="result" class="form-select">
-                    <option value="">All Results</option>
-                    <option value="win" <?php echo $result_filter === 'win' ? 'selected' : ''; ?>>Win</option>
-                    <option value="loss" <?php echo $result_filter === 'loss' ? 'selected' : ''; ?>>Loss</option>
-                    <option value="tie" <?php echo $result_filter === 'tie' ? 'selected' : ''; ?>>Tie</option>
+                    <option value=""><?php _e('admin_all_results'); ?></option>
+                    <option value="win" <?php echo $result_filter === 'win' ? 'selected' : ''; ?>><?php _e('admin_result_win'); ?></option>
+                    <option value="loss" <?php echo $result_filter === 'loss' ? 'selected' : ''; ?>><?php _e('admin_result_loss'); ?></option>
+                    <option value="tie" <?php echo $result_filter === 'tie' ? 'selected' : ''; ?>><?php _e('admin_result_tie'); ?></option>
                 </select>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Apply
+                    <i class="fas fa-search me-2"></i><?php _e('admin_apply'); ?>
                 </button>
             </div>
         </form>
@@ -163,15 +163,15 @@ $strategies = $stmt->fetchAll();
 <!-- Trades Table -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-history"></i> Trade Records</h5>
-        <span class="badge badge-primary"><?php echo count($trades); ?> trades (max 500)</span>
+        <h5 class="admin-card-title"><i class="fas fa-history"></i> <?php _e('admin_trade_records'); ?></h5>
+        <span class="badge badge-primary"><?php echo str_replace(':count', count($trades), __('admin_trades_count_max')); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($trades)): ?>
         <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-chart-line"></i></div>
-            <h4 class="empty-state-title">No Trades Found</h4>
-            <p class="empty-state-desc">No trades found for the selected period and filters.</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_trades_found'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_trades_period'); ?></p>
         </div>
         <?php else: ?>
         <div class="table-responsive">
@@ -179,14 +179,14 @@ $strategies = $stmt->fetchAll();
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>User</th>
-                        <th>Strategy</th>
-                        <th>Asset</th>
-                        <th>Direction</th>
-                        <th>Amount</th>
-                        <th>Result</th>
+                        <th><?php _e('admin_th_user'); ?></th>
+                        <th><?php _e('admin_th_strategy'); ?></th>
+                        <th><?php _e('admin_th_asset'); ?></th>
+                        <th><?php _e('admin_th_direction'); ?></th>
+                        <th><?php _e('admin_th_amount'); ?></th>
+                        <th><?php _e('admin_th_result'); ?></th>
                         <th>P/L</th>
-                        <th>Time</th>
+                        <th><?php _e('admin_th_time'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -246,7 +246,7 @@ $strategies = $stmt->fetchAll();
     <div class="col-md-6">
         <div class="admin-card fade-in">
             <div class="admin-card-header">
-                <h5 class="admin-card-title"><i class="fas fa-chart-pie"></i> Result Distribution</h5>
+                <h5 class="admin-card-title"><i class="fas fa-chart-pie"></i> <?php _e('admin_result_distribution'); ?></h5>
             </div>
             <div class="admin-card-body">
                 <?php
@@ -256,7 +256,7 @@ $strategies = $stmt->fetchAll();
                 ?>
                 <div class="mb-3">
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-success"><i class="fas fa-check-circle me-1"></i>Wins</span>
+                        <span class="text-success"><i class="fas fa-check-circle me-1"></i><?php _e('admin_wins'); ?></span>
                         <span class="text-success"><?php echo $stats['wins'] ?? 0; ?> (<?php echo $winPercent; ?>%)</span>
                     </div>
                     <div class="progress" style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
@@ -265,7 +265,7 @@ $strategies = $stmt->fetchAll();
                 </div>
                 <div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-danger"><i class="fas fa-times-circle me-1"></i>Losses</span>
+                        <span class="text-danger"><i class="fas fa-times-circle me-1"></i><?php _e('admin_losses'); ?></span>
                         <span class="text-danger"><?php echo $stats['losses'] ?? 0; ?> (<?php echo $lossPercent; ?>%)</span>
                     </div>
                     <div class="progress" style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
@@ -278,14 +278,14 @@ $strategies = $stmt->fetchAll();
     <div class="col-md-6">
         <div class="admin-card fade-in">
             <div class="admin-card-header">
-                <h5 class="admin-card-title"><i class="fas fa-info-circle"></i> Quick Stats</h5>
+                <h5 class="admin-card-title"><i class="fas fa-info-circle"></i> <?php _e('admin_quick_stats'); ?></h5>
             </div>
             <div class="admin-card-body">
                 <div class="row">
                     <div class="col-6">
                         <div class="text-center p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 8px;">
                             <div class="h4 mb-1 text-primary"><?php echo count($trades); ?></div>
-                            <small class="text-muted">Displayed Trades</small>
+                            <small class="text-muted"><?php _e('admin_displayed_trades'); ?></small>
                         </div>
                     </div>
                     <div class="col-6">
@@ -296,7 +296,7 @@ $strategies = $stmt->fetchAll();
                             <div class="h4 mb-1 <?php echo $avgPL >= 0 ? 'text-success' : 'text-danger'; ?>">
                                 $<?php echo number_format($avgPL, 2); ?>
                             </div>
-                            <small class="text-muted">Avg P/L per Trade</small>
+                            <small class="text-muted"><?php _e('admin_avg_pnl_per_trade'); ?></small>
                         </div>
                     </div>
                 </div>

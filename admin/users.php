@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Manage Users';
+$page_title = __('admin_users_title') ?: 'Manage Users';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             case 'suspend':
                 $stmt = $db->prepare("UPDATE users SET status = 'suspended' WHERE id = ? AND role != 'admin'");
                 $stmt->execute([$user_id]);
-                $message = "User #$user_id has been suspended.";
+                $message = str_replace(':id', $user_id, __('admin_user_suspended'));
                 break;
 
             case 'activate':
                 $stmt = $db->prepare("UPDATE users SET status = 'active' WHERE id = ?");
                 $stmt->execute([$user_id]);
-                $message = "User #$user_id has been activated.";
+                $message = str_replace(':id', $user_id, __('admin_user_activated'));
                 break;
 
             case 'upgrade':
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
                 $stmt = $db->prepare("UPDATE users SET package = ?, package_expiry = ? WHERE id = ?");
                 $stmt->execute([$package, $expiry, $user_id]);
-                $message = "User #$user_id upgraded to " . strtoupper($package) . " for $days days.";
+                $message = str_replace([':id', ':package', ':days'], [$user_id, strtoupper($package), $days], __('admin_user_upgraded'));
                 break;
 
             case 'reset_password':
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
 
                 $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
                 $stmt->execute([$hashed, $user_id]);
-                $message = "Password reset for User #$user_id. New password: <code class='text-warning'>$new_password</code>";
+                $message = str_replace([':id', ':password'], [$user_id, "<code class='text-warning'>$new_password</code>"], __('admin_password_reset'));
                 break;
         }
     }
@@ -91,11 +91,11 @@ while ($row = $stmt->fetch()) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-users"></i> Manage Users</h1>
-        <p class="page-subtitle"><?php echo array_sum($counts); ?> total users registered</p>
+        <h1 class="page-title"><i class="fas fa-users"></i> <?php _e('admin_users_title'); ?></h1>
+        <p class="page-subtitle"><?php echo str_replace(':count', array_sum($counts), __('admin_total_users_registered')); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -111,15 +111,15 @@ while ($row = $stmt->fetch()) {
 <div class="stat-grid" style="grid-template-columns: repeat(6, 1fr);">
     <div class="stat-card primary fade-in">
         <div class="stat-value"><?php echo array_sum($counts); ?></div>
-        <div class="stat-label">Total Users</div>
+        <div class="stat-label"><?php _e('admin_stat_total_users'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-value"><?php echo $counts['active'] ?? 0; ?></div>
-        <div class="stat-label">Active</div>
+        <div class="stat-label"><?php _e('admin_status_active'); ?></div>
     </div>
     <div class="stat-card warning fade-in">
         <div class="stat-value"><?php echo $counts['pending'] ?? 0; ?></div>
-        <div class="stat-label">Pending</div>
+        <div class="stat-label"><?php _e('admin_status_pending'); ?></div>
     </div>
     <div class="stat-card info fade-in">
         <div class="stat-value"><?php echo $packageCounts['pro'] ?? 0; ?></div>
@@ -140,28 +140,28 @@ while ($row = $stmt->fetch()) {
     <div class="admin-card-body py-3">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label small">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Name, email, OT ID, or license key..." value="<?php echo htmlspecialchars($search); ?>">
+                <label class="form-label small"><?php _e('admin_search'); ?></label>
+                <input type="text" name="search" class="form-control" placeholder="<?php echo __('admin_search_users_placeholder'); ?>" value="<?php echo htmlspecialchars($search); ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label small">Status Filter</label>
+                <label class="form-label small"><?php _e('admin_status_filter'); ?></label>
                 <select name="filter" class="form-select">
-                    <option value="all" <?php echo $filter === 'all' ? 'selected' : ''; ?>>All Status</option>
-                    <option value="active" <?php echo $filter === 'active' ? 'selected' : ''; ?>>Active</option>
-                    <option value="pending" <?php echo $filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                    <option value="rejected" <?php echo $filter === 'rejected' ? 'selected' : ''; ?>>Rejected</option>
-                    <option value="suspended" <?php echo $filter === 'suspended' ? 'selected' : ''; ?>>Suspended</option>
+                    <option value="all" <?php echo $filter === 'all' ? 'selected' : ''; ?>><?php _e('admin_all_status'); ?></option>
+                    <option value="active" <?php echo $filter === 'active' ? 'selected' : ''; ?>><?php _e('admin_status_active'); ?></option>
+                    <option value="pending" <?php echo $filter === 'pending' ? 'selected' : ''; ?>><?php _e('admin_status_pending'); ?></option>
+                    <option value="rejected" <?php echo $filter === 'rejected' ? 'selected' : ''; ?>><?php _e('admin_status_rejected'); ?></option>
+                    <option value="suspended" <?php echo $filter === 'suspended' ? 'selected' : ''; ?>><?php _e('admin_status_suspended'); ?></option>
                 </select>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Search
+                    <i class="fas fa-search me-2"></i><?php _e('admin_search'); ?>
                 </button>
             </div>
             <?php if ($search || $filter !== 'all'): ?>
             <div class="col-md-2">
                 <a href="users.php" class="btn btn-outline-secondary w-100">
-                    <i class="fas fa-times me-2"></i>Clear
+                    <i class="fas fa-times me-2"></i><?php _e('admin_clear'); ?>
                 </a>
             </div>
             <?php endif; ?>
@@ -172,15 +172,15 @@ while ($row = $stmt->fetch()) {
 <!-- Users Table -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-list"></i> Users List</h5>
-        <span class="badge badge-primary"><?php echo count($users); ?> results</span>
+        <h5 class="admin-card-title"><i class="fas fa-list"></i> <?php _e('admin_users_list'); ?></h5>
+        <span class="badge badge-primary"><?php echo count($users); ?> <?php _e('admin_results'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($users)): ?>
         <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-users"></i></div>
-            <h4 class="empty-state-title">No Users Found</h4>
-            <p class="empty-state-desc">No users match your search criteria.</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_users_found'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_users_match'); ?></p>
         </div>
         <?php else: ?>
         <div class="table-responsive">
@@ -188,13 +188,13 @@ while ($row = $stmt->fetch()) {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>User</th>
+                        <th><?php _e('admin_th_user'); ?></th>
                         <th>OlympTrade</th>
-                        <th>Country</th>
-                        <th>Package</th>
-                        <th>Status</th>
-                        <th>Registered</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_th_country'); ?></th>
+                        <th><?php _e('admin_th_package'); ?></th>
+                        <th><?php _e('admin_th_status'); ?></th>
+                        <th><?php _e('admin_th_registered'); ?></th>
+                        <th><?php _e('admin_th_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -221,7 +221,7 @@ while ($row = $stmt->fetch()) {
                                 <?php echo strtoupper($user['package']); ?>
                             </span>
                             <?php if ($user['package_expiry'] && $user['package'] !== 'free'): ?>
-                            <br><small class="text-muted">Until <?php echo date('M d', strtotime($user['package_expiry'])); ?></small>
+                            <br><small class="text-muted"><?php echo str_replace(':date', date('M d', strtotime($user['package_expiry'])), __('admin_until_date')); ?></small>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -236,19 +236,19 @@ while ($row = $stmt->fetch()) {
                         <td>
                             <span class="d-block"><?php echo date('M d, Y', strtotime($user['created_at'])); ?></span>
                             <?php if ($user['last_login']): ?>
-                            <small class="text-muted">Last: <?php echo date('M d', strtotime($user['last_login'])); ?></small>
+                            <small class="text-muted"><?php echo str_replace(':date', date('M d', strtotime($user['last_login'])), __('admin_last_login_date')); ?></small>
                             <?php endif; ?>
                         </td>
                         <td>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                                    Actions
+                                    <?php _e('admin_th_actions'); ?>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <?php if ($user['status'] === 'pending'): ?>
                                     <li>
                                         <a class="dropdown-item text-success" href="verify-users.php?action=verify&id=<?php echo $user['id']; ?>">
-                                            <i class="fas fa-check me-2"></i>Verify
+                                            <i class="fas fa-check me-2"></i><?php _e('admin_action_verify'); ?>
                                         </a>
                                     </li>
                                     <?php endif; ?>
@@ -259,8 +259,8 @@ while ($row = $stmt->fetch()) {
                                             <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                             <input type="hidden" name="action" value="suspend">
-                                            <button type="submit" class="dropdown-item text-warning" data-confirm="Suspend this user?">
-                                                <i class="fas fa-ban me-2"></i>Suspend
+                                            <button type="submit" class="dropdown-item text-warning" data-confirm="<?php echo __('admin_confirm_suspend'); ?>">
+                                                <i class="fas fa-ban me-2"></i><?php _e('admin_action_suspend'); ?>
                                             </button>
                                         </form>
                                     </li>
@@ -271,7 +271,7 @@ while ($row = $stmt->fetch()) {
                                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                             <input type="hidden" name="action" value="activate">
                                             <button type="submit" class="dropdown-item text-success">
-                                                <i class="fas fa-check me-2"></i>Activate
+                                                <i class="fas fa-check me-2"></i><?php _e('admin_action_activate'); ?>
                                             </button>
                                         </form>
                                     </li>
@@ -281,7 +281,7 @@ while ($row = $stmt->fetch()) {
 
                                     <li>
                                         <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#upgradeModal<?php echo $user['id']; ?>">
-                                            <i class="fas fa-arrow-up me-2"></i>Upgrade Package
+                                            <i class="fas fa-arrow-up me-2"></i><?php _e('admin_action_upgrade'); ?>
                                         </button>
                                     </li>
 
@@ -290,8 +290,8 @@ while ($row = $stmt->fetch()) {
                                             <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                             <input type="hidden" name="action" value="reset_password">
-                                            <button type="submit" class="dropdown-item" data-confirm="Reset password for this user?">
-                                                <i class="fas fa-key me-2"></i>Reset Password
+                                            <button type="submit" class="dropdown-item" data-confirm="<?php echo __('admin_confirm_reset_password'); ?>">
+                                                <i class="fas fa-key me-2"></i><?php _e('admin_action_reset_password'); ?>
                                             </button>
                                         </form>
                                     </li>
@@ -304,7 +304,7 @@ while ($row = $stmt->fetch()) {
                                     <div class="modal-content">
                                         <form method="POST">
                                             <div class="modal-header">
-                                                <h5 class="modal-title"><i class="fas fa-arrow-up me-2 text-primary"></i>Upgrade User</h5>
+                                                <h5 class="modal-title"><i class="fas fa-arrow-up me-2 text-primary"></i><?php _e('admin_upgrade_user'); ?></h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
@@ -313,35 +313,35 @@ while ($row = $stmt->fetch()) {
                                                 <input type="hidden" name="action" value="upgrade">
 
                                                 <div class="mb-3 p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 8px;">
-                                                    <p class="mb-1"><strong>User:</strong> <?php echo htmlspecialchars($user['fullname']); ?></p>
-                                                    <p class="mb-0"><strong>Current Package:</strong> <span class="badge badge-<?php echo $pkgColors[$user['package']] ?? 'secondary'; ?>"><?php echo strtoupper($user['package']); ?></span></p>
+                                                    <p class="mb-1"><strong><?php _e('admin_th_user'); ?>:</strong> <?php echo htmlspecialchars($user['fullname']); ?></p>
+                                                    <p class="mb-0"><strong><?php _e('admin_current_package'); ?>:</strong> <span class="badge badge-<?php echo $pkgColors[$user['package']] ?? 'secondary'; ?>"><?php echo strtoupper($user['package']); ?></span></p>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label class="form-label">New Package</label>
+                                                    <label class="form-label"><?php _e('admin_new_package'); ?></label>
                                                     <select name="package" class="form-select">
                                                         <option value="free">FREE</option>
-                                                        <option value="pro">PRO ($29/mo)</option>
-                                                        <option value="elite">ELITE ($79/mo)</option>
-                                                        <option value="vip">VIP ($149/mo)</option>
+                                                        <option value="pro">PRO ($29/<?php _e('admin_month'); ?>)</option>
+                                                        <option value="elite">ELITE ($79/<?php _e('admin_month'); ?>)</option>
+                                                        <option value="vip">VIP ($149/<?php _e('admin_month'); ?>)</option>
                                                     </select>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label class="form-label">Duration</label>
+                                                    <label class="form-label"><?php _e('admin_duration'); ?></label>
                                                     <select name="days" class="form-select">
-                                                        <option value="7">7 days</option>
-                                                        <option value="14">14 days</option>
-                                                        <option value="30" selected>30 days (1 month)</option>
-                                                        <option value="90">90 days (3 months)</option>
-                                                        <option value="365">365 days (1 year)</option>
+                                                        <option value="7"><?php echo str_replace(':n', '7', __('admin_n_days')); ?></option>
+                                                        <option value="14"><?php echo str_replace(':n', '14', __('admin_n_days')); ?></option>
+                                                        <option value="30" selected><?php echo str_replace(':n', '30', __('admin_n_days')); ?> (1 <?php _e('admin_month'); ?>)</option>
+                                                        <option value="90"><?php echo str_replace(':n', '90', __('admin_n_days')); ?> (3 <?php _e('admin_months'); ?>)</option>
+                                                        <option value="365"><?php echo str_replace(':n', '365', __('admin_n_days')); ?> (1 <?php _e('admin_year'); ?>)</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?php _e('admin_cancel'); ?></button>
                                                 <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-arrow-up me-2"></i>Upgrade
+                                                    <i class="fas fa-arrow-up me-2"></i><?php _e('admin_upgrade'); ?>
                                                 </button>
                                             </div>
                                         </form>

@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Manage Subscriptions';
+$page_title = __('admin_subs_title') ?: 'Manage Subscriptions';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -56,12 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                         "Your {$sub['plan']} subscription has been activated! Valid until " . date('M d, Y', strtotime($expires_at))
                     ]);
 
-                    $message = "Subscription #$sub_id approved successfully!";
+                    $message = str_replace(':id', $sub_id, __('admin_sub_approved'));
                 }
                 break;
 
             case 'reject':
-                $reason = cleanInput($_POST['rejection_reason'] ?? 'Payment not verified');
+                $reason = cleanInput($_POST['rejection_reason'] ?? __('admin_payment_not_verified'));
 
                 $stmt = $db->prepare("
                     UPDATE subscriptions
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                     "Your subscription request was rejected. Reason: $reason. Please contact support."
                 ]);
 
-                $message = "Subscription #$sub_id rejected.";
+                $message = str_replace(':id', $sub_id, __('admin_sub_rejected'));
                 break;
 
             case 'extend':
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 $stmt = $db->prepare("UPDATE users SET package_expiry = ? WHERE id = ?");
                 $stmt->execute([$sub['expires_at'], $sub['user_id']]);
 
-                $message = "Subscription #$sub_id extended by $days days.";
+                $message = str_replace([':id', ':days'], [$sub_id, $days], __('admin_sub_extended'));
                 break;
         }
     }
@@ -149,11 +149,11 @@ $monthlyRevenue = $stmt->fetch()['total'];
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-credit-card"></i> Manage Subscriptions</h1>
-        <p class="page-subtitle"><?php echo array_sum($counts); ?> total subscriptions</p>
+        <h1 class="page-title"><i class="fas fa-credit-card"></i> <?php _e('admin_subs_title'); ?></h1>
+        <p class="page-subtitle"><?php echo str_replace(':count', array_sum($counts), __('admin_total_subscriptions')); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -169,27 +169,27 @@ $monthlyRevenue = $stmt->fetch()['total'];
 <div class="stat-grid" style="grid-template-columns: repeat(6, 1fr);">
     <div class="stat-card warning fade-in">
         <div class="stat-value"><?php echo $counts['pending'] ?? 0; ?></div>
-        <div class="stat-label">Pending</div>
+        <div class="stat-label"><?php _e('admin_status_pending'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-value"><?php echo $counts['active'] ?? 0; ?></div>
-        <div class="stat-label">Active</div>
+        <div class="stat-label"><?php _e('admin_status_active'); ?></div>
     </div>
     <div class="stat-card danger fade-in">
         <div class="stat-value"><?php echo $counts['rejected'] ?? 0; ?></div>
-        <div class="stat-label">Rejected</div>
+        <div class="stat-label"><?php _e('admin_status_rejected'); ?></div>
     </div>
     <div class="stat-card secondary fade-in">
         <div class="stat-value"><?php echo $counts['expired'] ?? 0; ?></div>
-        <div class="stat-label">Expired</div>
+        <div class="stat-label"><?php _e('admin_status_expired'); ?></div>
     </div>
     <div class="stat-card primary fade-in">
         <div class="stat-value">$<?php echo number_format($monthlyRevenue); ?></div>
-        <div class="stat-label">This Month</div>
+        <div class="stat-label"><?php _e('admin_this_month'); ?></div>
     </div>
     <div class="stat-card info fade-in">
         <div class="stat-value">$<?php echo number_format($totalRevenue); ?></div>
-        <div class="stat-label">Total Revenue</div>
+        <div class="stat-label"><?php _e('admin_total_revenue'); ?></div>
     </div>
 </div>
 
@@ -199,31 +199,31 @@ $monthlyRevenue = $stmt->fetch()['total'];
         <ul class="nav nav-pills gap-2">
             <li class="nav-item">
                 <a class="nav-link <?php echo $filter === 'pending' ? 'active' : ''; ?>" href="?filter=pending">
-                    <i class="fas fa-clock me-1"></i>Pending
+                    <i class="fas fa-clock me-1"></i><?php _e('admin_status_pending'); ?>
                     <span class="badge badge-warning ms-1"><?php echo $counts['pending'] ?? 0; ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?php echo $filter === 'active' ? 'active' : ''; ?>" href="?filter=active">
-                    <i class="fas fa-check me-1"></i>Active
+                    <i class="fas fa-check me-1"></i><?php _e('admin_status_active'); ?>
                     <span class="badge badge-success ms-1"><?php echo $counts['active'] ?? 0; ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?php echo $filter === 'rejected' ? 'active' : ''; ?>" href="?filter=rejected">
-                    <i class="fas fa-times me-1"></i>Rejected
+                    <i class="fas fa-times me-1"></i><?php _e('admin_status_rejected'); ?>
                     <span class="badge badge-danger ms-1"><?php echo $counts['rejected'] ?? 0; ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?php echo $filter === 'expired' ? 'active' : ''; ?>" href="?filter=expired">
-                    <i class="fas fa-calendar-times me-1"></i>Expired
+                    <i class="fas fa-calendar-times me-1"></i><?php _e('admin_status_expired'); ?>
                     <span class="badge badge-secondary ms-1"><?php echo $counts['expired'] ?? 0; ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?php echo $filter === 'all' ? 'active' : ''; ?>" href="?filter=all">
-                    <i class="fas fa-list me-1"></i>All
+                    <i class="fas fa-list me-1"></i><?php _e('admin_all'); ?>
                 </a>
             </li>
         </ul>
@@ -233,15 +233,15 @@ $monthlyRevenue = $stmt->fetch()['total'];
 <!-- Subscriptions Table -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-list"></i> Subscriptions</h5>
-        <span class="badge badge-primary"><?php echo count($subscriptions); ?> results</span>
+        <h5 class="admin-card-title"><i class="fas fa-list"></i> <?php _e('admin_subscriptions'); ?></h5>
+        <span class="badge badge-primary"><?php echo count($subscriptions); ?> <?php _e('admin_results'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($subscriptions)): ?>
         <div class="empty-state">
             <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
-            <h4 class="empty-state-title">No Subscriptions Found</h4>
-            <p class="empty-state-desc">No subscriptions match your filter criteria.</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_subs_found'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_subs_match'); ?></p>
         </div>
         <?php else: ?>
         <div class="table-responsive">
@@ -249,14 +249,14 @@ $monthlyRevenue = $stmt->fetch()['total'];
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>User</th>
-                        <th>Plan</th>
-                        <th>Amount</th>
-                        <th>Payment</th>
-                        <th>Proof</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_th_user'); ?></th>
+                        <th><?php _e('admin_th_plan'); ?></th>
+                        <th><?php _e('admin_th_amount'); ?></th>
+                        <th><?php _e('admin_th_payment'); ?></th>
+                        <th><?php _e('admin_th_proof'); ?></th>
+                        <th><?php _e('admin_th_status'); ?></th>
+                        <th><?php _e('admin_th_date'); ?></th>
+                        <th><?php _e('admin_th_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -295,7 +295,7 @@ $monthlyRevenue = $stmt->fetch()['total'];
                         <td>
                             <?php if ($sub['payment_proof']): ?>
                             <a href="../<?php echo htmlspecialchars($sub['payment_proof']); ?>" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-image me-1"></i>View
+                                <i class="fas fa-image me-1"></i><?php _e('admin_view'); ?>
                             </a>
                             <?php else: ?>
                             <span class="text-muted">-</span>
@@ -307,7 +307,7 @@ $monthlyRevenue = $stmt->fetch()['total'];
                                 <?php echo ucfirst($sub['status']); ?>
                             </span>
                             <?php if ($sub['status'] === 'active' && $sub['expires_at']): ?>
-                            <br><small class="text-muted">Until <?php echo date('M d', strtotime($sub['expires_at'])); ?></small>
+                            <br><small class="text-muted"><?php echo str_replace(':date', date('M d', strtotime($sub['expires_at'])), __('admin_until_date')); ?></small>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -321,12 +321,12 @@ $monthlyRevenue = $stmt->fetch()['total'];
                                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="subscription_id" value="<?php echo $sub['id']; ?>">
                                     <input type="hidden" name="action" value="approve">
-                                    <button type="submit" class="btn-approve" data-confirm="Approve this subscription?">
-                                        <i class="fas fa-check"></i> Approve
+                                    <button type="submit" class="btn-approve" data-confirm="<?php echo __('admin_confirm_approve_sub'); ?>">
+                                        <i class="fas fa-check"></i> <?php _e('admin_btn_approve'); ?>
                                     </button>
                                 </form>
                                 <button type="button" class="btn-reject" data-bs-toggle="modal" data-bs-target="#rejectModal<?php echo $sub['id']; ?>">
-                                    <i class="fas fa-times"></i> Reject
+                                    <i class="fas fa-times"></i> <?php _e('admin_btn_reject'); ?>
                                 </button>
                             </div>
 
@@ -336,7 +336,7 @@ $monthlyRevenue = $stmt->fetch()['total'];
                                     <div class="modal-content">
                                         <form method="POST">
                                             <div class="modal-header">
-                                                <h5 class="modal-title"><i class="fas fa-times-circle me-2 text-danger"></i>Reject Subscription</h5>
+                                                <h5 class="modal-title"><i class="fas fa-times-circle me-2 text-danger"></i><?php _e('admin_reject_subscription'); ?></h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
@@ -345,25 +345,25 @@ $monthlyRevenue = $stmt->fetch()['total'];
                                                 <input type="hidden" name="action" value="reject">
 
                                                 <div class="mb-3 p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 8px;">
-                                                    <p class="mb-1"><strong>User:</strong> <?php echo htmlspecialchars($sub['fullname']); ?></p>
-                                                    <p class="mb-0"><strong>Plan:</strong> <span class="badge badge-<?php echo $planColors[$sub['plan']] ?? 'secondary'; ?>"><?php echo strtoupper($sub['plan']); ?></span> - $<?php echo number_format($sub['amount'], 2); ?></p>
+                                                    <p class="mb-1"><strong><?php _e('admin_th_user'); ?>:</strong> <?php echo htmlspecialchars($sub['fullname']); ?></p>
+                                                    <p class="mb-0"><strong><?php _e('admin_th_plan'); ?>:</strong> <span class="badge badge-<?php echo $planColors[$sub['plan']] ?? 'secondary'; ?>"><?php echo strtoupper($sub['plan']); ?></span> - $<?php echo number_format($sub['amount'], 2); ?></p>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label class="form-label">Rejection Reason</label>
+                                                    <label class="form-label"><?php _e('admin_rejection_reason'); ?></label>
                                                     <select name="rejection_reason" class="form-select">
-                                                        <option value="Payment not verified">Payment not verified</option>
-                                                        <option value="Invalid payment proof">Invalid payment proof</option>
-                                                        <option value="Amount mismatch">Amount mismatch</option>
-                                                        <option value="Duplicate submission">Duplicate submission</option>
-                                                        <option value="Other">Other</option>
+                                                        <option value="<?php echo __('admin_payment_not_verified'); ?>"><?php _e('admin_payment_not_verified'); ?></option>
+                                                        <option value="<?php echo __('admin_invalid_proof'); ?>"><?php _e('admin_invalid_proof'); ?></option>
+                                                        <option value="<?php echo __('admin_amount_mismatch'); ?>"><?php _e('admin_amount_mismatch'); ?></option>
+                                                        <option value="<?php echo __('admin_duplicate_submission'); ?>"><?php _e('admin_duplicate_submission'); ?></option>
+                                                        <option value="<?php echo __('admin_other'); ?>"><?php _e('admin_other'); ?></option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?php _e('admin_cancel'); ?></button>
                                                 <button type="submit" class="btn btn-danger">
-                                                    <i class="fas fa-times me-2"></i>Reject
+                                                    <i class="fas fa-times me-2"></i><?php _e('admin_btn_reject'); ?>
                                                 </button>
                                             </div>
                                         </form>
@@ -372,7 +372,7 @@ $monthlyRevenue = $stmt->fetch()['total'];
                             </div>
                             <?php elseif ($sub['status'] === 'active'): ?>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#extendModal<?php echo $sub['id']; ?>">
-                                <i class="fas fa-calendar-plus me-1"></i>Extend
+                                <i class="fas fa-calendar-plus me-1"></i><?php _e('admin_extend'); ?>
                             </button>
 
                             <!-- Extend Modal -->
@@ -381,7 +381,7 @@ $monthlyRevenue = $stmt->fetch()['total'];
                                     <div class="modal-content">
                                         <form method="POST">
                                             <div class="modal-header">
-                                                <h5 class="modal-title"><i class="fas fa-calendar-plus me-2 text-primary"></i>Extend Subscription</h5>
+                                                <h5 class="modal-title"><i class="fas fa-calendar-plus me-2 text-primary"></i><?php _e('admin_extend_subscription'); ?></h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
@@ -390,25 +390,25 @@ $monthlyRevenue = $stmt->fetch()['total'];
                                                 <input type="hidden" name="action" value="extend">
 
                                                 <div class="mb-3 p-3" style="background: rgba(var(--primary-rgb), 0.05); border-radius: 8px;">
-                                                    <p class="mb-1"><strong>User:</strong> <?php echo htmlspecialchars($sub['fullname']); ?></p>
-                                                    <p class="mb-1"><strong>Current Plan:</strong> <span class="badge badge-<?php echo $planColors[$sub['plan']] ?? 'secondary'; ?>"><?php echo strtoupper($sub['plan']); ?></span></p>
-                                                    <p class="mb-0"><strong>Expires:</strong> <?php echo date('M d, Y', strtotime($sub['expires_at'])); ?></p>
+                                                    <p class="mb-1"><strong><?php _e('admin_th_user'); ?>:</strong> <?php echo htmlspecialchars($sub['fullname']); ?></p>
+                                                    <p class="mb-1"><strong><?php _e('admin_current_package'); ?>:</strong> <span class="badge badge-<?php echo $planColors[$sub['plan']] ?? 'secondary'; ?>"><?php echo strtoupper($sub['plan']); ?></span></p>
+                                                    <p class="mb-0"><strong><?php _e('admin_expires'); ?>:</strong> <?php echo date('M d, Y', strtotime($sub['expires_at'])); ?></p>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label class="form-label">Extend by</label>
+                                                    <label class="form-label"><?php _e('admin_extend_by'); ?></label>
                                                     <select name="extend_days" class="form-select">
-                                                        <option value="7">7 days</option>
-                                                        <option value="14">14 days</option>
-                                                        <option value="30" selected>30 days (1 month)</option>
-                                                        <option value="90">90 days (3 months)</option>
+                                                        <option value="7"><?php echo str_replace(':n', '7', __('admin_n_days')); ?></option>
+                                                        <option value="14"><?php echo str_replace(':n', '14', __('admin_n_days')); ?></option>
+                                                        <option value="30" selected><?php echo str_replace(':n', '30', __('admin_n_days')); ?> (1 <?php _e('admin_month'); ?>)</option>
+                                                        <option value="90"><?php echo str_replace(':n', '90', __('admin_n_days')); ?> (3 <?php _e('admin_months'); ?>)</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?php _e('admin_cancel'); ?></button>
                                                 <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-calendar-plus me-2"></i>Extend
+                                                    <i class="fas fa-calendar-plus me-2"></i><?php _e('admin_extend'); ?>
                                                 </button>
                                             </div>
                                         </form>
