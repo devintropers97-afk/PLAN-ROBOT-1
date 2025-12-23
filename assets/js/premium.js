@@ -2510,3 +2510,637 @@ document.addEventListener('DOMContentLoaded', () => {
             'background: linear-gradient(135deg, #00ff88, #7c3aed); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
     }, 1500);
 });
+
+// ============================================================
+// BATCH 6: FINAL POLISH & ADVANCED FEATURES
+// ============================================================
+
+// ===== THEME TOGGLE (Dark/Light Mode) =====
+class ThemeToggle {
+    constructor() {
+        this.theme = localStorage.getItem('theme') || 'dark';
+        this.createToggle();
+        this.init();
+    }
+
+    createToggle() {
+        const toggle = document.createElement('div');
+        toggle.className = 'theme-toggle';
+        toggle.innerHTML = `
+            <button class="theme-toggle-btn" title="Toggle Theme (T)">
+                <i class="fas fa-sun icon-sun"></i>
+                <i class="fas fa-moon icon-moon"></i>
+            </button>
+            <button class="theme-toggle-btn sound-toggle" title="Toggle Sound (M)">
+                <i class="fas fa-volume-up icon-sound-on"></i>
+                <i class="fas fa-volume-mute icon-sound-off"></i>
+            </button>
+        `;
+        document.body.appendChild(toggle);
+        this.toggleBtn = toggle.querySelector('.theme-toggle-btn:first-child');
+        this.soundBtn = toggle.querySelector('.sound-toggle');
+    }
+
+    init() {
+        // Apply saved theme
+        document.documentElement.setAttribute('data-theme', this.theme);
+
+        // Theme toggle click
+        this.toggleBtn.addEventListener('click', () => this.toggle());
+
+        // Sound toggle
+        const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        if (!soundEnabled) this.soundBtn.classList.add('muted');
+        this.soundBtn.addEventListener('click', () => this.toggleSound());
+    }
+
+    toggle() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', this.theme);
+        localStorage.setItem('theme', this.theme);
+
+        // Play sound
+        if (window.soundSystem) {
+            window.soundSystem.play('switch');
+        }
+
+        // Show toast
+        if (window.toastSystem) {
+            window.toastSystem.show({
+                title: `${this.theme === 'light' ? 'Light' : 'Dark'} Mode`,
+                message: `Theme changed to ${this.theme} mode`,
+                type: 'info',
+                duration: 2000
+            });
+        }
+    }
+
+    toggleSound() {
+        this.soundBtn.classList.toggle('muted');
+        const enabled = !this.soundBtn.classList.contains('muted');
+        localStorage.setItem('soundEnabled', enabled);
+
+        if (window.soundSystem) {
+            window.soundSystem.enabled = enabled;
+            if (enabled) window.soundSystem.play('click');
+        }
+    }
+}
+
+// ===== SOUND EFFECTS SYSTEM =====
+class SoundEffects {
+    constructor() {
+        this.enabled = localStorage.getItem('soundEnabled') !== 'false';
+        this.sounds = {};
+        this.audioContext = null;
+        this.init();
+    }
+
+    init() {
+        // Create audio context on first user interaction
+        document.addEventListener('click', () => {
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.createSounds();
+            }
+        }, { once: true });
+    }
+
+    createSounds() {
+        // Generate simple sounds using Web Audio API
+        this.sounds = {
+            click: { freq: 800, duration: 0.05, type: 'sine' },
+            hover: { freq: 600, duration: 0.03, type: 'sine' },
+            success: { freq: [523, 659, 784], duration: 0.15, type: 'sine' },
+            error: { freq: [300, 200], duration: 0.2, type: 'square' },
+            switch: { freq: [400, 600], duration: 0.1, type: 'sine' },
+            notification: { freq: [880, 1100], duration: 0.1, type: 'sine' }
+        };
+    }
+
+    play(soundName) {
+        if (!this.enabled || !this.audioContext || !this.sounds[soundName]) return;
+
+        const sound = this.sounds[soundName];
+        const frequencies = Array.isArray(sound.freq) ? sound.freq : [sound.freq];
+
+        frequencies.forEach((freq, index) => {
+            setTimeout(() => {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = freq;
+                oscillator.type = sound.type;
+
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + sound.duration);
+
+                oscillator.start();
+                oscillator.stop(this.audioContext.currentTime + sound.duration);
+            }, index * 100);
+        });
+    }
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+class KeyboardShortcuts {
+    constructor() {
+        this.shortcuts = [
+            { key: 'h', desc: 'Go to Home', action: () => window.location.href = 'index.php' },
+            { key: 'p', desc: 'Go to Pricing', action: () => window.location.href = 'pricing.php' },
+            { key: 's', desc: 'Go to Strategies', action: () => window.location.href = 'strategies.php' },
+            { key: 'c', desc: 'Go to Calculator', action: () => window.location.href = 'calculator.php' },
+            { key: 't', desc: 'Toggle Theme', action: () => document.querySelector('.theme-toggle-btn')?.click() },
+            { key: 'm', desc: 'Toggle Sound', action: () => document.querySelector('.sound-toggle')?.click() },
+            { key: '/', desc: 'Open Command Palette', action: () => window.commandPalette?.open() },
+            { key: '?', desc: 'Show Shortcuts', action: () => this.showModal() },
+            { key: 'Escape', desc: 'Close Modals', action: () => this.closeAllModals() }
+        ];
+
+        this.createModal();
+        this.init();
+    }
+
+    createModal() {
+        const modal = document.createElement('div');
+        modal.className = 'shortcuts-modal';
+        modal.innerHTML = `
+            <div class="shortcuts-content">
+                <div class="shortcuts-header">
+                    <h3><i class="fas fa-keyboard me-2"></i>Keyboard Shortcuts</h3>
+                    <button class="shortcuts-close">&times;</button>
+                </div>
+                <div class="shortcuts-list">
+                    ${this.shortcuts.map(s => `
+                        <div class="shortcut-item">
+                            <span class="shortcut-desc">${s.desc}</span>
+                            <div class="shortcut-keys">
+                                <span class="shortcut-key">${s.key === '?' ? 'Shift + /' : s.key.toUpperCase()}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        this.modal = modal;
+
+        // Close button
+        modal.querySelector('.shortcuts-close').addEventListener('click', () => this.hideModal());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) this.hideModal();
+        });
+    }
+
+    init() {
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger if typing in input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            const key = e.key.toLowerCase();
+            const shortcut = this.shortcuts.find(s => s.key.toLowerCase() === key);
+
+            if (shortcut) {
+                e.preventDefault();
+                shortcut.action();
+                if (window.soundSystem) window.soundSystem.play('click');
+            }
+        });
+    }
+
+    showModal() {
+        this.modal.classList.add('active');
+    }
+
+    hideModal() {
+        this.modal.classList.remove('active');
+    }
+
+    closeAllModals() {
+        document.querySelectorAll('.shortcuts-modal, .command-palette').forEach(m => {
+            m.classList.remove('active');
+        });
+    }
+}
+
+// ===== COMMAND PALETTE =====
+class CommandPalette {
+    constructor() {
+        this.commands = [
+            { icon: 'fa-home', title: 'Go to Home', desc: 'Navigate to homepage', action: () => window.location.href = 'index.php' },
+            { icon: 'fa-dollar-sign', title: 'View Pricing', desc: 'Check our pricing plans', action: () => window.location.href = 'pricing.php' },
+            { icon: 'fa-chess', title: 'View Strategies', desc: 'Explore trading strategies', action: () => window.location.href = 'strategies.php' },
+            { icon: 'fa-calculator', title: 'Open Calculator', desc: 'Calculate profits & risk', action: () => window.location.href = 'calculator.php' },
+            { icon: 'fa-user-plus', title: 'Register', desc: 'Create a new account', action: () => window.location.href = 'register.php' },
+            { icon: 'fa-sign-in-alt', title: 'Login', desc: 'Sign in to your account', action: () => window.location.href = 'login.php' },
+            { icon: 'fa-moon', title: 'Toggle Theme', desc: 'Switch dark/light mode', action: () => document.querySelector('.theme-toggle-btn')?.click() },
+            { icon: 'fa-volume-up', title: 'Toggle Sound', desc: 'Enable/disable sounds', action: () => document.querySelector('.sound-toggle')?.click() },
+            { icon: 'fa-arrow-up', title: 'Back to Top', desc: 'Scroll to top of page', action: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+            { icon: 'fa-keyboard', title: 'Show Shortcuts', desc: 'View keyboard shortcuts', action: () => window.keyboardShortcuts?.showModal() }
+        ];
+
+        this.selectedIndex = 0;
+        this.filteredCommands = [...this.commands];
+        this.createPalette();
+        this.init();
+    }
+
+    createPalette() {
+        const palette = document.createElement('div');
+        palette.className = 'command-palette';
+        palette.innerHTML = `
+            <div class="command-palette-box">
+                <div class="command-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="command-input" placeholder="Type a command or search...">
+                    <span class="command-shortcut">ESC to close</span>
+                </div>
+                <div class="command-results"></div>
+            </div>
+        `;
+        document.body.appendChild(palette);
+        this.palette = palette;
+        this.input = palette.querySelector('.command-input');
+        this.results = palette.querySelector('.command-results');
+
+        // Close on backdrop click
+        palette.addEventListener('click', (e) => {
+            if (e.target === palette) this.close();
+        });
+
+        // Input handling
+        this.input.addEventListener('input', () => this.filterCommands());
+        this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+    }
+
+    init() {
+        // Ctrl/Cmd + K to open
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                this.open();
+            }
+        });
+    }
+
+    open() {
+        this.palette.classList.add('active');
+        this.input.value = '';
+        this.filterCommands();
+        setTimeout(() => this.input.focus(), 100);
+    }
+
+    close() {
+        this.palette.classList.remove('active');
+    }
+
+    filterCommands() {
+        const query = this.input.value.toLowerCase();
+        this.filteredCommands = this.commands.filter(cmd =>
+            cmd.title.toLowerCase().includes(query) ||
+            cmd.desc.toLowerCase().includes(query)
+        );
+        this.selectedIndex = 0;
+        this.renderResults();
+    }
+
+    renderResults() {
+        this.results.innerHTML = this.filteredCommands.map((cmd, index) => `
+            <div class="command-item${index === this.selectedIndex ? ' selected' : ''}" data-index="${index}">
+                <i class="fas ${cmd.icon}"></i>
+                <div class="command-item-text">
+                    <h4>${cmd.title}</h4>
+                    <span>${cmd.desc}</span>
+                </div>
+            </div>
+        `).join('');
+
+        // Click handlers
+        this.results.querySelectorAll('.command-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const index = parseInt(item.dataset.index);
+                this.executeCommand(index);
+            });
+        });
+    }
+
+    handleKeydown(e) {
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                this.selectedIndex = Math.min(this.selectedIndex + 1, this.filteredCommands.length - 1);
+                this.renderResults();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
+                this.renderResults();
+                break;
+            case 'Enter':
+                e.preventDefault();
+                this.executeCommand(this.selectedIndex);
+                break;
+            case 'Escape':
+                this.close();
+                break;
+        }
+    }
+
+    executeCommand(index) {
+        if (this.filteredCommands[index]) {
+            this.filteredCommands[index].action();
+            this.close();
+            if (window.soundSystem) window.soundSystem.play('click');
+        }
+    }
+}
+
+// ===== PAGE TRANSITIONS =====
+class PageTransitions {
+    constructor() {
+        this.createTransition();
+        this.init();
+    }
+
+    createTransition() {
+        const transition = document.createElement('div');
+        transition.className = 'page-transition';
+        transition.innerHTML = `
+            <div class="page-transition-panel"></div>
+            <div class="page-transition-panel"></div>
+            <div class="page-transition-panel"></div>
+            <div class="page-transition-panel"></div>
+        `;
+        document.body.appendChild(transition);
+        this.transition = transition;
+    }
+
+    init() {
+        // Intercept internal links
+        document.querySelectorAll('a[href]').forEach(link => {
+            const href = link.getAttribute('href');
+            // Only for internal links, not external or anchor links
+            if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto') && !href.startsWith('tel')) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.navigate(href);
+                });
+            }
+        });
+    }
+
+    navigate(url) {
+        this.transition.classList.add('active');
+        if (window.soundSystem) window.soundSystem.play('switch');
+
+        setTimeout(() => {
+            window.location.href = url;
+        }, 400);
+    }
+}
+
+// ===== PWA INSTALL PROMPT =====
+class PWAInstall {
+    constructor() {
+        this.deferredPrompt = null;
+        this.createPrompt();
+        this.init();
+    }
+
+    createPrompt() {
+        const prompt = document.createElement('div');
+        prompt.className = 'pwa-install-prompt';
+        prompt.innerHTML = `
+            <div class="pwa-install-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="pwa-install-text">
+                <h4>Install ZYN Trade</h4>
+                <p>Add to home screen for quick access</p>
+            </div>
+            <div class="pwa-install-actions">
+                <button class="pwa-install-btn secondary" data-action="later">Later</button>
+                <button class="pwa-install-btn primary" data-action="install">Install</button>
+            </div>
+        `;
+        document.body.appendChild(prompt);
+        this.prompt = prompt;
+
+        prompt.querySelector('[data-action="install"]').addEventListener('click', () => this.install());
+        prompt.querySelector('[data-action="later"]').addEventListener('click', () => this.hide());
+    }
+
+    init() {
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+
+            // Show prompt after 30 seconds if not dismissed before
+            const dismissed = localStorage.getItem('pwaPromptDismissed');
+            if (!dismissed) {
+                setTimeout(() => this.show(), 30000);
+            }
+        });
+
+        // Hide if already installed
+        window.addEventListener('appinstalled', () => {
+            this.hide();
+            if (window.toastSystem) {
+                window.toastSystem.show({
+                    title: 'App Installed!',
+                    message: 'ZYN Trade has been added to your home screen',
+                    type: 'success'
+                });
+            }
+        });
+    }
+
+    show() {
+        this.prompt.classList.add('show');
+    }
+
+    hide() {
+        this.prompt.classList.remove('show');
+        localStorage.setItem('pwaPromptDismissed', 'true');
+    }
+
+    async install() {
+        if (!this.deferredPrompt) return;
+
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+            if (window.soundSystem) window.soundSystem.play('success');
+        }
+
+        this.deferredPrompt = null;
+        this.hide();
+    }
+}
+
+// ===== ANIMATION SEQUENCER =====
+class AnimationSequencer {
+    constructor() {
+        this.sequences = document.querySelectorAll('.sequence-container');
+        if (this.sequences.length === 0) return;
+
+        this.init();
+    }
+
+    init() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        this.sequences.forEach(seq => observer.observe(seq));
+    }
+}
+
+// ===== PERFORMANCE MONITOR =====
+class PerformanceMonitor {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Lazy load images
+        this.lazyLoadImages();
+
+        // Reduce animations for low-end devices
+        this.checkPerformance();
+
+        // Prefetch links on hover
+        this.prefetchLinks();
+    }
+
+    lazyLoadImages() {
+        const images = document.querySelectorAll('img[data-src]');
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+
+        images.forEach(img => imageObserver.observe(img));
+    }
+
+    checkPerformance() {
+        // Check if device prefers reduced motion
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.body.classList.add('reduce-motion');
+        }
+
+        // Check device memory (if available)
+        if (navigator.deviceMemory && navigator.deviceMemory < 4) {
+            document.body.classList.add('reduce-motion');
+        }
+    }
+
+    prefetchLinks() {
+        document.querySelectorAll('a[href]').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.endsWith('.php') && !href.startsWith('http')) {
+                link.addEventListener('mouseenter', () => {
+                    const prefetch = document.createElement('link');
+                    prefetch.rel = 'prefetch';
+                    prefetch.href = href;
+                    document.head.appendChild(prefetch);
+                }, { once: true });
+            }
+        });
+    }
+}
+
+// ===== INTERACTIVE HINTS =====
+class InteractiveHints {
+    constructor() {
+        this.hints = [
+            { selector: '.theme-toggle-btn:first-child', message: 'Press T to toggle theme' },
+            { selector: '.fab-main', message: 'Quick actions menu' },
+            { selector: '.scroll-progress', message: 'Scroll progress indicator' }
+        ];
+
+        this.shown = new Set(JSON.parse(localStorage.getItem('hintsShown') || '[]'));
+        this.init();
+    }
+
+    init() {
+        // Show hints for first-time users
+        if (this.shown.size < this.hints.length) {
+            setTimeout(() => this.showNextHint(), 5000);
+        }
+    }
+
+    showNextHint() {
+        const hint = this.hints.find((h, i) => !this.shown.has(i));
+        if (!hint) return;
+
+        const element = document.querySelector(hint.selector);
+        if (!element) return;
+
+        const index = this.hints.indexOf(hint);
+        this.shown.add(index);
+        localStorage.setItem('hintsShown', JSON.stringify([...this.shown]));
+
+        if (window.toastSystem) {
+            window.toastSystem.show({
+                title: 'Tip',
+                message: hint.message,
+                type: 'info',
+                duration: 4000
+            });
+        }
+    }
+}
+
+// ===== INITIALIZE BATCH 6 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Sound Effects System (initialize first)
+        window.soundSystem = new SoundEffects();
+
+        // Theme Toggle
+        new ThemeToggle();
+
+        // Keyboard Shortcuts
+        window.keyboardShortcuts = new KeyboardShortcuts();
+
+        // Command Palette
+        window.commandPalette = new CommandPalette();
+
+        // Page Transitions
+        new PageTransitions();
+
+        // PWA Install Prompt
+        new PWAInstall();
+
+        // Animation Sequencer
+        new AnimationSequencer();
+
+        // Performance Monitor
+        new PerformanceMonitor();
+
+        // Interactive Hints
+        new InteractiveHints();
+
+        console.log('%c Batch 6 Final Polish Loaded ',
+            'background: linear-gradient(135deg, #ff6b6b, #ffd700); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+
+        console.log('%c 🎉 Premium Edition Complete! Tier 1 Legendary Achieved ',
+            'background: linear-gradient(135deg, #00d4ff, #7c3aed, #00ff88); color: #fff; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px;');
+    }, 2000);
+});
