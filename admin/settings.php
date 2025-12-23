@@ -1,5 +1,5 @@
 <?php
-$page_title = 'System Settings';
+$page_title = __('admin_system_settings_title') ?: 'System Settings';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
         $stmt->execute([$value, $key]);
     }
 
-    $message = "Settings updated successfully!";
+    $message = __('admin_settings_updated');
 }
 
 // Get all settings
@@ -26,7 +26,7 @@ while ($row = $stmt->fetch()) {
 
 // Group settings
 $settingGroups = [
-    'Site Settings' => [
+    __('admin_group_site_settings') => [
         'icon' => 'fas fa-globe',
         'color' => 'primary',
         'keys' => ['site_name', 'site_tagline', 'currency']
@@ -41,27 +41,27 @@ $settingGroups = [
         'color' => 'primary',
         'keys' => ['telegram_channel', 'telegram_channel_id', 'telegram_support']
     ],
-    'Trading Rules' => [
+    __('admin_group_trading_rules') => [
         'icon' => 'fas fa-sliders-h',
         'color' => 'warning',
         'keys' => ['min_deposit', 'allowed_markets', 'allowed_timeframes', 'default_tp_target', 'default_ml_limit', 'real_account_only', 'weekend_auto_off']
     ],
-    'Pricing (USD)' => [
+    __('admin_group_pricing') => [
         'icon' => 'fas fa-tags',
         'color' => 'success',
         'keys' => ['price_pro', 'price_elite', 'price_vip']
     ],
-    'Payment - PayPal/Wise' => [
+    __('admin_group_payment_paypal') => [
         'icon' => 'fab fa-paypal',
         'color' => 'primary',
         'keys' => ['paypal_email', 'wise_email']
     ],
-    'Payment - Crypto' => [
+    __('admin_group_payment_crypto') => [
         'icon' => 'fab fa-bitcoin',
         'color' => 'warning',
         'keys' => ['crypto_usdt_trc20', 'crypto_btc']
     ],
-    'Payment - Bank Transfer' => [
+    __('admin_group_payment_bank') => [
         'icon' => 'fas fa-university',
         'color' => 'info',
         'keys' => ['bank_name', 'bank_account', 'bank_holder']
@@ -72,11 +72,11 @@ $settingGroups = [
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-cog"></i> System Settings</h1>
-        <p class="page-subtitle">Configure your application settings</p>
+        <h1 class="page-title"><i class="fas fa-cog"></i> <?php _e('admin_system_settings_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_system_settings_subtitle'); ?></p>
     </div>
     <a href="index.php" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        <i class="fas fa-arrow-left me-2"></i><?php _e('admin_back_dashboard'); ?>
     </a>
 </div>
 
@@ -130,8 +130,8 @@ $settingGroups = [
                         <!-- Comma-separated values -->
                         <input type="text" name="settings[<?php echo $key; ?>]" class="form-control"
                                value="<?php echo htmlspecialchars($setting['value']); ?>"
-                               placeholder="Comma-separated values">
-                        <small class="text-muted">Separate multiple values with commas</small>
+                               placeholder="<?php echo addslashes(__('admin_comma_separated')); ?>">
+                        <small class="text-muted"><?php _e('admin_comma_separated_hint'); ?></small>
 
                         <?php elseif (in_array($key, ['price_pro', 'price_elite', 'price_vip', 'min_deposit', 'default_tp_target', 'default_ml_limit'])): ?>
                         <!-- Number input -->
@@ -175,11 +175,11 @@ $settingGroups = [
         <div class="admin-card-body">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="mb-1"><i class="fas fa-save me-2 text-primary"></i>Save Changes</h5>
-                    <p class="text-muted mb-0 small">All settings will be updated immediately</p>
+                    <h5 class="mb-1"><i class="fas fa-save me-2 text-primary"></i><?php _e('admin_save_changes'); ?></h5>
+                    <p class="text-muted mb-0 small"><?php _e('admin_settings_apply_note'); ?></p>
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="fas fa-save me-2"></i>Save All Settings
+                    <i class="fas fa-save me-2"></i><?php _e('admin_save_all_settings'); ?>
                 </button>
             </div>
         </div>
@@ -193,16 +193,16 @@ $settingGroups = [
         <div class="admin-card fade-in" style="border-color: var(--danger);">
             <div class="admin-card-header" style="background: rgba(239, 68, 68, 0.1);">
                 <h5 class="admin-card-title text-danger">
-                    <i class="fas fa-exclamation-triangle"></i> Danger Zone
+                    <i class="fas fa-exclamation-triangle"></i> <?php _e('admin_danger_zone'); ?>
                 </h5>
             </div>
             <div class="admin-card-body">
-                <h6 class="mb-2">Maintenance Mode</h6>
-                <p class="text-muted small mb-3">When enabled, users cannot access the system. Only admins can login.</p>
+                <h6 class="mb-2"><?php _e('admin_maintenance_mode'); ?></h6>
+                <p class="text-muted small mb-3"><?php _e('admin_maintenance_desc'); ?></p>
                 <div class="alert alert-<?php echo ($allSettings['maintenance_mode']['value'] ?? '0') === '1' ? 'danger' : 'success'; ?> py-2 mb-0">
                     <i class="fas fa-<?php echo ($allSettings['maintenance_mode']['value'] ?? '0') === '1' ? 'exclamation-circle' : 'check-circle'; ?> me-2"></i>
-                    <strong>Current Status:</strong>
-                    <?php echo ($allSettings['maintenance_mode']['value'] ?? '0') === '1' ? 'MAINTENANCE MODE ON' : 'System Online'; ?>
+                    <strong><?php _e('admin_current_status'); ?>:</strong>
+                    <?php echo ($allSettings['maintenance_mode']['value'] ?? '0') === '1' ? __('admin_maintenance_on') : __('admin_system_online'); ?>
                 </div>
             </div>
         </div>
@@ -213,25 +213,25 @@ $settingGroups = [
         <div class="admin-card fade-in">
             <div class="admin-card-header">
                 <h5 class="admin-card-title">
-                    <i class="fas fa-server text-info"></i> System Information
+                    <i class="fas fa-server text-info"></i> <?php _e('admin_system_info'); ?>
                 </h5>
             </div>
             <div class="admin-card-body">
                 <div class="system-info-grid">
                     <div class="system-info-item">
-                        <span class="system-info-label">PHP Version</span>
+                        <span class="system-info-label"><?php _e('admin_php_version'); ?></span>
                         <span class="system-info-value"><?php echo phpversion(); ?></span>
                     </div>
                     <div class="system-info-item">
-                        <span class="system-info-label">Database</span>
+                        <span class="system-info-label"><?php _e('admin_database'); ?></span>
                         <span class="system-info-value">MySQL</span>
                     </div>
                     <div class="system-info-item">
-                        <span class="system-info-label">Timezone</span>
+                        <span class="system-info-label"><?php _e('admin_timezone'); ?></span>
                         <span class="system-info-value"><?php echo date_default_timezone_get(); ?></span>
                     </div>
                     <div class="system-info-item">
-                        <span class="system-info-label">Server Time</span>
+                        <span class="system-info-label"><?php _e('admin_server_time'); ?></span>
                         <span class="system-info-value"><?php echo date('Y-m-d H:i:s'); ?></span>
                     </div>
                 </div>

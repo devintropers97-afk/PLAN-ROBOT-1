@@ -1,5 +1,5 @@
 <?php
-$page_title = 'My Trading';
+$page_title = __('admin_my_trading_title') ?: 'My Trading';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -106,16 +106,16 @@ foreach ($dailyStats as $day) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-chart-area"></i> My Trading</h1>
-        <p class="page-subtitle">Your personal trading performance</p>
+        <h1 class="page-title"><i class="fas fa-chart-area"></i> <?php _e('admin_my_trading_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_my_trading_subtitle'); ?></p>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <span class="badge badge-<?php echo $adminUser['olymptrade_account_type'] === 'demo' ? 'warning' : 'success'; ?> badge-lg">
             <i class="fas fa-<?php echo $adminUser['olymptrade_account_type'] === 'demo' ? 'flask' : 'dollar-sign'; ?> me-1"></i>
-            <?php echo strtoupper($adminUser['olymptrade_account_type'] ?? 'demo'); ?> Account
+            <?php echo strtoupper($adminUser['olymptrade_account_type'] ?? 'demo'); ?> <?php _e('admin_account'); ?>
         </span>
         <a href="my-robot.php" class="btn btn-primary">
-            <i class="fas fa-robot me-2"></i>Robot Settings
+            <i class="fas fa-robot me-2"></i><?php _e('admin_robot_settings'); ?>
         </a>
     </div>
 </div>
@@ -125,27 +125,27 @@ foreach ($dailyStats as $day) {
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
         <div class="stat-value"><?php echo number_format($stats['total_trades'] ?? 0); ?></div>
-        <div class="stat-label">Total Trades</div>
+        <div class="stat-label"><?php _e('admin_total_trades'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-value"><?php echo number_format($stats['wins'] ?? 0); ?></div>
-        <div class="stat-label">Wins</div>
+        <div class="stat-label"><?php _e('admin_wins'); ?></div>
     </div>
     <div class="stat-card danger fade-in">
         <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
         <div class="stat-value"><?php echo number_format($stats['losses'] ?? 0); ?></div>
-        <div class="stat-label">Losses</div>
+        <div class="stat-label"><?php _e('admin_losses'); ?></div>
     </div>
     <div class="stat-card <?php echo $winRate >= 60 ? 'success' : ($winRate >= 50 ? 'warning' : 'danger'); ?> fade-in">
         <div class="stat-icon"><i class="fas fa-percentage"></i></div>
         <div class="stat-value"><?php echo $winRate; ?>%</div>
-        <div class="stat-label">Win Rate</div>
+        <div class="stat-label"><?php _e('admin_winrate_label'); ?></div>
     </div>
     <div class="stat-card <?php echo ($stats['total_pnl'] ?? 0) >= 0 ? 'success' : 'danger'; ?> fade-in">
         <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
         <div class="stat-value"><?php echo ($stats['total_pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($stats['total_pnl'] ?? 0, 2); ?></div>
-        <div class="stat-label">Total P/L</div>
+        <div class="stat-label"><?php _e('admin_total_pnl'); ?></div>
     </div>
 </div>
 
@@ -154,23 +154,23 @@ foreach ($dailyStats as $day) {
     <div class="admin-card-body py-3">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label class="form-label small">From Date</label>
+                <label class="form-label small"><?php _e('admin_from_date'); ?></label>
                 <input type="date" name="date_from" class="form-control" value="<?php echo $dateFrom; ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label small">To Date</label>
+                <label class="form-label small"><?php _e('admin_to_date'); ?></label>
                 <input type="date" name="date_to" class="form-control" value="<?php echo $dateTo; ?>">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Filter
+                    <i class="fas fa-search me-2"></i><?php _e('admin_filter'); ?>
                 </button>
             </div>
             <div class="col-md-4 text-end">
                 <div class="btn-group">
-                    <a href="?date_from=<?php echo date('Y-m-d'); ?>&date_to=<?php echo date('Y-m-d'); ?>" class="btn btn-outline-secondary">Today</a>
-                    <a href="?date_from=<?php echo date('Y-m-d', strtotime('-7 days')); ?>&date_to=<?php echo date('Y-m-d'); ?>" class="btn btn-outline-secondary">7 Days</a>
-                    <a href="?date_from=<?php echo date('Y-m-d', strtotime('-30 days')); ?>&date_to=<?php echo date('Y-m-d'); ?>" class="btn btn-outline-secondary">30 Days</a>
+                    <a href="?date_from=<?php echo date('Y-m-d'); ?>&date_to=<?php echo date('Y-m-d'); ?>" class="btn btn-outline-secondary"><?php _e('admin_today'); ?></a>
+                    <a href="?date_from=<?php echo date('Y-m-d', strtotime('-7 days')); ?>&date_to=<?php echo date('Y-m-d'); ?>" class="btn btn-outline-secondary"><?php _e('admin_7_days'); ?></a>
+                    <a href="?date_from=<?php echo date('Y-m-d', strtotime('-30 days')); ?>&date_to=<?php echo date('Y-m-d'); ?>" class="btn btn-outline-secondary"><?php _e('admin_30_days'); ?></a>
                 </div>
             </div>
         </form>
@@ -182,7 +182,7 @@ foreach ($dailyStats as $day) {
     <div class="col-lg-8 mb-4">
         <div class="admin-card h-100 fade-in">
             <div class="admin-card-header">
-                <h5 class="admin-card-title"><i class="fas fa-chart-line text-primary"></i> Cumulative P/L</h5>
+                <h5 class="admin-card-title"><i class="fas fa-chart-line text-primary"></i> <?php _e('admin_cumulative_pnl'); ?></h5>
             </div>
             <div class="admin-card-body">
                 <canvas id="pnlChart" height="200"></canvas>
@@ -194,20 +194,20 @@ foreach ($dailyStats as $day) {
     <div class="col-lg-4 mb-4">
         <div class="admin-card h-100 fade-in">
             <div class="admin-card-header">
-                <h5 class="admin-card-title"><i class="fas fa-calendar-day text-info"></i> Today's Summary</h5>
+                <h5 class="admin-card-title"><i class="fas fa-calendar-day text-info"></i> <?php _e('admin_todays_summary'); ?></h5>
             </div>
             <div class="admin-card-body">
                 <div class="today-summary">
                     <div class="summary-item">
-                        <span class="summary-label">Trades</span>
+                        <span class="summary-label"><?php _e('admin_trades_label'); ?></span>
                         <span class="summary-value"><?php echo $todayStats['total'] ?? 0; ?></span>
                     </div>
                     <div class="summary-item">
-                        <span class="summary-label">Wins</span>
+                        <span class="summary-label"><?php _e('admin_wins'); ?></span>
                         <span class="summary-value text-success"><?php echo $todayStats['wins'] ?? 0; ?></span>
                     </div>
                     <div class="summary-item">
-                        <span class="summary-label">Win Rate</span>
+                        <span class="summary-label"><?php _e('admin_winrate_label'); ?></span>
                         <span class="summary-value">
                             <?php
                             $todayWinRate = ($todayStats['total'] ?? 0) > 0
@@ -226,17 +226,17 @@ foreach ($dailyStats as $day) {
                 </div>
 
                 <div class="mt-4">
-                    <h6 class="mb-3">Quick Stats</h6>
+                    <h6 class="mb-3"><?php _e('admin_quick_stats'); ?></h6>
                     <div class="quick-stat">
-                        <span>Best Trade</span>
+                        <span><?php _e('admin_best_trade'); ?></span>
                         <span class="text-success">+$<?php echo number_format($stats['best_trade'] ?? 0, 2); ?></span>
                     </div>
                     <div class="quick-stat">
-                        <span>Worst Trade</span>
+                        <span><?php _e('admin_worst_trade'); ?></span>
                         <span class="text-danger">$<?php echo number_format($stats['worst_trade'] ?? 0, 2); ?></span>
                     </div>
                     <div class="quick-stat">
-                        <span>Avg Trade</span>
+                        <span><?php _e('admin_avg_trade'); ?></span>
                         <span class="<?php echo ($stats['avg_trade'] ?? 0) >= 0 ? 'text-success' : 'text-danger'; ?>">
                             $<?php echo number_format($stats['avg_trade'] ?? 0, 2); ?>
                         </span>
@@ -250,24 +250,24 @@ foreach ($dailyStats as $day) {
 <!-- Strategy Performance -->
 <div class="admin-card mb-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-brain text-warning"></i> Strategy Performance</h5>
+        <h5 class="admin-card-title"><i class="fas fa-brain text-warning"></i> <?php _e('admin_strategy_performance'); ?></h5>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($strategyPerf)): ?>
         <div class="empty-state py-4">
             <div class="empty-state-icon"><i class="fas fa-chart-pie"></i></div>
-            <p class="empty-state-desc">No trades recorded yet</p>
+            <p class="empty-state-desc"><?php _e('admin_no_trades_recorded'); ?></p>
         </div>
         <?php else: ?>
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Strategy</th>
-                        <th>Trades</th>
-                        <th>Wins</th>
-                        <th>Losses</th>
-                        <th>Win Rate</th>
+                        <th><?php _e('admin_th_strategy'); ?></th>
+                        <th><?php _e('admin_trades_label'); ?></th>
+                        <th><?php _e('admin_wins'); ?></th>
+                        <th><?php _e('admin_losses'); ?></th>
+                        <th><?php _e('admin_winrate_label'); ?></th>
                         <th>P/L</th>
                     </tr>
                 </thead>
@@ -303,17 +303,17 @@ foreach ($dailyStats as $day) {
 <!-- Recent Trades -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-history text-info"></i> Recent Trades</h5>
-        <span class="badge badge-primary"><?php echo count($trades); ?> trades</span>
+        <h5 class="admin-card-title"><i class="fas fa-history text-info"></i> <?php _e('admin_recent_trades'); ?></h5>
+        <span class="badge badge-primary"><?php echo count($trades); ?> <?php _e('admin_trades_label'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($trades)): ?>
         <div class="empty-state py-4">
             <div class="empty-state-icon"><i class="fas fa-chart-line"></i></div>
-            <h4 class="empty-state-title">No Trades Yet</h4>
-            <p class="empty-state-desc">Start your robot to begin trading!</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_trades_yet'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_start_robot_desc'); ?></p>
             <a href="my-robot.php" class="btn btn-primary mt-2">
-                <i class="fas fa-robot me-2"></i>Go to Robot Settings
+                <i class="fas fa-robot me-2"></i><?php _e('admin_go_robot_settings'); ?>
             </a>
         </div>
         <?php else: ?>
@@ -321,12 +321,12 @@ foreach ($dailyStats as $day) {
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Time</th>
-                        <th>Strategy</th>
-                        <th>Asset</th>
-                        <th>Direction</th>
-                        <th>Amount</th>
-                        <th>Result</th>
+                        <th><?php _e('admin_th_time'); ?></th>
+                        <th><?php _e('admin_th_strategy'); ?></th>
+                        <th><?php _e('admin_th_asset'); ?></th>
+                        <th><?php _e('admin_th_direction'); ?></th>
+                        <th><?php _e('admin_th_amount'); ?></th>
+                        <th><?php _e('admin_th_result'); ?></th>
                         <th>P/L</th>
                     </tr>
                 </thead>

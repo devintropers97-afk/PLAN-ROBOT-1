@@ -1,5 +1,5 @@
 <?php
-$page_title = 'License Keys';
+$page_title = __('admin_license_keys_title') ?: 'License Keys';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
                 }
             }
 
-            $message = "Generated " . count($generated) . " " . strtoupper($package) . " license keys!";
+            $message = str_replace([':count', ':package'], [count($generated), strtoupper($package)], __('admin_license_generated'));
             $messageType = 'success';
             break;
 
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             if ($keyId > 0) {
                 $stmt = $db->prepare("UPDATE license_keys SET status = 'revoked' WHERE id = ? AND status = 'available'");
                 $stmt->execute([$keyId]);
-                $message = "License key revoked.";
+                $message = __('admin_license_revoked');
                 $messageType = 'warning';
             }
             break;
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCSRFToken($_POST['csrf_token'
             if ($keyId > 0) {
                 $stmt = $db->prepare("DELETE FROM license_keys WHERE id = ? AND user_id IS NULL");
                 $stmt->execute([$keyId]);
-                $message = "License key deleted.";
+                $message = __('admin_license_deleted');
                 $messageType = 'info';
             }
             break;
@@ -114,11 +114,11 @@ while ($row = $stmt->fetch()) {
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-key"></i> License Keys</h1>
-        <p class="page-subtitle">Generate and manage license keys</p>
+        <h1 class="page-title"><i class="fas fa-key"></i> <?php _e('admin_license_keys_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_license_subtitle'); ?></p>
     </div>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateModal">
-        <i class="fas fa-plus me-2"></i>Generate Keys
+        <i class="fas fa-plus me-2"></i><?php _e('admin_generate_keys'); ?>
     </button>
 </div>
 
@@ -135,34 +135,34 @@ while ($row = $stmt->fetch()) {
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-key"></i></div>
         <div class="stat-value"><?php echo array_sum($statusCounts); ?></div>
-        <div class="stat-label">Total Keys</div>
+        <div class="stat-label"><?php _e('admin_total_keys'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
         <div class="stat-value"><?php echo $statusCounts['available'] ?? 0; ?></div>
-        <div class="stat-label">Available</div>
+        <div class="stat-label"><?php _e('admin_keys_available'); ?></div>
     </div>
     <div class="stat-card info fade-in">
         <div class="stat-icon"><i class="fas fa-user-check"></i></div>
         <div class="stat-value"><?php echo $statusCounts['active'] ?? 0; ?></div>
-        <div class="stat-label">Active (Used)</div>
+        <div class="stat-label"><?php _e('admin_keys_active'); ?></div>
     </div>
     <div class="stat-card warning fade-in">
         <div class="stat-icon"><i class="fas fa-clock"></i></div>
         <div class="stat-value"><?php echo $statusCounts['expired'] ?? 0; ?></div>
-        <div class="stat-label">Expired</div>
+        <div class="stat-label"><?php _e('admin_keys_expired'); ?></div>
     </div>
     <div class="stat-card danger fade-in">
         <div class="stat-icon"><i class="fas fa-ban"></i></div>
         <div class="stat-value"><?php echo $statusCounts['revoked'] ?? 0; ?></div>
-        <div class="stat-label">Revoked</div>
+        <div class="stat-label"><?php _e('admin_keys_revoked'); ?></div>
     </div>
 </div>
 
 <!-- Available Keys by Package -->
 <div class="admin-card mb-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-boxes text-primary"></i> Available Keys by Package</h5>
+        <h5 class="admin-card-title"><i class="fas fa-boxes text-primary"></i> <?php _e('admin_keys_by_package'); ?></h5>
     </div>
     <div class="admin-card-body">
         <div class="row">
@@ -195,19 +195,19 @@ while ($row = $stmt->fetch()) {
     <div class="admin-card-body py-3">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label class="form-label small">Status</label>
+                <label class="form-label small"><?php _e('admin_th_status'); ?></label>
                 <select name="filter" class="form-select">
-                    <option value="all" <?php echo $filter === 'all' ? 'selected' : ''; ?>>All Status</option>
-                    <option value="available" <?php echo $filter === 'available' ? 'selected' : ''; ?>>Available</option>
-                    <option value="active" <?php echo $filter === 'active' ? 'selected' : ''; ?>>Active</option>
-                    <option value="expired" <?php echo $filter === 'expired' ? 'selected' : ''; ?>>Expired</option>
-                    <option value="revoked" <?php echo $filter === 'revoked' ? 'selected' : ''; ?>>Revoked</option>
+                    <option value="all" <?php echo $filter === 'all' ? 'selected' : ''; ?>><?php _e('admin_all_status'); ?></option>
+                    <option value="available" <?php echo $filter === 'available' ? 'selected' : ''; ?>><?php _e('admin_keys_available'); ?></option>
+                    <option value="active" <?php echo $filter === 'active' ? 'selected' : ''; ?>><?php _e('admin_status_active'); ?></option>
+                    <option value="expired" <?php echo $filter === 'expired' ? 'selected' : ''; ?>><?php _e('admin_status_expired'); ?></option>
+                    <option value="revoked" <?php echo $filter === 'revoked' ? 'selected' : ''; ?>><?php _e('admin_keys_revoked'); ?></option>
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label small">Package</label>
+                <label class="form-label small"><?php _e('admin_th_package'); ?></label>
                 <select name="package" class="form-select">
-                    <option value="">All Packages</option>
+                    <option value=""><?php _e('admin_all_packages'); ?></option>
                     <option value="free" <?php echo $packageFilter === 'free' ? 'selected' : ''; ?>>FREE</option>
                     <option value="starter" <?php echo $packageFilter === 'starter' ? 'selected' : ''; ?>>STARTER</option>
                     <option value="pro" <?php echo $packageFilter === 'pro' ? 'selected' : ''; ?>>PRO</option>
@@ -217,13 +217,13 @@ while ($row = $stmt->fetch()) {
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Filter
+                    <i class="fas fa-search me-2"></i><?php _e('admin_filter'); ?>
                 </button>
             </div>
             <?php if ($filter !== 'all' || $packageFilter): ?>
             <div class="col-md-2">
                 <a href="license-keys.php" class="btn btn-outline-secondary w-100">
-                    <i class="fas fa-times me-2"></i>Clear
+                    <i class="fas fa-times me-2"></i><?php _e('admin_clear'); ?>
                 </a>
             </div>
             <?php endif; ?>
@@ -234,17 +234,17 @@ while ($row = $stmt->fetch()) {
 <!-- Keys Table -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-list"></i> License Keys</h5>
-        <span class="badge badge-primary"><?php echo count($keys); ?> keys</span>
+        <h5 class="admin-card-title"><i class="fas fa-list"></i> <?php _e('admin_license_keys_title'); ?></h5>
+        <span class="badge badge-primary"><?php echo count($keys); ?> <?php _e('admin_keys_label'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php if (empty($keys)): ?>
         <div class="empty-state py-4">
             <div class="empty-state-icon"><i class="fas fa-key"></i></div>
-            <h4 class="empty-state-title">No License Keys</h4>
-            <p class="empty-state-desc">Generate some license keys to get started.</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_license_keys'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_license_keys_desc'); ?></p>
             <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#generateModal">
-                <i class="fas fa-plus me-2"></i>Generate Keys
+                <i class="fas fa-plus me-2"></i><?php _e('admin_generate_keys'); ?>
             </button>
         </div>
         <?php else: ?>
@@ -252,12 +252,12 @@ while ($row = $stmt->fetch()) {
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>License Key</th>
-                        <th>Package</th>
-                        <th>Status</th>
-                        <th>User</th>
-                        <th>Created</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_th_license_key'); ?></th>
+                        <th><?php _e('admin_th_package'); ?></th>
+                        <th><?php _e('admin_th_status'); ?></th>
+                        <th><?php _e('admin_th_user'); ?></th>
+                        <th><?php _e('admin_th_created'); ?></th>
+                        <th><?php _e('admin_th_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -292,7 +292,7 @@ while ($row = $stmt->fetch()) {
                                 <span class="user-email"><?php echo htmlspecialchars($key['user_email']); ?></span>
                             </div>
                             <?php else: ?>
-                            <span class="text-muted">Not assigned</span>
+                            <span class="text-muted"><?php _e('admin_not_assigned'); ?></span>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -306,7 +306,7 @@ while ($row = $stmt->fetch()) {
                                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="action" value="revoke">
                                     <input type="hidden" name="key_id" value="<?php echo $key['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Revoke" onclick="return confirm('Revoke this key?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="<?php echo addslashes(__('admin_action_revoke')); ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_revoke_key')); ?>');">
                                         <i class="fas fa-ban"></i>
                                     </button>
                                 </form>
@@ -314,7 +314,7 @@ while ($row = $stmt->fetch()) {
                                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="key_id" value="<?php echo $key['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Delete this key permanently?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="<?php echo addslashes(__('admin_action_delete')); ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_key')); ?>');">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -338,7 +338,7 @@ while ($row = $stmt->fetch()) {
         <div class="modal-content">
             <form method="POST">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2 text-primary"></i>Generate License Keys</h5>
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2 text-primary"></i><?php _e('admin_generate_license_keys'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -346,26 +346,26 @@ while ($row = $stmt->fetch()) {
                     <input type="hidden" name="action" value="generate">
 
                     <div class="mb-3">
-                        <label class="form-label">Package Type</label>
+                        <label class="form-label"><?php _e('admin_package_type'); ?></label>
                         <select name="package" class="form-select">
-                            <option value="free">FREE - Basic access</option>
-                            <option value="starter">STARTER - $19/month</option>
-                            <option value="pro">PRO - $29/month</option>
-                            <option value="elite">ELITE - $79/month</option>
-                            <option value="vip">VIP - $149/month</option>
+                            <option value="free"><?php _e('admin_pkg_free_desc'); ?></option>
+                            <option value="starter"><?php _e('admin_pkg_starter_desc'); ?></option>
+                            <option value="pro"><?php _e('admin_pkg_pro_desc'); ?></option>
+                            <option value="elite"><?php _e('admin_pkg_elite_desc'); ?></option>
+                            <option value="vip"><?php _e('admin_pkg_vip_desc'); ?></option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Quantity</label>
+                        <label class="form-label"><?php _e('admin_quantity'); ?></label>
                         <input type="number" name="quantity" class="form-control" value="10" min="1" max="100">
-                        <small class="text-muted">Maximum 100 keys at once</small>
+                        <small class="text-muted"><?php _e('admin_max_keys_hint'); ?></small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?php _e('admin_cancel'); ?></button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-key me-2"></i>Generate Keys
+                        <i class="fas fa-key me-2"></i><?php _e('admin_generate_keys'); ?>
                     </button>
                 </div>
             </form>

@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Robot Monitoring';
+$page_title = __('admin_robot_monitoring_title') ?: 'Robot Monitoring';
 require_once 'includes/admin-header.php';
 
 $db = getDBConnection();
@@ -72,12 +72,12 @@ $vpsStatus = [
 <!-- Page Header -->
 <div class="page-header">
     <div>
-        <h1 class="page-title"><i class="fas fa-satellite-dish"></i> Robot Monitoring</h1>
-        <p class="page-subtitle">Real-time monitoring of all trading robots</p>
+        <h1 class="page-title"><i class="fas fa-satellite-dish"></i> <?php _e('admin_robot_monitoring_title'); ?></h1>
+        <p class="page-subtitle"><?php _e('admin_robot_monitoring_subtitle'); ?></p>
     </div>
     <div class="d-flex gap-2">
         <button class="btn btn-outline-primary" onclick="location.reload()">
-            <i class="fas fa-sync-alt me-2"></i>Refresh
+            <i class="fas fa-sync-alt me-2"></i><?php _e('admin_refresh'); ?>
         </button>
     </div>
 </div>
@@ -92,10 +92,10 @@ $vpsStatus = [
                         <i class="fas fa-server"></i>
                     </div>
                     <div>
-                        <h4 class="mb-0">VPS Status</h4>
+                        <h4 class="mb-0"><?php _e('admin_vps_status'); ?></h4>
                         <span class="badge badge-success">
                             <i class="fas fa-circle me-1" style="font-size: 8px;"></i>
-                            ONLINE
+                            <?php _e('admin_vps_online'); ?>
                         </span>
                     </div>
                 </div>
@@ -105,7 +105,7 @@ $vpsStatus = [
                     <div class="col">
                         <div class="vps-stat">
                             <span class="vps-stat-value"><?php echo $vpsStatus['uptime']; ?></span>
-                            <span class="vps-stat-label">Uptime</span>
+                            <span class="vps-stat-label"><?php _e('admin_vps_uptime'); ?></span>
                         </div>
                     </div>
                     <div class="col">
@@ -117,13 +117,13 @@ $vpsStatus = [
                     <div class="col">
                         <div class="vps-stat">
                             <span class="vps-stat-value"><?php echo $vpsStatus['memory']; ?>%</span>
-                            <span class="vps-stat-label">Memory</span>
+                            <span class="vps-stat-label"><?php _e('admin_vps_memory'); ?></span>
                         </div>
                     </div>
                     <div class="col">
                         <div class="vps-stat">
                             <span class="vps-stat-value text-success"><?php echo $connectedRobots; ?></span>
-                            <span class="vps-stat-label">Connected</span>
+                            <span class="vps-stat-label"><?php _e('admin_robots_connected'); ?></span>
                         </div>
                     </div>
                 </div>
@@ -137,35 +137,35 @@ $vpsStatus = [
     <div class="stat-card primary fade-in">
         <div class="stat-icon"><i class="fas fa-users"></i></div>
         <div class="stat-value"><?php echo count($users); ?></div>
-        <div class="stat-label">Total Users</div>
+        <div class="stat-label"><?php _e('admin_total_users'); ?></div>
     </div>
     <div class="stat-card success fade-in">
         <div class="stat-icon"><i class="fas fa-robot"></i></div>
         <div class="stat-value"><?php echo $activeRobots; ?></div>
-        <div class="stat-label">Robots ON</div>
+        <div class="stat-label"><?php _e('admin_robots_on'); ?></div>
     </div>
     <div class="stat-card info fade-in">
         <div class="stat-icon"><i class="fas fa-wifi"></i></div>
         <div class="stat-value"><?php echo $connectedRobots; ?></div>
-        <div class="stat-label">Connected</div>
+        <div class="stat-label"><?php _e('admin_robots_connected'); ?></div>
     </div>
     <div class="stat-card warning fade-in">
         <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
         <div class="stat-value"><?php echo number_format($todayGlobalStats['total_trades'] ?? 0); ?></div>
-        <div class="stat-label">Today's Trades</div>
+        <div class="stat-label"><?php _e('admin_todays_trades'); ?></div>
     </div>
     <div class="stat-card <?php echo ($todayGlobalStats['pnl'] ?? 0) >= 0 ? 'success' : 'danger'; ?> fade-in">
         <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
         <div class="stat-value"><?php echo ($todayGlobalStats['pnl'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($todayGlobalStats['pnl'] ?? 0, 2); ?></div>
-        <div class="stat-label">Today's P/L</div>
+        <div class="stat-label"><?php _e('admin_todays_pnl'); ?></div>
     </div>
 </div>
 
 <!-- Active Robots -->
 <div class="admin-card mb-4 fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-robot text-success"></i> Active Robots</h5>
-        <span class="badge badge-success"><?php echo $activeRobots; ?> Active</span>
+        <h5 class="admin-card-title"><i class="fas fa-robot text-success"></i> <?php _e('admin_active_robots'); ?></h5>
+        <span class="badge badge-success"><?php echo $activeRobots; ?> <?php _e('admin_status_active'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <?php
@@ -174,22 +174,22 @@ $vpsStatus = [
         ?>
         <div class="empty-state py-4">
             <div class="empty-state-icon"><i class="fas fa-robot"></i></div>
-            <h4 class="empty-state-title">No Active Robots</h4>
-            <p class="empty-state-desc">No users have their robot enabled currently.</p>
+            <h4 class="empty-state-title"><?php _e('admin_no_active_robots'); ?></h4>
+            <p class="empty-state-desc"><?php _e('admin_no_active_robots_desc'); ?></p>
         </div>
         <?php else: ?>
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>User</th>
-                        <th>Status</th>
-                        <th>Market</th>
-                        <th>Account</th>
-                        <th>Balance</th>
-                        <th>Session</th>
-                        <th>Last Active</th>
-                        <th>Actions</th>
+                        <th><?php _e('admin_th_user'); ?></th>
+                        <th><?php _e('admin_th_status'); ?></th>
+                        <th><?php _e('admin_th_market'); ?></th>
+                        <th><?php _e('admin_th_account'); ?></th>
+                        <th><?php _e('admin_th_balance'); ?></th>
+                        <th><?php _e('admin_th_session'); ?></th>
+                        <th><?php _e('admin_th_last_active'); ?></th>
+                        <th><?php _e('admin_th_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -211,7 +211,7 @@ $vpsStatus = [
                                 </span>
                                 <?php if ($user['error_message']): ?>
                                 <small class="text-danger" title="<?php echo htmlspecialchars($user['error_message']); ?>">
-                                    <i class="fas fa-exclamation-triangle"></i> Error
+                                    <i class="fas fa-exclamation-triangle"></i> <?php _e('admin_error'); ?>
                                 </small>
                                 <?php endif; ?>
                             </div>
@@ -241,7 +241,7 @@ $vpsStatus = [
                             <?php endif; ?>
                         </td>
                         <td>
-                            <span class="d-block"><?php echo $user['session_trades'] ?? 0; ?> trades</span>
+                            <span class="d-block"><?php echo $user['session_trades'] ?? 0; ?> <?php _e('admin_trades_label'); ?></span>
                             <span class="<?php echo ($user['session_profit'] ?? 0) >= 0 ? 'text-success' : 'text-danger'; ?>">
                                 <?php echo ($user['session_profit'] ?? 0) >= 0 ? '+' : ''; ?>$<?php echo number_format($user['session_profit'] ?? 0, 2); ?>
                             </span>
@@ -251,11 +251,11 @@ $vpsStatus = [
                             <span class="d-block"><?php echo date('H:i:s', strtotime($user['last_active'])); ?></span>
                             <small class="text-muted"><?php echo date('M d', strtotime($user['last_active'])); ?></small>
                             <?php else: ?>
-                            <span class="text-muted">Never</span>
+                            <span class="text-muted"><?php _e('admin_never'); ?></span>
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="users.php?search=<?php echo urlencode($user['email']); ?>" class="btn btn-sm btn-outline-primary" title="View User">
+                            <a href="users.php?search=<?php echo urlencode($user['email']); ?>" class="btn btn-sm btn-outline-primary" title="<?php echo addslashes(__('admin_view_user')); ?>">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </td>
@@ -271,21 +271,21 @@ $vpsStatus = [
 <!-- All Users Robot Status -->
 <div class="admin-card fade-in">
     <div class="admin-card-header">
-        <h5 class="admin-card-title"><i class="fas fa-users text-info"></i> All Users</h5>
-        <span class="badge badge-primary"><?php echo count($users); ?> users</span>
+        <h5 class="admin-card-title"><i class="fas fa-users text-info"></i> <?php _e('admin_all_users'); ?></h5>
+        <span class="badge badge-primary"><?php echo count($users); ?> <?php _e('admin_users_label'); ?></span>
     </div>
     <div class="admin-card-body" style="padding: 0;">
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>User</th>
-                        <th>Package</th>
-                        <th>Account</th>
-                        <th>Robot</th>
-                        <th>Settings</th>
-                        <th>Limits</th>
-                        <th>Heartbeats</th>
+                        <th><?php _e('admin_th_user'); ?></th>
+                        <th><?php _e('admin_th_package'); ?></th>
+                        <th><?php _e('admin_th_account'); ?></th>
+                        <th><?php _e('admin_th_robot'); ?></th>
+                        <th><?php _e('admin_th_settings'); ?></th>
+                        <th><?php _e('admin_th_limits'); ?></th>
+                        <th><?php _e('admin_th_heartbeats'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -319,14 +319,14 @@ $vpsStatus = [
                         <td>
                             <?php if ($user['market']): ?>
                             <span class="d-block"><?php echo $user['market']; ?> / <?php echo $user['timeframe']; ?></span>
-                            <small class="text-muted">$<?php echo number_format($user['trade_amount'] ?? 0); ?>/trade</small>
+                            <small class="text-muted">$<?php echo number_format($user['trade_amount'] ?? 0); ?>/<?php _e('admin_per_trade'); ?></small>
                             <?php else: ?>
-                            <span class="text-muted">Not configured</span>
+                            <span class="text-muted"><?php _e('admin_not_configured'); ?></span>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?php if ($user['daily_limit']): ?>
-                            <span class="d-block"><?php echo $user['daily_limit']; ?> trades/day</span>
+                            <span class="d-block"><?php echo $user['daily_limit']; ?> <?php _e('admin_trades_per_day'); ?></span>
                             <small class="text-muted">
                                 TP: $<?php echo $user['take_profit_target'] ?? 0; ?> /
                                 ML: $<?php echo $user['max_loss_limit'] ?? 0; ?>
