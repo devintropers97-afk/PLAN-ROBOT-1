@@ -1,49 +1,174 @@
 # ZYN Trade Robot Engine
 
-Robot trading otomatis untuk OlympTrade dengan 10 strategi teknikal.
+Robot trading otomatis untuk OlympTrade dengan fitur anti-captcha, rate limiting, dan queue system untuk multiple traders.
+
+## Features
+
+- **Session Persistence**: Menyimpan session login untuk menghindari login berulang
+- **Rate Limiting**: Mencegah blocking dari OlympTrade karena terlalu banyak request
+- **Anti-Captcha**: Strategi menghindari captcha + integrasi 2Captcha (opsional)
+- **Queue System**: Menangani multiple trader dengan antrian
+- **REST API**: Integrasi mudah dengan website PHP/lainnya
+- **Multi-Trader Support**: Satu robot untuk banyak trader
+- **10 Technical Strategies**: RSI, MACD, Bollinger Bands, Williams %R, Stochastic RSI
 
 ## Requirements
 
 - Node.js >= 18.0.0
-- MySQL Database
-- VPS (recommended: Ubuntu 20.04+)
+- VPS di Indonesia/Singapore (OlympTrade block US/EU)
+- Chromium browser
 
 ## Installation
 
 ```bash
-# 1. Install dependencies
+# Clone repository
+git clone <repo-url>
+cd PLAN-ROBOT-1/robot-engine
+
+# Install dependencies
 npm install
 
-# 2. Copy environment file
+# Install Chromium browser
+npx playwright install chromium
+
+# Setup environment
 cp .env.example .env
-
-# 3. Configure .env with your settings
-nano .env
-
-# 4. Run tests
-npm test
-
-# 5. Start robot
-npm start
+# Edit .env dengan konfigurasi
 ```
 
-## Configuration (.env)
+## Environment Variables
 
 ```env
-# Database
-DB_HOST=localhost
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_NAME=zyn_trade
+# OlympTrade Credentials (untuk testing)
+OLYMPTRADE_EMAIL=your@email.com
+OLYMPTRADE_PASSWORD=yourpassword
 
-# API
-API_BASE_URL=https://your-website.com
-API_KEY=your_api_key
+# Chromium path (dari playwright)
+PUPPETEER_EXECUTABLE_PATH=/root/.cache/ms-playwright/chromium-1200/chrome-linux64/chrome
 
-# OlympTrade (per user - stored in database)
-# OLYMPTRADE_EMAIL=user@email.com
-# OLYMPTRADE_PASSWORD=password
-# OLYMPTRADE_DEMO_MODE=true
+# API Server
+API_PORT=3001
+API_KEY=your-secret-api-key
+
+# Optional: 2Captcha untuk solve captcha otomatis
+TWOCAPTCHA_API_KEY=your-2captcha-key
+```
+
+## Usage
+
+### 1. Test Mode (Single Trader)
+
+```bash
+# Test akses OlympTrade
+npm run test:access:simple
+
+# Test login dan trading
+npm run test:olymptrade -- --trade --demo
+
+# Dengan browser visible
+npm run test:olymptrade -- --trade --demo --visible
+```
+
+### 2. Standalone Robot
+
+```bash
+# Jalankan robot standalone
+npm run standalone -- --demo --amount=1 --strategy=simple_rsi
+
+# Dengan browser visible
+npm run standalone:visible -- --demo
+```
+
+### 3. API Server (Multi-Trader)
+
+```bash
+# Start API server
+npm run api
+
+# Dengan auto-reload (development)
+npm run api:dev
+```
+
+## API Endpoints
+
+### Health Check
+```
+GET /health
+```
+
+### Execute Trade
+```
+POST /api/trade/execute
+Content-Type: application/json
+X-API-Key: your-api-key
+
+{
+  "email": "trader@email.com",
+  "password": "password123",
+  "direction": "CALL",
+  "amount": 10,
+  "asset": "EUR/USD",
+  "duration": 1,
+  "isDemo": true
+}
+```
+
+### Get Trade Status
+```
+GET /api/trade/status/:jobId
+X-API-Key: your-api-key
+```
+
+### Test Login
+```
+POST /api/trader/login
+X-API-Key: your-api-key
+
+{
+  "email": "trader@email.com",
+  "password": "password123",
+  "isDemo": true
+}
+```
+
+### Get Balance
+```
+POST /api/trader/balance
+X-API-Key: your-api-key
+
+{
+  "email": "trader@email.com",
+  "password": "password123",
+  "isDemo": true
+}
+```
+
+### Queue Status
+```
+GET /api/queue/status
+X-API-Key: your-api-key
+```
+
+## PHP Integration
+
+Lihat folder `website-integration/` untuk contoh integrasi dengan PHP:
+
+```php
+require_once 'ZynRobotClient.php';
+
+$robot = new ZynRobotClient('http://localhost:3001', 'your-api-key');
+
+// Execute trade
+$result = $robot->executeTrade([
+    'email' => 'trader@email.com',
+    'password' => 'password123',
+    'direction' => 'CALL',
+    'amount' => 10,
+    'isDemo' => true
+]);
+
+// Wait for result
+$finalResult = $robot->waitForTrade($result['jobId']);
 ```
 
 ## Strategies
@@ -61,90 +186,76 @@ API_KEY=your_api_key
 | 9 | APEX-HUNTER | FREE | 55-86% | ~20-45 menit |
 | 10 | QUANTUM-FLOW | VIP | 80-90% | ~30-60 menit |
 
-### Tier Access:
-- **FREE**: Strategi #8, #9 (2 strategi)
-- **PRO**: FREE + #6, #7 (4 strategi)
-- **ELITE**: PRO + #3, #4, #5 (7 strategi)
-- **VIP**: Semua 10 strategi
+## Anti-Captcha Strategy
 
-## Architecture
+Robot menggunakan beberapa strategi untuk menghindari captcha:
+
+1. **Session Persistence**: Menyimpan cookies/session untuk menghindari login berulang
+2. **Rate Limiting**: Membatasi request per menit dan login per jam
+3. **Human-like Behavior**: Simulasi gerakan mouse dan typing delay
+4. **Minimal Login**: Menggunakan session yang ada jika masih valid
+
+Jika captcha tetap muncul, robot mendukung 2Captcha:
+
+```env
+TWOCAPTCHA_API_KEY=your-key
+```
+
+## Troubleshooting
+
+### Error: Trade button not found
+- Platform belum fully loaded
+- Ada popup/modal yang menutupi
+- Coba tunggu lebih lama atau jalankan dengan `--visible`
+
+### Error: Login failed
+- Credentials salah
+- Terlalu banyak login attempts (tunggu 1 jam)
+- Captcha muncul (setup 2Captcha atau tunggu)
+
+### Error: net::ERR_TUNNEL_CONNECTION_FAILED
+- VPS di-block OlympTrade (gunakan VPS Indonesia/Singapore)
+- Network issue
+
+### Error: Session expired
+- Clear session: hapus folder `sessions/`
+- Login ulang
+
+## File Structure
 
 ```
 robot-engine/
 ├── src/
-│   ├── index.js          # Main entry point
-│   ├── test.js           # Test script
-│   ├── modules/
-│   │   ├── database.js   # MySQL operations
-│   │   ├── priceData.js  # Price data feed
-│   │   ├── signalGenerator.js  # Signal generation
-│   │   ├── tradeExecutor.js    # Puppeteer automation
-│   │   └── apiClient.js        # PHP API integration
-│   ├── strategies/
-│   │   ├── baseStrategy.js
-│   │   ├── tripleRSI.js        # ORACLE-PRIME (#1)
-│   │   ├── structuredMACD.js   # NEXUS-WAVE (#2)
-│   │   ├── williamsR.js        # STEALTH-MODE (#3)
-│   │   ├── connorsRSI2.js      # PHOENIX-X1 (#4)
-│   │   ├── macdBollinger.js    # VORTEX-PRO (#5)
-│   │   ├── macdRSICombo.js     # TITAN-PULSE (#6)
-│   │   ├── stochRSIMACD.js     # SHADOW-EDGE (#7)
-│   │   ├── bbRSIStandard.js    # BLITZ-SIGNAL (#8)
-│   │   ├── rsiDivergence.js    # APEX-HUNTER (#9)
-│   │   └── multiIndicator.js   # QUANTUM-FLOW (#10)
-│   └── utils/
-│       ├── logger.js
-│       └── helpers.js
-├── logs/              # Log files
-├── screenshots/       # Debug screenshots
-├── package.json
-├── .env.example
-└── README.md
+│   ├── api/
+│   │   ├── server.js        # REST API server
+│   │   ├── tradeQueue.js    # Queue management
+│   │   └── tradeExecutor.js # Trade execution
+│   ├── utils/
+│   │   ├── rateLimiter.js   # Rate limiting
+│   │   ├── sessionManager.js # Session management
+│   │   └── captchaHandler.js # Captcha handling
+│   ├── strategies/          # 10 trading strategies
+│   ├── test-olymptrade.js   # Test script
+│   └── standalone-robot.js  # Standalone robot
+├── sessions/                 # Browser sessions
+├── logs/                     # Logs and screenshots
+└── .env                      # Configuration
 ```
 
-## Features
-
-- **10 Technical Strategies**: RSI, MACD, Bollinger Bands, Williams %R, Stochastic RSI
-- **Multi-Asset Support**: EUR/USD, GBP/USD
-- **Multi-Timeframe**: 5M, 15M, 30M, 1H
-- **Money Management**: Flat Amount & Martingale
-- **Auto-Pause**: Take Profit & Max Loss triggers
-- **5 Schedule Modes**: Auto 24H, Best Hours, Custom, Multi-Session, Per Day
-- **Weekend Auto-Off**: Saturday & Sunday
-- **Real-time Logging**: Winston logger with daily rotation
-
-## Running as Service
+## Production Deployment
 
 ```bash
-# Using PM2 (recommended)
+# Install PM2
 npm install -g pm2
-pm2 start src/index.js --name "zyn-robot"
-pm2 save
+
+# Start with PM2
+pm2 start src/api/server.js --name "zyn-robot-api"
+
+# Auto-restart on reboot
 pm2 startup
-
-# Using systemd
-sudo nano /etc/systemd/system/zyn-robot.service
-```
-
-Example systemd service:
-
-```ini
-[Unit]
-Description=ZYN Trade Robot
-After=network.target
-
-[Service]
-Type=simple
-User=ubuntu
-WorkingDirectory=/path/to/robot-engine
-ExecStart=/usr/bin/node src/index.js
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
+pm2 save
 ```
 
 ## License
 
-Private - ZYN Trade System
+PROPRIETARY - ZYN Trade System
