@@ -505,4 +505,25 @@ return [
     'price_cta_title' => 'Siap Mulai Trading Otomatis?',
     'price_cta_desc' => 'Bergabung dengan ribuan trader yang sudah merasakan kemudahan trading dengan ZYN',
     'price_cta_btn' => 'Mulai Gratis Sekarang',
+
+    // FAQ Page
+    'faq_badge' => 'Pusat Bantuan',
+    'faq_title' => 'Pertanyaan yang Sering Diajukan',
+    'faq_subtitle' => 'Temukan jawaban untuk pertanyaan umum tentang ZYN Trade System',
+    'faq_quick_nav' => 'Navigasi Cepat',
+    'faq_section_getting_started' => 'Memulai',
+    'faq_section_trading' => 'Trading',
+    'faq_section_risk' => 'Manajemen Risiko',
+    'faq_section_billing' => 'Pembayaran & Langganan',
+    'faq_section_support' => 'Dukungan',
+    'faq_cta_title' => 'Masih Punya Pertanyaan?',
+    'faq_cta_desc' => 'Tim support kami siap membantu Anda dengan pertanyaan apapun',
+    'faq_cta_contact' => 'Hubungi Support',
+    'faq_cta_start' => 'Mulai Gratis',
+
+    // Navigation Links (Footer/Legal)
+    'nav_terms' => 'Syarat & Ketentuan',
+    'nav_privacy' => 'Kebijakan Privasi',
+    'nav_disclaimer' => 'Disclaimer Risiko',
+    'nav_refund' => 'Kebijakan Refund',
 ];

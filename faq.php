@@ -12,10 +12,10 @@ require_once 'includes/header.php';
         <div class="legal-header legal-fade-in">
             <div class="legal-badge">
                 <i class="fas fa-question-circle"></i>
-                Help Center
+                <?php _e('faq_badge'); ?>
             </div>
-            <h1 class="legal-title">Frequently Asked Questions</h1>
-            <p class="legal-subtitle">Temukan jawaban untuk pertanyaan umum tentang ZYN Trade System</p>
+            <h1 class="legal-title"><?php _e('faq_title'); ?></h1>
+            <p class="legal-subtitle"><?php _e('faq_subtitle'); ?></p>
         </div>
 
         <div class="row justify-content-center">
@@ -24,14 +24,14 @@ require_once 'includes/header.php';
                 <div class="legal-toc legal-fade-in">
                     <div class="legal-toc-title">
                         <i class="fas fa-bolt"></i>
-                        Quick Navigation
+                        <?php _e('faq_quick_nav'); ?>
                     </div>
                     <ul class="legal-toc-list">
-                        <li><a href="#getting-started">Getting Started</a></li>
-                        <li><a href="#trading">Trading</a></li>
-                        <li><a href="#risk-management">Risk Management</a></li>
-                        <li><a href="#billing">Billing & Subscription</a></li>
-                        <li><a href="#support">Support</a></li>
+                        <li><a href="#getting-started"><?php _e('faq_section_getting_started'); ?></a></li>
+                        <li><a href="#trading"><?php _e('faq_section_trading'); ?></a></li>
+                        <li><a href="#risk-management"><?php _e('faq_section_risk'); ?></a></li>
+                        <li><a href="#billing"><?php _e('faq_section_billing'); ?></a></li>
+                        <li><a href="#support"><?php _e('faq_section_support'); ?></a></li>
                     </ul>
                 </div>
 
@@ -42,7 +42,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="getting-started">
                         <div class="faq-section-title">
                             <i class="fas fa-rocket"></i>
-                            Getting Started
+                            <?php _e('faq_section_getting_started'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item active">
@@ -120,7 +120,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="trading">
                         <div class="faq-section-title">
                             <i class="fas fa-chart-line"></i>
-                            Trading
+                            <?php _e('faq_section_trading'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item">
@@ -202,7 +202,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="risk-management">
                         <div class="faq-section-title">
                             <i class="fas fa-shield-alt"></i>
-                            Risk Management
+                            <?php _e('faq_section_risk'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item">
@@ -249,7 +249,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="billing">
                         <div class="faq-section-title">
                             <i class="fas fa-credit-card"></i>
-                            Billing & Subscription
+                            <?php _e('faq_section_billing'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item">
@@ -315,7 +315,7 @@ require_once 'includes/header.php';
                     <div class="faq-section" id="support">
                         <div class="faq-section-title">
                             <i class="fas fa-headset"></i>
-                            Support
+                            <?php _e('faq_section_support'); ?>
                         </div>
                         <div class="faq-accordion">
                             <div class="faq-item">
@@ -355,26 +355,26 @@ require_once 'includes/header.php';
 
                     <!-- Still Have Questions CTA -->
                     <div class="legal-cta">
-                        <h4 class="legal-cta-title">Still Have Questions?</h4>
-                        <p class="legal-cta-text">Our support team is ready to help you with any questions</p>
+                        <h4 class="legal-cta-title"><?php _e('faq_cta_title'); ?></h4>
+                        <p class="legal-cta-text"><?php _e('faq_cta_desc'); ?></p>
                         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                             <a href="<?php echo TELEGRAM_SUPPORT; ?>" target="_blank" class="legal-btn">
                                 <i class="fab fa-telegram"></i>
-                                Contact Support
+                                <?php _e('faq_cta_contact'); ?>
                             </a>
                             <a href="register.php" class="legal-btn legal-btn-outline">
                                 <i class="fas fa-rocket"></i>
-                                Get Started Free
+                                <?php _e('faq_cta_start'); ?>
                             </a>
                         </div>
                     </div>
 
                     <!-- Navigation -->
                     <div class="legal-nav">
-                        <a href="terms.php">Terms of Service</a>
-                        <a href="privacy.php">Privacy Policy</a>
-                        <a href="disclaimer.php">Risk Disclaimer</a>
-                        <a href="refund.php">Refund Policy</a>
+                        <a href="terms.php"><?php _e('nav_terms'); ?></a>
+                        <a href="privacy.php"><?php _e('nav_privacy'); ?></a>
+                        <a href="disclaimer.php"><?php _e('nav_disclaimer'); ?></a>
+                        <a href="refund.php"><?php _e('nav_refund'); ?></a>
                     </div>
                 </div>
             </div>

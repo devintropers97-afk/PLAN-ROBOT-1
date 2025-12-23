@@ -504,4 +504,25 @@ return [
     'price_cta_title' => 'Ready to Start Automated Trading?',
     'price_cta_desc' => 'Join thousands of traders who have experienced the ease of trading with ZYN',
     'price_cta_btn' => 'Start Free Now',
+
+    // FAQ Page
+    'faq_badge' => 'Help Center',
+    'faq_title' => 'Frequently Asked Questions',
+    'faq_subtitle' => 'Find answers to common questions about ZYN Trade System',
+    'faq_quick_nav' => 'Quick Navigation',
+    'faq_section_getting_started' => 'Getting Started',
+    'faq_section_trading' => 'Trading',
+    'faq_section_risk' => 'Risk Management',
+    'faq_section_billing' => 'Billing & Subscription',
+    'faq_section_support' => 'Support',
+    'faq_cta_title' => 'Still Have Questions?',
+    'faq_cta_desc' => 'Our support team is ready to help you with any questions',
+    'faq_cta_contact' => 'Contact Support',
+    'faq_cta_start' => 'Get Started Free',
+
+    // Navigation Links (Footer/Legal)
+    'nav_terms' => 'Terms of Service',
+    'nav_privacy' => 'Privacy Policy',
+    'nav_disclaimer' => 'Risk Disclaimer',
+    'nav_refund' => 'Refund Policy',
 ];
