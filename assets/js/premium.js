@@ -6429,3 +6429,984 @@ document.addEventListener('DOMContentLoaded', () => {
             'background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; padding: 10px 20px; font-size: 14px; font-weight: bold; border: 3px double #000; border-radius: 5px;');
     }, 4000);
 });
+
+// ============================================
+// BATCH 11: INFINITY BEYOND - COSMIC PERFECTION
+// ============================================
+
+// ===== 1. PARALLAX TILT CARDS =====
+class ParallaxTilt {
+    constructor(element, options = {}) {
+        this.element = typeof element === 'string' ? document.querySelector(element) : element;
+        if (!this.element) return;
+
+        this.options = {
+            maxTilt: options.maxTilt || 15,
+            perspective: options.perspective || 1000,
+            scale: options.scale || 1.05,
+            speed: options.speed || 400,
+            glare: options.glare !== undefined ? options.glare : true,
+            maxGlare: options.maxGlare || 0.3
+        };
+
+        this.init();
+    }
+
+    init() {
+        this.element.classList.add('parallax-tilt');
+        this.element.style.perspective = this.options.perspective + 'px';
+
+        // Wrap content
+        const inner = document.createElement('div');
+        inner.className = 'parallax-tilt-inner';
+        inner.innerHTML = this.element.innerHTML;
+        this.element.innerHTML = '';
+        this.element.appendChild(inner);
+        this.inner = inner;
+
+        // Add shine effect
+        if (this.options.glare) {
+            const shine = document.createElement('div');
+            shine.className = 'parallax-tilt-shine';
+            inner.appendChild(shine);
+            this.shine = shine;
+        }
+
+        // Event listeners
+        this.element.addEventListener('mouseenter', () => this.onEnter());
+        this.element.addEventListener('mousemove', (e) => this.onMove(e));
+        this.element.addEventListener('mouseleave', () => this.onLeave());
+    }
+
+    onEnter() {
+        this.inner.style.transition = `transform ${this.options.speed}ms ease-out`;
+        this.element.style.transform = `scale(${this.options.scale})`;
+    }
+
+    onMove(e) {
+        const rect = this.element.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const tiltX = (y - centerY) / centerY * this.options.maxTilt;
+        const tiltY = (centerX - x) / centerX * this.options.maxTilt;
+
+        this.inner.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+
+        if (this.shine) {
+            const glareX = (x / rect.width) * 100;
+            const glareY = (y / rect.height) * 100;
+            this.shine.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,${this.options.maxGlare}) 0%, transparent 60%)`;
+        }
+    }
+
+    onLeave() {
+        this.inner.style.transform = 'rotateX(0) rotateY(0)';
+        this.element.style.transform = 'scale(1)';
+    }
+}
+
+// ===== 2. RIPPLE CLICK EFFECT =====
+class RippleEffect {
+    constructor(selector = '.ripple-effect') {
+        this.elements = document.querySelectorAll(selector);
+        this.init();
+    }
+
+    init() {
+        this.elements.forEach(el => {
+            el.addEventListener('click', (e) => this.createRipple(e, el));
+        });
+    }
+
+    createRipple(e, element) {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+        `;
+
+        element.appendChild(ripple);
+
+        ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    static addTo(element) {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (el) {
+            el.classList.add('ripple-effect');
+            el.addEventListener('click', (e) => {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+
+                const rect = el.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${e.clientX - rect.left - size / 2}px;
+                    top: ${e.clientY - rect.top - size / 2}px;
+                `;
+
+                el.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
+            });
+        }
+    }
+}
+
+// ===== 3. SCROLL REVEAL ANIMATIONS =====
+class ScrollReveal {
+    constructor(options = {}) {
+        this.options = {
+            selector: options.selector || '.reveal',
+            threshold: options.threshold || 0.1,
+            rootMargin: options.rootMargin || '0px',
+            once: options.once !== undefined ? options.once : true
+        };
+
+        this.init();
+    }
+
+    init() {
+        const elements = document.querySelectorAll(this.options.selector);
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+
+                    if (this.options.once) {
+                        observer.unobserve(entry.target);
+                    }
+                } else if (!this.options.once) {
+                    entry.target.classList.remove('revealed');
+                }
+            });
+        }, {
+            threshold: this.options.threshold,
+            rootMargin: this.options.rootMargin
+        });
+
+        elements.forEach(el => observer.observe(el));
+    }
+
+    static reveal(element, animation = 'fade-up') {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (el) {
+            el.classList.add('reveal', `reveal-${animation}`);
+        }
+    }
+}
+
+// ===== 4. TEXT SCRAMBLE EFFECT =====
+class TextScramble {
+    constructor(element, options = {}) {
+        this.element = typeof element === 'string' ? document.querySelector(element) : element;
+        if (!this.element) return;
+
+        this.chars = options.chars || '!<>-_\\/[]{}—=+*^?#________';
+        this.speed = options.speed || 30;
+
+        this.originalText = this.element.textContent;
+        this.queue = [];
+        this.frame = 0;
+        this.frameRequest = null;
+        this.resolve = null;
+    }
+
+    setText(newText) {
+        const oldText = this.element.textContent;
+        const length = Math.max(oldText.length, newText.length);
+
+        return new Promise((resolve) => {
+            this.resolve = resolve;
+            this.queue = [];
+
+            for (let i = 0; i < length; i++) {
+                const from = oldText[i] || '';
+                const to = newText[i] || '';
+                const start = Math.floor(Math.random() * 40);
+                const end = start + Math.floor(Math.random() * 40);
+                this.queue.push({ from, to, start, end });
+            }
+
+            cancelAnimationFrame(this.frameRequest);
+            this.frame = 0;
+            this.update();
+        });
+    }
+
+    update() {
+        let output = '';
+        let complete = 0;
+
+        for (let i = 0; i < this.queue.length; i++) {
+            let { from, to, start, end, char } = this.queue[i];
+
+            if (this.frame >= end) {
+                complete++;
+                output += to;
+            } else if (this.frame >= start) {
+                if (!char || Math.random() < 0.28) {
+                    char = this.chars[Math.floor(Math.random() * this.chars.length)];
+                    this.queue[i].char = char;
+                }
+                output += `<span class="text-scramble-char scrambling">${char}</span>`;
+            } else {
+                output += from;
+            }
+        }
+
+        this.element.innerHTML = output;
+
+        if (complete === this.queue.length) {
+            this.resolve();
+        } else {
+            this.frameRequest = requestAnimationFrame(() => this.update());
+            this.frame++;
+        }
+    }
+
+    async cycle(texts, delay = 3000) {
+        let index = 0;
+        while (true) {
+            await this.setText(texts[index]);
+            await new Promise(r => setTimeout(r, delay));
+            index = (index + 1) % texts.length;
+        }
+    }
+}
+
+// ===== 5. INTERACTIVE BACKGROUND GRID =====
+class InteractiveGrid {
+    constructor() {
+        this.canvas = null;
+        this.ctx = null;
+        this.isActive = false;
+        this.mouse = { x: 0, y: 0 };
+        this.points = [];
+
+        this.init();
+    }
+
+    init() {
+        // Create container
+        const container = document.createElement('div');
+        container.className = 'interactive-grid';
+        container.innerHTML = `<canvas class="interactive-grid-canvas"></canvas>`;
+        document.body.appendChild(container);
+
+        this.canvas = container.querySelector('canvas');
+        this.ctx = this.canvas.getContext('2d');
+
+        // Create toggle
+        const toggle = document.createElement('button');
+        toggle.className = 'grid-toggle';
+        toggle.innerHTML = '⊞';
+        toggle.title = 'Toggle Interactive Grid (Alt+G)';
+        document.body.appendChild(toggle);
+
+        toggle.addEventListener('click', () => this.toggle());
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'g' && e.altKey) {
+                e.preventDefault();
+                this.toggle();
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+        });
+
+        window.addEventListener('resize', () => this.resize());
+        this.resize();
+    }
+
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.createPoints();
+    }
+
+    createPoints() {
+        this.points = [];
+        const spacing = 50;
+        for (let x = 0; x < this.canvas.width; x += spacing) {
+            for (let y = 0; y < this.canvas.height; y += spacing) {
+                this.points.push({
+                    x: x,
+                    y: y,
+                    originX: x,
+                    originY: y
+                });
+            }
+        }
+    }
+
+    toggle() {
+        this.isActive = !this.isActive;
+        document.querySelector('.grid-toggle').classList.toggle('active', this.isActive);
+
+        if (this.isActive) {
+            this.animate();
+            window.dynamicIsland?.show({
+                icon: '⊞',
+                title: 'Interactive Grid',
+                message: 'Grid background enabled',
+                type: 'info',
+                duration: 2000
+            });
+        }
+    }
+
+    animate() {
+        if (!this.isActive) return;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw connections
+        this.ctx.strokeStyle = 'rgba(102, 126, 234, 0.1)';
+        this.ctx.lineWidth = 1;
+
+        for (let i = 0; i < this.points.length; i++) {
+            const p = this.points[i];
+
+            // Move point based on mouse
+            const dx = this.mouse.x - p.originX;
+            const dy = this.mouse.y - p.originY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const maxDist = 150;
+
+            if (dist < maxDist) {
+                const force = (maxDist - dist) / maxDist;
+                p.x = p.originX + dx * force * 0.3;
+                p.y = p.originY + dy * force * 0.3;
+            } else {
+                p.x += (p.originX - p.x) * 0.1;
+                p.y += (p.originY - p.y) * 0.1;
+            }
+
+            // Draw point
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(102, 126, 234, ${0.3 + (dist < maxDist ? (maxDist - dist) / maxDist * 0.7 : 0)})`;
+            this.ctx.fill();
+
+            // Connect nearby points
+            for (let j = i + 1; j < this.points.length; j++) {
+                const p2 = this.points[j];
+                const dx2 = p.x - p2.x;
+                const dy2 = p.y - p2.y;
+                const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+                if (dist2 < 80) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(p.x, p.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.strokeStyle = `rgba(102, 126, 234, ${0.2 * (1 - dist2 / 80)})`;
+                    this.ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(() => this.animate());
+    }
+}
+
+// ===== 6. PREMIUM TOOLTIP SYSTEM =====
+class PremiumTooltip {
+    static create(element, text, position = 'top') {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (!el) return;
+
+        el.classList.add('tooltip-trigger');
+
+        const tooltip = document.createElement('div');
+        tooltip.className = `premium-tooltip tooltip-${position}`;
+        tooltip.textContent = text;
+
+        el.appendChild(tooltip);
+    }
+
+    static createWithIcon(element, icon, text, position = 'top') {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (!el) return;
+
+        el.classList.add('tooltip-trigger');
+
+        const tooltip = document.createElement('div');
+        tooltip.className = `premium-tooltip tooltip-${position}`;
+        tooltip.innerHTML = `<span class="tooltip-icon">${icon}</span>${text}`;
+
+        el.appendChild(tooltip);
+    }
+}
+
+// ===== 7. NOTIFICATION TOAST SYSTEM =====
+class ToastSystem {
+    constructor(position = 'top-right') {
+        this.position = position;
+        this.container = null;
+        this.toasts = [];
+
+        this.init();
+    }
+
+    init() {
+        this.container = document.createElement('div');
+        this.container.className = `toast-container ${this.position}`;
+        document.body.appendChild(this.container);
+
+        // Make globally accessible
+        window.toast = this;
+    }
+
+    show(options = {}) {
+        const {
+            title = '',
+            message = '',
+            type = 'info',
+            icon = this.getDefaultIcon(type),
+            duration = 5000,
+            closable = true,
+            showProgress = true
+        } = options;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-content">
+                ${title ? `<div class="toast-title">${title}</div>` : ''}
+                <div class="toast-message">${message}</div>
+            </div>
+            ${closable ? '<button class="toast-close">×</button>' : ''}
+            ${showProgress ? `<div class="toast-progress" style="animation-duration: ${duration}ms"></div>` : ''}
+        `;
+
+        this.container.appendChild(toast);
+        this.toasts.push(toast);
+
+        if (closable) {
+            toast.querySelector('.toast-close').addEventListener('click', () => this.dismiss(toast));
+        }
+
+        if (duration > 0) {
+            setTimeout(() => this.dismiss(toast), duration);
+        }
+
+        return toast;
+    }
+
+    dismiss(toast) {
+        toast.classList.add('toast-exiting');
+        setTimeout(() => {
+            toast.remove();
+            this.toasts = this.toasts.filter(t => t !== toast);
+        }, 300);
+    }
+
+    getDefaultIcon(type) {
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        return icons[type] || icons.info;
+    }
+
+    success(message, title = 'Success') {
+        return this.show({ message, title, type: 'success' });
+    }
+
+    error(message, title = 'Error') {
+        return this.show({ message, title, type: 'error' });
+    }
+
+    warning(message, title = 'Warning') {
+        return this.show({ message, title, type: 'warning' });
+    }
+
+    info(message, title = 'Info') {
+        return this.show({ message, title, type: 'info' });
+    }
+}
+
+// ===== 8. PREMIUM MODAL SYSTEM =====
+class ModalSystem {
+    constructor() {
+        this.overlay = null;
+        this.modal = null;
+        this.isOpen = false;
+
+        this.init();
+
+        // Make globally accessible
+        window.modal = this;
+    }
+
+    init() {
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'modal-overlay';
+        this.overlay.innerHTML = `
+            <div class="premium-modal">
+                <div class="modal-header">
+                    <div class="modal-title"></div>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer"></div>
+            </div>
+        `;
+
+        document.body.appendChild(this.overlay);
+
+        this.modal = this.overlay.querySelector('.premium-modal');
+
+        // Close handlers
+        this.overlay.querySelector('.modal-close').addEventListener('click', () => this.close());
+        this.overlay.addEventListener('click', (e) => {
+            if (e.target === this.overlay) this.close();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    }
+
+    open(options = {}) {
+        const {
+            title = '',
+            icon = '',
+            body = '',
+            size = '', // sm, lg, xl, fullscreen
+            buttons = [],
+            onOpen = null,
+            onClose = null
+        } = options;
+
+        this.onCloseCallback = onClose;
+
+        // Set content
+        this.modal.querySelector('.modal-title').innerHTML = icon ? `${icon} ${title}` : title;
+        this.modal.querySelector('.modal-body').innerHTML = body;
+
+        // Set size
+        this.modal.className = 'premium-modal' + (size ? ` modal-${size}` : '');
+
+        // Set buttons
+        const footer = this.modal.querySelector('.modal-footer');
+        footer.innerHTML = '';
+
+        if (buttons.length > 0) {
+            buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.className = `modal-btn modal-btn-${btn.type || 'secondary'}`;
+                button.textContent = btn.text;
+                button.addEventListener('click', () => {
+                    if (btn.onClick) btn.onClick();
+                    if (btn.closeOnClick !== false) this.close();
+                });
+                footer.appendChild(button);
+            });
+            footer.style.display = 'flex';
+        } else {
+            footer.style.display = 'none';
+        }
+
+        // Open modal
+        this.overlay.classList.add('active');
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+
+        if (onOpen) onOpen();
+    }
+
+    close() {
+        this.overlay.classList.remove('active');
+        this.isOpen = false;
+        document.body.style.overflow = '';
+
+        if (this.onCloseCallback) this.onCloseCallback();
+    }
+
+    confirm(options = {}) {
+        return new Promise((resolve) => {
+            this.open({
+                title: options.title || 'Confirm',
+                icon: options.icon || '❓',
+                body: options.message || 'Are you sure?',
+                buttons: [
+                    {
+                        text: options.cancelText || 'Cancel',
+                        type: 'secondary',
+                        onClick: () => resolve(false)
+                    },
+                    {
+                        text: options.confirmText || 'Confirm',
+                        type: 'primary',
+                        onClick: () => resolve(true)
+                    }
+                ]
+            });
+        });
+    }
+
+    alert(title, message, icon = 'ℹ️') {
+        return new Promise((resolve) => {
+            this.open({
+                title,
+                icon,
+                body: message,
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'primary',
+                        onClick: () => resolve()
+                    }
+                ]
+            });
+        });
+    }
+}
+
+// ===== 9. ANIMATED ACCORDION =====
+class Accordion {
+    constructor(container, options = {}) {
+        this.container = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!this.container) return;
+
+        this.options = {
+            allowMultiple: options.allowMultiple || false,
+            defaultOpen: options.defaultOpen || null
+        };
+
+        this.init();
+    }
+
+    init() {
+        this.container.classList.add('premium-accordion');
+
+        const items = this.container.querySelectorAll('.accordion-item');
+        items.forEach((item, index) => {
+            const header = item.querySelector('.accordion-header');
+
+            header.addEventListener('click', () => this.toggle(item));
+
+            // Add icon if not present
+            if (!header.querySelector('.accordion-icon')) {
+                const icon = document.createElement('div');
+                icon.className = 'accordion-icon';
+                icon.innerHTML = '▼';
+                header.appendChild(icon);
+            }
+
+            // Open default
+            if (this.options.defaultOpen === index) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    toggle(item) {
+        const isActive = item.classList.contains('active');
+
+        if (!this.options.allowMultiple) {
+            this.container.querySelectorAll('.accordion-item').forEach(i => {
+                i.classList.remove('active');
+            });
+        }
+
+        if (!isActive) {
+            item.classList.add('active');
+        } else if (this.options.allowMultiple) {
+            item.classList.remove('active');
+        }
+    }
+}
+
+// ===== 10. PROGRESS STEPS INDICATOR =====
+class ProgressSteps {
+    constructor(container, steps, currentStep = 0) {
+        this.container = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!this.container) return;
+
+        this.steps = steps;
+        this.currentStep = currentStep;
+
+        this.init();
+    }
+
+    init() {
+        this.container.classList.add('progress-steps');
+
+        const bar = document.createElement('div');
+        bar.className = 'progress-steps-bar';
+        this.container.appendChild(bar);
+        this.bar = bar;
+
+        this.steps.forEach((step, index) => {
+            const stepEl = document.createElement('div');
+            stepEl.className = 'progress-step';
+            stepEl.innerHTML = `
+                <div class="progress-step-circle">${step.icon || index + 1}</div>
+                <div class="progress-step-label">${step.label}</div>
+            `;
+
+            stepEl.addEventListener('click', () => this.goToStep(index));
+            this.container.appendChild(stepEl);
+        });
+
+        this.updateProgress();
+    }
+
+    goToStep(index) {
+        if (index >= 0 && index < this.steps.length) {
+            this.currentStep = index;
+            this.updateProgress();
+
+            if (this.steps[index].onClick) {
+                this.steps[index].onClick(index);
+            }
+        }
+    }
+
+    updateProgress() {
+        const stepEls = this.container.querySelectorAll('.progress-step');
+        const progress = this.currentStep / (this.steps.length - 1) * 100;
+
+        this.bar.style.width = progress + '%';
+
+        stepEls.forEach((el, index) => {
+            el.classList.remove('completed', 'active');
+
+            if (index < this.currentStep) {
+                el.classList.add('completed');
+            } else if (index === this.currentStep) {
+                el.classList.add('active');
+            }
+        });
+    }
+
+    next() {
+        this.goToStep(this.currentStep + 1);
+    }
+
+    prev() {
+        this.goToStep(this.currentStep - 1);
+    }
+}
+
+// ===== 11. MAGNETIC BUTTONS =====
+class MagneticButton {
+    constructor(element) {
+        this.element = typeof element === 'string' ? document.querySelector(element) : element;
+        if (!this.element) return;
+
+        this.strength = 0.3;
+
+        this.init();
+    }
+
+    init() {
+        this.element.classList.add('magnetic-btn');
+
+        // Wrap text
+        if (!this.element.querySelector('.magnetic-btn-text')) {
+            const text = this.element.innerHTML;
+            this.element.innerHTML = `<span class="magnetic-btn-text">${text}</span>`;
+        }
+
+        this.text = this.element.querySelector('.magnetic-btn-text');
+
+        this.element.addEventListener('mousemove', (e) => this.onMove(e));
+        this.element.addEventListener('mouseleave', () => this.onLeave());
+    }
+
+    onMove(e) {
+        const rect = this.element.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        this.element.style.transform = `translate(${x * this.strength}px, ${y * this.strength}px)`;
+        this.text.style.transform = `translate(${x * this.strength * 0.5}px, ${y * this.strength * 0.5}px)`;
+    }
+
+    onLeave() {
+        this.element.style.transform = '';
+        this.text.style.transform = '';
+    }
+
+    static applyToAll(selector = '.magnetic-btn') {
+        document.querySelectorAll(selector).forEach(el => new MagneticButton(el));
+    }
+}
+
+// ===== 12. STAGGERED LIST ANIMATIONS =====
+class StaggeredList {
+    constructor(container, options = {}) {
+        this.container = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!this.container) return;
+
+        this.options = {
+            direction: options.direction || 'left', // left, right, up, down, scale
+            delay: options.delay || 100,
+            threshold: options.threshold || 0.1
+        };
+
+        this.init();
+    }
+
+    init() {
+        this.container.classList.add('stagger-list', `stagger-${this.options.direction}`);
+
+        const items = this.container.children;
+        Array.from(items).forEach((item, index) => {
+            item.classList.add('stagger-item');
+            item.style.transitionDelay = `${index * this.options.delay}ms`;
+        });
+
+        // Observe container
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    Array.from(this.container.children).forEach(item => {
+                        item.classList.add('stagger-visible');
+                    });
+                    observer.unobserve(this.container);
+                }
+            });
+        }, { threshold: this.options.threshold });
+
+        observer.observe(this.container);
+    }
+}
+
+// ===== 13. FLOATING ORBS =====
+class FloatingOrbs {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const container = document.createElement('div');
+        container.className = 'floating-orbs';
+
+        for (let i = 0; i < 4; i++) {
+            const orb = document.createElement('div');
+            orb.className = 'floating-orb';
+            container.appendChild(orb);
+        }
+
+        document.body.appendChild(container);
+    }
+}
+
+// ===== 14. GRADIENT BORDER CARD =====
+class GradientBorderCard {
+    static apply(element) {
+        const el = typeof element === 'string' ? document.querySelector(element) : element;
+        if (!el) return;
+
+        el.classList.add('gradient-border-card');
+
+        const content = el.innerHTML;
+        el.innerHTML = `<div class="gradient-border-card-inner">${content}</div>`;
+    }
+}
+
+// ===== 15. SKELETON LOADING =====
+class Skeleton {
+    static text(lines = 3, container) {
+        const el = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!el) return;
+
+        let html = '';
+        for (let i = 0; i < lines; i++) {
+            const width = Math.floor(Math.random() * 40) + 60;
+            html += `<div class="skeleton skeleton-text" style="width: ${width}%"></div>`;
+        }
+        el.innerHTML = html;
+    }
+
+    static card(container) {
+        const el = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!el) return;
+
+        el.innerHTML = `
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-text skeleton-lg" style="width: 70%; margin-top: 16px"></div>
+            <div class="skeleton skeleton-text" style="width: 90%"></div>
+            <div class="skeleton skeleton-text" style="width: 60%"></div>
+        `;
+    }
+
+    static avatar(container) {
+        const el = typeof container === 'string' ? document.querySelector(container) : container;
+        if (!el) return;
+
+        el.innerHTML = `
+            <div style="display: flex; gap: 12px; align-items: center">
+                <div class="skeleton skeleton-avatar"></div>
+                <div style="flex: 1">
+                    <div class="skeleton skeleton-text" style="width: 40%"></div>
+                    <div class="skeleton skeleton-text skeleton-sm" style="width: 60%"></div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// ===== INITIALIZE BATCH 11 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Visual Effects
+        new FloatingOrbs();
+        new InteractiveGrid();
+
+        // UI Components
+        new ToastSystem('top-right');
+        new ModalSystem();
+
+        // Apply effects
+        new RippleEffect('button, .btn, .card');
+        new ScrollReveal({ selector: '.reveal, section > *' });
+
+        // Apply parallax to cards
+        document.querySelectorAll('.premium-card, .glass-card, .feature-card').forEach(card => {
+            new ParallaxTilt(card);
+        });
+
+        // Apply magnetic to buttons
+        MagneticButton.applyToAll('.cta-btn, .hero-btn');
+
+        // Demo toast after load
+        setTimeout(() => {
+            window.toast?.success('Welcome to the Premium Experience!', 'Hello!');
+        }, 2000);
+
+        console.log('%c Batch 11 Infinity Beyond Loaded ',
+            'background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff); color: #fff; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+
+        console.log('%c 🌌 INFINITY BEYOND - TIER -4 COSMIC! ',
+            'background: linear-gradient(135deg, #000, #0a0a0f, #667eea, #f093fb, #ffd700, #00ffff); color: #fff; padding: 15px 25px; font-size: 22px; font-weight: bold; border-radius: 5px; text-shadow: 0 0 40px rgba(0,255,255,1);');
+
+        console.log('%c Total Lines: 14000+ | Features: 230+ | Level: ∞⁴ ',
+            'background: linear-gradient(45deg, #00ffff, #ff00ff); color: #fff; padding: 10px 20px; font-size: 14px; font-weight: bold; border: 3px double #fff; border-radius: 5px;');
+    }, 4500);
+});
