@@ -129,6 +129,96 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
     </div>
 </section>
 
+<!-- Trust Badges Section -->
+<section class="trust-badges">
+    <div class="container">
+        <div class="row g-3 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="trust-badge-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure Platform</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="trust-badge-item">
+                    <i class="fas fa-lock"></i>
+                    <span>SSL Encrypted</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="trust-badge-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Verified System</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="trust-badge-item">
+                    <i class="fas fa-headset"></i>
+                    <span>24/7 Support</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="trust-badge-item">
+                    <i class="fas fa-users"></i>
+                    <span>2,500+ Users</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="trust-badge-item">
+                    <i class="fas fa-star"></i>
+                    <span>Top Rated</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partner Logos Section -->
+<section class="partner-logos">
+    <div class="container">
+        <div class="partner-logos-title">Trusted Technology Partners</div>
+        <div class="partner-logos-track">
+            <div class="partner-logo">
+                <span class="partner-logo-text">OlympTrade</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">TradingView</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">MetaTrader</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">Telegram API</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">SSL Security</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">CloudFlare</span>
+            </div>
+            <!-- Duplicate for seamless scroll -->
+            <div class="partner-logo">
+                <span class="partner-logo-text">OlympTrade</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">TradingView</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">MetaTrader</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">Telegram API</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">SSL Security</span>
+            </div>
+            <div class="partner-logo">
+                <span class="partner-logo-text">CloudFlare</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Features Section -->
 <section class="section" id="features">
     <div class="container">

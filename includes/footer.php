@@ -138,6 +138,14 @@
         </div>
     </footer>
 
+    <!-- Floating Telegram/Support Button -->
+    <div class="floating-whatsapp">
+        <a href="https://t.me/<?php echo ltrim(TELEGRAM_SUPPORT, '@'); ?>" target="_blank" class="whatsapp-btn" title="Chat with Support">
+            <i class="fab fa-telegram"></i>
+        </a>
+        <div class="whatsapp-tooltip">Chat with Support</div>
+    </div>
+
     <!-- Risk Disclaimer Modal -->
     <div class="modal fade" id="riskModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">

@@ -810,7 +810,7 @@ class NoiseOverlay {
 
 // ===== INITIALIZE EVERYTHING =====
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize components
+    // Initialize core components
     new PremiumPreloader();
     new CustomCursor();
     new SmoothScroll();
@@ -831,9 +831,294 @@ document.addEventListener('DOMContentLoaded', () => {
         new ThreeBackground();
     }
 
+    // Initialize premium features
+    new PageTransition();
+    new BackToTop();
+    new CookieConsent();
+    new LiveNotifications();
+    new FloatingWhatsApp();
+
     console.log('%c ZYN Trade Premium Edition ',
         'background: linear-gradient(135deg, #00d4ff, #7c3aed); color: white; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 5px;');
 });
+
+// ===== PAGE TRANSITION =====
+class PageTransition {
+    constructor() {
+        this.createTransition();
+        this.init();
+    }
+
+    createTransition() {
+        const transition = document.createElement('div');
+        transition.className = 'page-transition';
+
+        for (let i = 0; i < 4; i++) {
+            const panel = document.createElement('div');
+            panel.className = 'page-transition-panel';
+            transition.appendChild(panel);
+        }
+
+        document.body.appendChild(transition);
+        this.transition = transition;
+    }
+
+    init() {
+        // Intercept internal links
+        document.querySelectorAll('a[href]').forEach(link => {
+            const href = link.getAttribute('href');
+
+            // Skip external links, anchors, and special links
+            if (!href ||
+                href.startsWith('#') ||
+                href.startsWith('http') ||
+                href.startsWith('mailto:') ||
+                href.startsWith('tel:') ||
+                href.startsWith('javascript:') ||
+                link.target === '_blank') {
+                return;
+            }
+
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.navigateTo(href);
+            });
+        });
+    }
+
+    navigateTo(url) {
+        this.transition.classList.add('active');
+
+        setTimeout(() => {
+            window.location.href = url;
+        }, 800);
+    }
+}
+
+// ===== BACK TO TOP BUTTON =====
+class BackToTop {
+    constructor() {
+        this.createButton();
+        this.init();
+    }
+
+    createButton() {
+        const button = document.createElement('button');
+        button.className = 'back-to-top';
+        button.innerHTML = `
+            <svg class="back-to-top-progress" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="20"></circle>
+                <circle class="progress-circle" cx="22" cy="22" r="20"></circle>
+            </svg>
+            <i class="fas fa-chevron-up"></i>
+        `;
+        document.body.appendChild(button);
+        this.button = button;
+        this.progressCircle = button.querySelector('.progress-circle');
+    }
+
+    init() {
+        // Scroll listener
+        window.addEventListener('scroll', () => this.onScroll());
+
+        // Click handler
+        this.button.addEventListener('click', () => this.scrollToTop());
+    }
+
+    onScroll() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollTop / docHeight;
+
+        // Show/hide button
+        if (scrollTop > 300) {
+            this.button.classList.add('visible');
+        } else {
+            this.button.classList.remove('visible');
+        }
+
+        // Update progress ring
+        if (this.progressCircle) {
+            const circumference = 126; // 2 * PI * 20
+            const offset = circumference - (progress * circumference);
+            this.progressCircle.style.strokeDashoffset = offset;
+        }
+    }
+
+    scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// ===== COOKIE CONSENT =====
+class CookieConsent {
+    constructor() {
+        this.storageKey = 'zyn_cookie_consent';
+
+        // Check if already accepted
+        if (!this.hasConsent()) {
+            this.createBanner();
+            setTimeout(() => this.show(), 2000);
+        }
+    }
+
+    hasConsent() {
+        return localStorage.getItem(this.storageKey) !== null;
+    }
+
+    createBanner() {
+        const banner = document.createElement('div');
+        banner.className = 'cookie-consent';
+        banner.innerHTML = `
+            <div class="cookie-consent-inner">
+                <div class="cookie-consent-text">
+                    <h4><i class="fas fa-cookie-bite me-2"></i>Cookie Notice</h4>
+                    <p>We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies. <a href="privacy.php">Learn more</a></p>
+                </div>
+                <div class="cookie-consent-buttons">
+                    <button class="cookie-btn cookie-btn-accept">Accept All</button>
+                    <button class="cookie-btn cookie-btn-decline">Decline</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(banner);
+        this.banner = banner;
+
+        // Event listeners
+        banner.querySelector('.cookie-btn-accept').addEventListener('click', () => this.accept());
+        banner.querySelector('.cookie-btn-decline').addEventListener('click', () => this.decline());
+    }
+
+    show() {
+        if (this.banner) {
+            this.banner.classList.add('show');
+        }
+    }
+
+    hide() {
+        if (this.banner) {
+            this.banner.classList.remove('show');
+            setTimeout(() => {
+                this.banner.remove();
+            }, 500);
+        }
+    }
+
+    accept() {
+        localStorage.setItem(this.storageKey, 'accepted');
+        this.hide();
+    }
+
+    decline() {
+        localStorage.setItem(this.storageKey, 'declined');
+        this.hide();
+    }
+}
+
+// ===== LIVE ACTIVITY NOTIFICATIONS =====
+class LiveNotifications {
+    constructor() {
+        this.notifications = [
+            { icon: 'fa-user-plus', title: 'New Member Joined', text: 'Someone from Jakarta just joined ZYN Trade', time: '2 minutes ago' },
+            { icon: 'fa-chart-line', title: 'Trade Success', text: 'User made +$127 profit on EUR/USD', time: '5 minutes ago' },
+            { icon: 'fa-download', title: 'New Download', text: 'ZYN Bot downloaded by new member', time: '3 minutes ago' },
+            { icon: 'fa-star', title: '5-Star Review', text: '"Amazing system, very profitable!" - Budi S.', time: '8 minutes ago' },
+            { icon: 'fa-fire', title: 'Hot Streak', text: '15 consecutive wins on GBP/USD', time: '12 minutes ago' },
+            { icon: 'fa-trophy', title: 'Achievement Unlocked', text: 'Member reached $1,000 profit milestone', time: '15 minutes ago' },
+            { icon: 'fa-rocket', title: 'Strategy Activated', text: 'Dragon Power strategy activated by user', time: '4 minutes ago' },
+            { icon: 'fa-shield-alt', title: 'Account Verified', text: 'New premium member verified', time: '6 minutes ago' }
+        ];
+
+        this.currentNotification = null;
+        this.notificationElement = null;
+        this.isShowing = false;
+
+        this.createNotificationElement();
+        this.startNotifications();
+    }
+
+    createNotificationElement() {
+        const notification = document.createElement('div');
+        notification.className = 'live-notification';
+        notification.innerHTML = `
+            <button class="live-notification-close"><i class="fas fa-times"></i></button>
+            <div class="live-notification-icon"><i class="fas"></i></div>
+            <div class="live-notification-content">
+                <div class="live-notification-title"><span class="live-dot"></span><span class="title-text"></span></div>
+                <div class="live-notification-text"></div>
+                <div class="live-notification-time"></div>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        this.notificationElement = notification;
+
+        // Close button
+        notification.querySelector('.live-notification-close').addEventListener('click', () => this.hide());
+    }
+
+    startNotifications() {
+        // Initial delay before first notification
+        setTimeout(() => this.showRandomNotification(), 5000);
+    }
+
+    showRandomNotification() {
+        if (this.isShowing) return;
+
+        // Random notification
+        const notification = this.notifications[Math.floor(Math.random() * this.notifications.length)];
+
+        // Update content
+        const iconEl = this.notificationElement.querySelector('.live-notification-icon i');
+        iconEl.className = `fas ${notification.icon}`;
+
+        this.notificationElement.querySelector('.title-text').textContent = notification.title;
+        this.notificationElement.querySelector('.live-notification-text').textContent = notification.text;
+        this.notificationElement.querySelector('.live-notification-time').textContent = notification.time;
+
+        // Show
+        this.isShowing = true;
+        this.notificationElement.classList.add('show');
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            this.hide();
+
+            // Schedule next notification (random interval 15-30 seconds)
+            const nextInterval = Math.random() * 15000 + 15000;
+            setTimeout(() => this.showRandomNotification(), nextInterval);
+        }, 5000);
+    }
+
+    hide() {
+        this.notificationElement.classList.remove('show');
+        this.isShowing = false;
+    }
+}
+
+// ===== FLOATING WHATSAPP HANDLER =====
+class FloatingWhatsApp {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const whatsappBtn = document.querySelector('.floating-whatsapp .whatsapp-btn');
+        if (!whatsappBtn) return;
+
+        // Track click for analytics
+        whatsappBtn.addEventListener('click', () => {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'whatsapp_click', {
+                    event_category: 'engagement',
+                    event_label: 'WhatsApp Contact'
+                });
+            }
+        });
+    }
+}
 
 // ===== UTILITY FUNCTIONS =====
 window.ZYNPremium = {
