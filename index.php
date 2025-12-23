@@ -230,10 +230,10 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
         <div class="row g-4">
             <div class="col-lg-4 col-md-6 fade-in stagger-1">
-                <div class="card feature-card h-100 hover-lift tilt-card">
+                <div class="card feature-card h-100 hover-lift tilt-card glass-card spotlight-container card-hover-glow">
                     <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
+                        <i class="fas fa-brain icon-animated icon-pulse"></i>
                     </div>
                     <h3 class="feature-title"><?php _e('feature_1_title'); ?></h3>
                     <p class="feature-desc"><?php _e('feature_1_desc'); ?></p>
@@ -241,10 +241,10 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-2">
-                <div class="card feature-card h-100 hover-lift tilt-card">
+                <div class="card feature-card h-100 hover-lift tilt-card glass-card spotlight-container card-hover-glow">
                     <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-chart-line icon-animated icon-bounce"></i>
                     </div>
                     <h3 class="feature-title"><?php _e('feature_2_title'); ?></h3>
                     <p class="feature-desc"><?php _e('feature_2_desc'); ?></p>
@@ -252,10 +252,10 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-3">
-                <div class="card feature-card h-100 hover-lift tilt-card">
+                <div class="card feature-card h-100 hover-lift tilt-card glass-card spotlight-container card-hover-glow">
                     <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
-                        <i class="fas fa-robot"></i>
+                        <i class="fas fa-robot icon-animated icon-float"></i>
                     </div>
                     <h3 class="feature-title"><?php _e('feature_3_title'); ?></h3>
                     <p class="feature-desc"><?php _e('feature_3_desc'); ?></p>
@@ -263,10 +263,10 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-4">
-                <div class="card feature-card h-100 hover-lift tilt-card">
+                <div class="card feature-card h-100 hover-lift tilt-card glass-card spotlight-container card-hover-glow">
                     <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-shield-alt icon-animated icon-pulse"></i>
                     </div>
                     <h3 class="feature-title"><?php _e('feature_4_title'); ?></h3>
                     <p class="feature-desc"><?php _e('feature_4_desc'); ?></p>
@@ -274,10 +274,10 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-5">
-                <div class="card feature-card h-100 hover-lift tilt-card">
+                <div class="card feature-card h-100 hover-lift tilt-card glass-card spotlight-container card-hover-glow">
                     <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
-                        <i class="fas fa-tachometer-alt"></i>
+                        <i class="fas fa-tachometer-alt icon-animated icon-bounce"></i>
                     </div>
                     <h3 class="feature-title"><?php _e('feature_5_title'); ?></h3>
                     <p class="feature-desc"><?php _e('feature_5_desc'); ?></p>
@@ -285,10 +285,10 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
             </div>
 
             <div class="col-lg-4 col-md-6 fade-in stagger-6">
-                <div class="card feature-card h-100 hover-lift tilt-card">
+                <div class="card feature-card h-100 hover-lift tilt-card glass-card spotlight-container card-hover-glow">
                     <div class="tilt-card-shine"></div>
                     <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
+                        <i class="fas fa-headset icon-animated icon-float"></i>
                     </div>
                     <h3 class="feature-title"><?php _e('feature_6_title'); ?></h3>
                     <p class="feature-desc"><?php _e('feature_6_desc'); ?></p>
@@ -785,29 +785,29 @@ $whatsappLink = "https://wa.me/{$whatsappNumber}";
 
         <div class="row mt-5">
             <div class="col-12">
-                <div class="stats-banner fade-in">
+                <div class="stats-banner fade-in glass-frosted">
                     <div class="row g-4 text-center">
                         <div class="col-6 col-md-3">
                             <div class="stat-big">
-                                <span class="stat-number text-gradient">2,500+</span>
+                                <span class="stat-number text-gradient gradient-text-animate" data-counter="2500" data-suffix="+">0</span>
                                 <span class="stat-label"><?php _e('stats_active_users'); ?></span>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-big">
-                                <span class="stat-number text-success">$150K+</span>
+                                <span class="stat-number text-success counter-glow" data-counter="150" data-prefix="$" data-suffix="K+">$0</span>
                                 <span class="stat-label"><?php _e('stats_total_profit'); ?></span>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-big">
-                                <span class="stat-number text-info">50,000+</span>
+                                <span class="stat-number text-info" data-counter="50000" data-suffix="+">0</span>
                                 <span class="stat-label"><?php _e('stats_trades_executed'); ?></span>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-big">
-                                <span class="stat-number text-warning">85%</span>
+                                <span class="stat-number text-warning neon-glow" data-counter="85" data-suffix="%">0%</span>
                                 <span class="stat-label"><?php _e('stats_avg_winrate'); ?></span>
                             </div>
                         </div>

@@ -1164,3 +1164,410 @@ window.ZYNPremium = {
         setTimeout(() => element.classList.remove('glitch-text'), duration);
     }
 };
+
+// ===== BATCH 3: ADVANCED PREMIUM FEATURES =====
+
+// ===== TYPEWRITER EFFECT =====
+class TypewriterEffect {
+    constructor(element, texts, options = {}) {
+        this.element = element;
+        this.texts = texts;
+        this.options = {
+            typeSpeed: options.typeSpeed || 100,
+            deleteSpeed: options.deleteSpeed || 50,
+            pauseTime: options.pauseTime || 2000,
+            loop: options.loop !== false
+        };
+        this.textIndex = 0;
+        this.charIndex = 0;
+        this.isDeleting = false;
+
+        if (this.element && this.texts.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.element.classList.add('typewriter-text');
+        this.type();
+    }
+
+    type() {
+        const currentText = this.texts[this.textIndex];
+
+        if (this.isDeleting) {
+            this.element.textContent = currentText.substring(0, this.charIndex - 1);
+            this.charIndex--;
+            this.element.classList.add('deleting');
+        } else {
+            this.element.textContent = currentText.substring(0, this.charIndex + 1);
+            this.charIndex++;
+            this.element.classList.remove('deleting');
+        }
+
+        let delay = this.isDeleting ? this.options.deleteSpeed : this.options.typeSpeed;
+
+        if (!this.isDeleting && this.charIndex === currentText.length) {
+            delay = this.options.pauseTime;
+            this.isDeleting = true;
+        } else if (this.isDeleting && this.charIndex === 0) {
+            this.isDeleting = false;
+            this.textIndex = (this.textIndex + 1) % this.texts.length;
+            delay = 500;
+        }
+
+        setTimeout(() => this.type(), delay);
+    }
+}
+
+// ===== TEXT SCRAMBLE EFFECT =====
+class TextScramble {
+    constructor(element) {
+        this.element = element;
+        this.chars = '!<>-_\\/[]{}—=+*^?#________';
+        this.originalText = element.textContent;
+        this.queue = [];
+        this.frame = 0;
+        this.frameRequest = null;
+        this.resolve = null;
+    }
+
+    setText(newText) {
+        const oldText = this.element.textContent;
+        const length = Math.max(oldText.length, newText.length);
+        const promise = new Promise(resolve => this.resolve = resolve);
+
+        this.queue = [];
+        for (let i = 0; i < length; i++) {
+            const from = oldText[i] || '';
+            const to = newText[i] || '';
+            const start = Math.floor(Math.random() * 40);
+            const end = start + Math.floor(Math.random() * 40);
+            this.queue.push({ from, to, start, end });
+        }
+
+        cancelAnimationFrame(this.frameRequest);
+        this.frame = 0;
+        this.update();
+        return promise;
+    }
+
+    update() {
+        let output = '';
+        let complete = 0;
+
+        for (let i = 0; i < this.queue.length; i++) {
+            let { from, to, start, end, char } = this.queue[i];
+
+            if (this.frame >= end) {
+                complete++;
+                output += to;
+            } else if (this.frame >= start) {
+                if (!char || Math.random() < 0.28) {
+                    char = this.randomChar();
+                    this.queue[i].char = char;
+                }
+                output += `<span class="char scrambling">${char}</span>`;
+            } else {
+                output += from;
+            }
+        }
+
+        this.element.innerHTML = output;
+
+        if (complete === this.queue.length) {
+            this.resolve();
+        } else {
+            this.frameRequest = requestAnimationFrame(() => this.update());
+            this.frame++;
+        }
+    }
+
+    randomChar() {
+        return this.chars[Math.floor(Math.random() * this.chars.length)];
+    }
+}
+
+// ===== PARTICLE MOUSE TRAIL =====
+class ParticleTrail {
+    constructor(options = {}) {
+        this.options = {
+            particleCount: options.particleCount || 10,
+            colors: options.colors || ['#00d4ff', '#7c3aed', '#00ff88'],
+            size: options.size || 8,
+            fadeTime: options.fadeTime || 1000
+        };
+
+        this.particles = [];
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.lastMouseX = 0;
+        this.lastMouseY = 0;
+        this.isMoving = false;
+        this.moveTimeout = null;
+
+        // Only enable on desktop
+        if (window.innerWidth > 768 && !('ontouchstart' in window)) {
+            this.init();
+        }
+    }
+
+    init() {
+        // Create container
+        this.container = document.createElement('div');
+        this.container.className = 'cursor-trail-container';
+        document.body.appendChild(this.container);
+
+        // Create particle pool
+        for (let i = 0; i < this.options.particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle-trail';
+            particle.style.width = this.options.size + 'px';
+            particle.style.height = this.options.size + 'px';
+            this.container.appendChild(particle);
+            this.particles.push({
+                element: particle,
+                active: false
+            });
+        }
+
+        // Mouse move listener
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    }
+
+    onMouseMove(e) {
+        this.mouseX = e.clientX;
+        this.mouseY = e.clientY;
+
+        // Check if mouse actually moved
+        const dx = this.mouseX - this.lastMouseX;
+        const dy = this.mouseY - this.lastMouseY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 5) {
+            this.spawnParticle();
+            this.lastMouseX = this.mouseX;
+            this.lastMouseY = this.mouseY;
+        }
+    }
+
+    spawnParticle() {
+        // Find inactive particle
+        const particle = this.particles.find(p => !p.active);
+        if (!particle) return;
+
+        const color = this.options.colors[Math.floor(Math.random() * this.options.colors.length)];
+
+        particle.element.style.left = this.mouseX + 'px';
+        particle.element.style.top = this.mouseY + 'px';
+        particle.element.style.background = `radial-gradient(circle, ${color}, transparent)`;
+        particle.element.classList.add('active');
+        particle.active = true;
+
+        // Deactivate after animation
+        setTimeout(() => {
+            particle.element.classList.remove('active');
+            particle.active = false;
+        }, this.options.fadeTime);
+    }
+}
+
+// ===== SPOTLIGHT EFFECT =====
+class SpotlightEffect {
+    constructor(selector = '.spotlight-container') {
+        this.containers = document.querySelectorAll(selector);
+
+        if (this.containers.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.containers.forEach(container => {
+            // Create spotlight element
+            const spotlight = document.createElement('div');
+            spotlight.className = 'spotlight';
+            container.appendChild(spotlight);
+
+            // Mouse move handler
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                spotlight.style.left = x + 'px';
+                spotlight.style.top = y + 'px';
+            });
+        });
+    }
+}
+
+// ===== ENHANCED COUNTER =====
+class EnhancedCounter {
+    constructor() {
+        this.counters = document.querySelectorAll('[data-counter]');
+        this.observed = new Set();
+
+        if (this.counters.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !this.observed.has(entry.target)) {
+                    this.observed.add(entry.target);
+                    this.animateCounter(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        this.counters.forEach(counter => observer.observe(counter));
+    }
+
+    animateCounter(element) {
+        const target = parseInt(element.getAttribute('data-counter'), 10);
+        const duration = parseInt(element.getAttribute('data-duration'), 10) || 2000;
+        const prefix = element.getAttribute('data-prefix') || '';
+        const suffix = element.getAttribute('data-suffix') || '';
+
+        element.classList.add('counter-animated', 'counting');
+
+        const startTime = performance.now();
+        const startValue = 0;
+
+        const update = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Easing function (ease-out-cubic)
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            const current = Math.round(startValue + (target - startValue) * easeProgress);
+
+            element.textContent = prefix + current.toLocaleString() + suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.classList.remove('counting');
+                element.classList.add('counted');
+            }
+        };
+
+        requestAnimationFrame(update);
+    }
+}
+
+// ===== TEXT ROTATE =====
+class TextRotate {
+    constructor(element, texts, options = {}) {
+        this.element = element;
+        this.texts = texts;
+        this.options = {
+            interval: options.interval || 3000,
+            animationDuration: options.animationDuration || 500
+        };
+        this.currentIndex = 0;
+
+        if (this.element && this.texts.length > 0) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.element.classList.add('text-rotate-wrapper');
+
+        // Create text items
+        this.texts.forEach((text, index) => {
+            const item = document.createElement('span');
+            item.className = 'text-rotate-item';
+            item.textContent = text;
+            if (index === 0) item.classList.add('active');
+            this.element.appendChild(item);
+        });
+
+        this.items = this.element.querySelectorAll('.text-rotate-item');
+
+        // Start rotation
+        setInterval(() => this.rotate(), this.options.interval);
+    }
+
+    rotate() {
+        this.items[this.currentIndex].classList.remove('active');
+        this.currentIndex = (this.currentIndex + 1) % this.items.length;
+        this.items[this.currentIndex].classList.add('active');
+    }
+}
+
+// ===== ANIMATED ICONS HANDLER =====
+class AnimatedIcons {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Add animation classes to feature icons
+        document.querySelectorAll('.feature-icon i').forEach((icon, index) => {
+            const animations = ['icon-bounce', 'icon-pulse', 'icon-float'];
+            icon.classList.add('icon-animated', animations[index % animations.length]);
+        });
+
+        // Add hover effects
+        document.querySelectorAll('[data-icon-animation]').forEach(icon => {
+            const animation = icon.getAttribute('data-icon-animation');
+            icon.classList.add('icon-animated', `icon-${animation}`);
+        });
+    }
+}
+
+// ===== INITIALIZE BATCH 3 FEATURES =====
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        // Particle Trail
+        new ParticleTrail({
+            particleCount: 15,
+            colors: ['#00d4ff', '#7c3aed', '#00ff88', '#ff6b6b'],
+            fadeTime: 800
+        });
+
+        // Spotlight Effect on cards
+        new SpotlightEffect('.feature-card, .pricing-card, .strategy-card');
+
+        // Enhanced Counters
+        new EnhancedCounter();
+
+        // Animated Icons
+        new AnimatedIcons();
+
+        // Typewriter for hero tagline (if element exists)
+        const heroTagline = document.querySelector('.hero-tagline');
+        if (heroTagline) {
+            const originalText = heroTagline.textContent.trim();
+            const texts = [
+                originalText,
+                'Automated Trading Revolution',
+                'Smart Money Management',
+                'AI-Powered Strategies'
+            ];
+            heroTagline.textContent = '';
+            new TypewriterEffect(heroTagline, texts);
+        }
+
+        // Text Scramble for section titles on hover
+        document.querySelectorAll('.section-title').forEach(title => {
+            const scrambler = new TextScramble(title);
+            const originalText = title.textContent;
+
+            title.addEventListener('mouseenter', () => {
+                scrambler.setText(originalText);
+            });
+        });
+
+        console.log('%c Batch 3 Premium Features Loaded ',
+            'background: linear-gradient(135deg, #00ff88, #00d4ff); color: #000; padding: 5px 10px; font-size: 12px; border-radius: 3px;');
+    }, 1000);
+});
