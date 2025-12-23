@@ -1,5 +1,6 @@
 <?php
-$page_title = 'Trading Strategies';
+require_once 'includes/language.php';
+$page_title = __('strat_page_title') ?: 'Trading Strategies';
 require_once 'includes/header.php';
 
 $strategies = getAllStrategies();
@@ -8,17 +9,14 @@ $strategies = getAllStrategies();
 <section class="section" style="padding-top: calc(var(--navbar-height) + 3rem);">
     <div class="container">
         <div class="section-header fade-in">
-            <span class="section-badge">ZYN Quant Logic</span>
-            <h1 class="section-title">10 Powerful Trading Strategies</h1>
-            <p class="section-desc">
-                Setiap strategi dirancang algoritmik untuk kondisi market tertentu.
-                Pilih yang sesuai dengan gaya trading kamu!
-            </p>
+            <span class="section-badge"><?php _e('strat_badge'); ?></span>
+            <h1 class="section-title"><?php _e('strat_title'); ?></h1>
+            <p class="section-desc"><?php _e('strat_desc'); ?></p>
             <!-- Frequency Legend -->
             <div class="frequency-legend mt-3">
-                <span class="badge bg-danger me-2">🔥 SERING = 15-30 signal/hari</span>
-                <span class="badge bg-primary me-2">⚡ SEDANG = 5-15 signal/hari</span>
-                <span class="badge bg-info">💎 JARANG = 1-5 signal/hari (MOMENTUM TERBAIK!)</span>
+                <span class="badge bg-danger me-2">🔥 <?php _e('strat_freq_high'); ?></span>
+                <span class="badge bg-primary me-2">⚡ <?php _e('strat_freq_medium'); ?></span>
+                <span class="badge bg-info">💎 <?php _e('strat_freq_low'); ?></span>
             </div>
         </div>
 
@@ -116,17 +114,17 @@ $strategies = getAllStrategies();
 
         <!-- Strategy Comparison -->
         <div class="mt-5 fade-in">
-            <h2 class="section-title text-center mb-4">📊 Strategy Comparison</h2>
+            <h2 class="section-title text-center mb-4">📊 <?php _e('strat_comparison_title'); ?></h2>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Strategy</th>
-                            <th>Win Rate</th>
-                            <th>Frequency</th>
-                            <th>Risk</th>
-                            <th>Rating</th>
-                            <th>Package</th>
+                            <th><?php _e('strat_col_strategy'); ?></th>
+                            <th><?php _e('strat_col_winrate'); ?></th>
+                            <th><?php _e('strat_col_frequency'); ?></th>
+                            <th><?php _e('strat_col_risk'); ?></th>
+                            <th><?php _e('strat_col_rating'); ?></th>
+                            <th><?php _e('strat_col_package'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -171,16 +169,14 @@ $strategies = getAllStrategies();
 
         <!-- CTA -->
         <div class="text-center mt-5 fade-in">
-            <h3 class="mb-3">🚀 Siap Trading Lebih Cerdas?</h3>
-            <p class="text-muted mb-4">
-                "Kenapa capek trading manual? Biarkan robot yang kerja, kamu tinggal cek profit" 💰
-            </p>
+            <h3 class="mb-3">🚀 <?php _e('strat_cta_title'); ?></h3>
+            <p class="text-muted mb-4"><?php _e('strat_cta_desc'); ?></p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
                 <a href="register.php" class="btn btn-primary btn-lg">
-                    <i class="fas fa-rocket"></i> Daftar GRATIS + Dapat Robot! 🎁
+                    <i class="fas fa-rocket"></i> <?php _e('strat_cta_register'); ?>
                 </a>
                 <a href="pricing.php" class="btn btn-secondary btn-lg">
-                    Lihat Paket Premium
+                    <?php _e('strat_cta_pricing'); ?>
                 </a>
             </div>
         </div>
@@ -192,7 +188,7 @@ $strategies = getAllStrategies();
     <div class="container">
         <div class="alert alert-warning mb-0">
             <i class="fas fa-exclamation-triangle"></i>
-            <strong>Disclaimer:</strong> Performa masa lalu tidak menjamin hasil di masa depan. Win rate berdasarkan backtest historis dan dapat bervariasi dalam kondisi live trading.
+            <strong><?php _e('disclaimer_title'); ?>:</strong> <?php _e('strat_disclaimer'); ?>
         </div>
     </div>
 </section>
